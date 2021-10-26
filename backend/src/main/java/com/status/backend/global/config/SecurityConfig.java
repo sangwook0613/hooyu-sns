@@ -1,8 +1,8 @@
 package com.status.backend.global.config;
 
 import com.status.backend.global.service.CustomOAuth2UserService;
+import com.status.backend.user.domain.Role;
 import lombok.RequiredArgsConstructor;
-import org.h2.engine.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/h2-console/**","/error","/favicon.ico").permitAll()
                 .antMatchers("/auth/**","/oauth2/**").permitAll()
-                .antMatchers("/api/v1/**").hasRole(Role.USER.name())
+                .antMatchers("/api/v1/**").hasRole(Role.USER.getKey())
 
                 .antMatchers("/api/guest/**","/api/user/**","/push/**").permitAll()
                 .anyRequest().authenticated()
@@ -57,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .loginPage("https://k5a101.p.ssafy.io/")
                 .loginPage("http://localhost:8085")
                 .userInfoEndpoint()
-                .userService(customOAuth2UserService)
+                .userService(customOAuth2UserService);
 
 //                .and()
 //                .successHandler(customOAuth2SuccessHandler);

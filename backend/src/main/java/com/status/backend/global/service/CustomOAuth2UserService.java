@@ -1,9 +1,9 @@
 package com.status.backend.global.service;
 
 
-import com.curation.backend.user.domain.UserRepository;
 import com.status.backend.global.dto.OAuthAttributes;
 import com.status.backend.user.domain.User;
+import com.status.backend.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

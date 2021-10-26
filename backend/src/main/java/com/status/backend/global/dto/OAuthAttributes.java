@@ -1,10 +1,10 @@
 package com.status.backend.global.dto;
 
 
+import com.status.backend.user.domain.Role;
+import com.status.backend.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
-import org.h2.engine.Role;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.Map;
 
@@ -77,9 +77,9 @@ public class OAuthAttributes {
      */
     public User toEntity() {
         return User.builder()
-                .name(name)
-                .email(email)
-                .profileImg(profileImg)
+                .name("ProjectName")
+                .email(this.email)
+                .profileImg(this.profileImg)
                 .role(Role.USER)
                 .build();
     }

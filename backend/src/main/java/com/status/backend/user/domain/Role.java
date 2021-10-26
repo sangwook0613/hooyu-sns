@@ -1,4 +1,4 @@
-package com.curation.backend.user.domain;
+package com.status.backend.user.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
