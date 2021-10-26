@@ -4,6 +4,8 @@ import com.status.backend.global.dto.ExceptionResponseDto;
 import com.status.backend.global.exception.NoContentException;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.service.ResponseGenerateService;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +49,36 @@ public class ExceptionController {
         logger.error("[No Content Exception] ", e);
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
         String message = "없는 컨탠츠 요청입니다.";
+
+        ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
+        return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ExceptionResponseDto> noAcceptJWTHandler(ExpiredJwtException e) {
+        logger.error("[No Content Exception] ", e);
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+        String message = "만료된 JWT 토큰입니다.";
+
+        ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
+        return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
+    }
+
+    @ExceptionHandler(UnsupportedJwtException.class)
+    public ResponseEntity<ExceptionResponseDto> noAcceptJWTHandler(UnsupportedJwtException e) {
+        logger.error("[No Content Exception] ", e);
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+        String message = "지원되지 않는 JWT 토큰입니다.";
+
+        ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
+        return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ExceptionResponseDto> noAcceptJWTHandler(IllegalArgumentException e) {
+        logger.error("[No Content Exception] ", e);
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+        String message = "JWT 토큰이 잘못되었습니다.";
 
         ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
         return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
