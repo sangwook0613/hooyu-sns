@@ -61,8 +61,8 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
         //유저에게 돌려보네기 upload시 우리 서버로
 //        String redirect_uri = "https://k5a101.p.ssafy.io/loginprocess";
-        String redirect_uri = "http://localhost:8085/loginprocess";
-        response.sendRedirect(redirect_uri);
+//        String redirect_uri = "http://localhost:8085/loginprocess";
+//        response.sendRedirect(redirect_uri);
     }
 
     private void writeTokenResponse(HttpServletResponse response, Token token)

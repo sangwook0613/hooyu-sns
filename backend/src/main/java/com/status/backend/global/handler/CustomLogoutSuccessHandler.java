@@ -35,7 +35,12 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
         logger.trace("?>>>>>>>>>>>>로그아웃 access_token: {}",access_token);
 
         if(refresh_token != null && tokenService.verifyToken(refresh_token)){
+            Long id = tokenService.getId(refresh_token);
 
+            User user = userRepository.findById(id).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+            user.updateRefreshToken("");
+            userRepository.save(user);
+            logger.trace("{}님의 refresh 초기화 했습니다.",tokenService.getNickName(access_token));
         }else if (access_token != null && tokenService.verifyToken(access_token)) {
             Long id = tokenService.getId(access_token);
 

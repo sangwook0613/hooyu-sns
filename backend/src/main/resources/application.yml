@@ -7,6 +7,9 @@ logging:
     com.status.backend: debug
 
 spring:
+  profiles:
+    include: oauth
+
   h2:
     console:
       enabled: true
@@ -31,4 +34,7 @@ spring:
 #      hbm2ddl.auto: update
       format_sql: true
 
-
+## security switch
+#  security:
+#    basic:
+#      enabled: false
