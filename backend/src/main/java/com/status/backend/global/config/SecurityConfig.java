@@ -1,7 +1,12 @@
 package com.status.backend.global.config;
 
+import com.status.backend.global.filter.JwtAuthFilter;
+import com.status.backend.global.handler.CustomLogoutSuccessHandler;
+import com.status.backend.global.handler.CustomOAuth2SuccessHandler;
 import com.status.backend.global.service.CustomOAuth2UserService;
+import com.status.backend.global.service.TokenService;
 import com.status.backend.user.domain.Role;
+import com.status.backend.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -10,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -19,8 +25,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CustomOAuth2UserService customOAuth2UserService;
-//    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
-//    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+    private final CustomOAuth2SuccessHandler customOAuth2SuccessHandler;
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
+    private final TokenService tokenService;
+    private final UserRepository userRepository;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -49,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
-//                .logoutSuccessHandler(customLogoutSuccessHandler)
+                .logoutSuccessHandler(customLogoutSuccessHandler)
 
                 .and()
                 .oauth2Login()
@@ -57,10 +65,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .loginPage("https://k5a101.p.ssafy.io/")
                 .loginPage("http://localhost:8085")
                 .userInfoEndpoint()
-                .userService(customOAuth2UserService);
+                .userService(customOAuth2UserService)
 
-//                .and()
-//                .successHandler(customOAuth2SuccessHandler);
+                .and()
+                .successHandler(customOAuth2SuccessHandler);
+
+        http.addFilterBefore(new JwtAuthFilter(tokenService,userRepository), UsernamePasswordAuthenticationFilter.class);
 
     }
 

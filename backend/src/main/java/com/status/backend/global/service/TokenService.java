@@ -18,7 +18,7 @@ public class TokenService {
     private String secretKey = "token-secret-key";
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
-    // 인증 token 10분, 리프레쉬 토큰 = 3주;
+    // 인증 token 30분, 리프레쉬 토큰 = 8주;
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60L * 30L;            // 30분
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L * 60L * 60L * 24L * 7L * 8L;  // 8주
 
@@ -27,17 +27,18 @@ public class TokenService {
         secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
     }
 
-    public Token generateToken(Long id, String uid, String emoji, String name, String role) {
+    public Token generateToken(Long id, String name, String role) {
 
 
-        Claims claims = Jwts.claims().setSubject(uid);
+        Claims claims = Jwts.claims().setSubject(name);
         claims.put("pk", id);
 //        claims.put("img", profileImg);
-        claims.put("emoji", emoji);
+//        claims.put("emoji", emoji);
         claims.put("name",name);
         claims.put("role", role);
 
-        Claims claims_re = Jwts.claims().setSubject(uid);
+        Claims claims_re = Jwts.claims().setSubject(name);
+        claims_re.put("pk", id);
 
         Date now = new Date();
         return new Token(

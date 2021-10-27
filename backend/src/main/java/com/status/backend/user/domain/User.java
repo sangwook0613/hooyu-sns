@@ -4,14 +4,12 @@ import com.status.backend.global.domain.BaseTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
 
-@SQLDelete(sql = "UPDATE user set deleted = true where id = ?")
-@Where(clause = "deleted = false")
+//@SQLDelete(sql = "UPDATE user set deleted = true where id = ?")
+//@Where(clause = "deleted = false")
 @Getter
 @NoArgsConstructor
 @Entity
@@ -19,6 +17,7 @@ public class User extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "LONG UNSIGNED")
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
