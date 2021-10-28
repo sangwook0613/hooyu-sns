@@ -9,7 +9,8 @@ spring:
           google:
             clientId: 342631621094-nel3qdnifnh6uvo75qrgiu6b6cii5d4h.apps.googleusercontent.com
             clientSecret: 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
-            redirectUri: http://localhost:8085/login/oauth2/code/google
+#            redirectUri: http://localhost:8085/login/oauth2/code/google
+            redirectUri: https://k5a101.p.ssafy.io/login/oauth2/code/google
             scope: email, profile
 #              accessTokenUri: https://accounts.google.com/o/oauth2/token
 #              userAuthorizationUri: https://accounts.google.com/o/oauth2/auth
@@ -22,7 +23,8 @@ spring:
             authorization-grant-type: authorization_code
             client-id: 1c97a5b559f464209bff9c4c92edcad8
             client-secret: oqp9w2qm9F8bM7Lw5WMrZ6ZSZ5PfaxUU
-            redirect-uri: http://localhost:8085/login/oauth2/code/kakao
+#            redirect-uri: http://localhost:8085/login/oauth2/code/kakao
+            redirectUri: https://k5a101.p.ssafy.io/login/oauth2/code/kakao
             scope:
               - profile_nickname
               - profile_image
