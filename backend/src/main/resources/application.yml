@@ -7,6 +7,9 @@ logging:
     com.status.backend: debug
 
 spring:
+  profiles:
+    include: oauth
+
   h2:
     console:
       enabled: true
@@ -23,10 +26,15 @@ spring:
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    properties.hibernate:
-      hbm2ddl.auto: update
-      format_sql: true
     showSql: true
     generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties.hibernate:
+#      hbm2ddl.auto: update
+      format_sql: true
 
-
+## security switch
+#  security:
+#    basic:
+#      enabled: false
