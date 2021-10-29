@@ -14,15 +14,15 @@ spring:
     console:
       enabled: true
 
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
 #  datasource:
-#    driver-class-name: org.mariadb.jdbc.Driver
-#    url: jdbc:mariadb://k5a101.p.ssafy.io:3306/데이터배이스 이름
-#    username: dawit
-#    password: free101#
+#    url: jdbc:h2:mem:testdb
+#    driver-class-name: org.h2.Driver
+#    username: sa
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://k5a101.p.ssafy.io:3306/whoyou?autoReconnect=true&useUnicode=true&characterEncoding=utf8mb4&serverTimezone=KST
+    username: whoyou
+    password: a101dawit!
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
