@@ -17,7 +17,7 @@ public class User extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(columnDefinition = "LONG UNSIGNED")
+//    @Column(columnDefinition = "LONG UNSIGNED")
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
