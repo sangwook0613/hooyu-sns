@@ -20,9 +20,13 @@ function Main() {
       </View>
       <View style={{
         flex: 0.7,
-        justifyContent: 'center',
         alignItems: 'center',
       }}>
+        <View style={styles.radar__text}>
+          <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
+          <Text style={styles.radar__text__count}>1000000</Text>
+        </View>
+        
         <View style={styles.rader}>
           
         </View>
@@ -84,6 +88,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 4,
   },
+  radar__text: {
+    alignItems: 'center',
+    marginBottom: device_height * 0.01,
+  },
+  radar__text__count: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 22,
+    fontWeight: '700',
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowOffset: {width: 0, height: 2},
+    textShadowRadius: 5
+  },
+  radar__text__title: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: device_height * 0.002,
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowOffset: {width: 0, height: 2},
+    textShadowRadius: 5
+  }
 });
 
 
