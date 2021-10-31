@@ -9,8 +9,9 @@ import AddButton from '../assets/images/add.png'
 import Geolocation from 'react-native-geolocation-service'
 
 
-const device_width = Dimensions.get('window').width
-const device_height = Dimensions.get('window').height
+const deviceWidth = Dimensions.get('window').width
+const deviceHeight = Dimensions.get('window').height
+const radarWidth = Dimensions.get('window').width * 0.7
 const mainColor1 = '#A1D1E7'
 const mainColor2 = '#71D2FF'
 const mainColor3 = '#FDA604'
@@ -18,6 +19,9 @@ const mainColor3 = '#FDA604'
 function Main() {
 
   const [location, setLocation] = useState('unknown')
+  const [radarX, setRadarX] = useState(0)
+  const [radarY, setRadarY] = useState(0)
+  const [radarWidth, setRadarWidth] = useState(0)
 
   async function requestPositionPermissions() {
     if (Platform.OS === 'ios') {
@@ -45,13 +49,11 @@ function Main() {
   }
 
   useEffect(() => {
-    console.warn('here')
     requestPositionPermissions()
       .then((didGetPermission) => {
         if (didGetPermission) {
           Geolocation.getCurrentPosition( position => {
             const { latitude, longitude } = position.coords
-            console.warn(latitude, longitude)
             setLocation({
               latitude,
               longitude
@@ -89,13 +91,10 @@ function Main() {
         </TouchableOpacity>
       </View>
 
-
-
-
       <View style={styles.raderArea}>
         <View style={styles.radar__text}>
           <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
-          <Text style={styles.radar__text__count}>1000000</Text>
+          <Text style={styles.radar__text__count}>10000</Text>
         </View>
         <View style={styles.shelterArea}>
           <Image
@@ -105,8 +104,16 @@ function Main() {
         </View>
 
 
-        <View style={styles.rader}>
-
+        <View 
+        style={styles.rader}
+        onLayout={({ target }) => {
+          target.measure((x, y, width, height, pageX, pageY) => {
+            setRadarX(x + pageX)
+            setRadarY(y + pageY)
+            setRadarWidth(width)
+          })
+        }}
+        >
         </View>
         <View style={{ flexDirection: "row", marginTop: 10 }}>
           <Text style={{ top: -20, marginRight: 20, transform: [{ rotate: '30deg' }] }}>20m</Text>
@@ -126,6 +133,24 @@ function Main() {
           />
         </TouchableOpacity>
       </View>
+      {/* 중앙 내 이모티콘 */}
+      <TouchableOpacity 
+          style={{
+            left: radarX + radarWidth / 2 - deviceWidth * 0.03,
+            top: radarY + radarWidth / 2 - deviceWidth * 0.03,
+            position: 'absolute',
+            elevation: 5,
+          }}
+        >
+          <Image
+            style={{
+              height: deviceWidth * 0.06,
+              width: deviceWidth * 0.06,
+            }}
+            source={wowImoticon}
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
     </LinearGradient >
   )
 }
@@ -136,27 +161,28 @@ const styles = StyleSheet.create({
     backgroundColor: mainColor3,
     borderRadius: 35,
     elevation: 4,
-    height: device_width * 0.12,
+    height: deviceWidth * 0.12,
     justifyContent: 'center',
-    marginTop: device_height * 0.13,
-    width: device_width * 0.12,
+    marginTop: deviceHeight
+   * 0.13,
+    width: deviceWidth * 0.12,
   },
   addButtonContainer: {
     alignItems: 'center',
     flex: 0.25,
   },
   addButtonImage: {
-    width: device_width * 0.06,
+    width: deviceWidth * 0.06,
   },
   cloud1: {
     position: "absolute",
-    width: device_width * 0.3
+    width: deviceWidth * 0.3
   },
   cloud2: {
     bottom: 30,
     right: 30,
     position: "absolute",
-    width: device_width * 0.4
+    width: deviceWidth * 0.4
   },
   linearGradient: {
     flex: 1,
@@ -168,34 +194,39 @@ const styles = StyleSheet.create({
   profileBackground: {
     position: "absolute",
     backgroundColor: 'white',
-    borderRadius: Math.round(device_width + device_height) / 2,
-    top: device_height * 0.02 - 2,
-    right: device_width * 0.03 - 2.5,
+    borderRadius: Math.round(deviceWidth + deviceHeight
+    ) / 2,
+    top: deviceHeight
+   * 0.02 - 2,
+    right: deviceWidth * 0.03 - 2.5,
     width: 45,
     height: 45,
-    // width: device_width * 0.11,
-    // height: device_width * 0.11,
+    // width: deviceWidth * 0.11,
+    // height: deviceWidth * 0.11,
   },
   profileImoticon: {
-    marginTop: device_height * 0.02,
-    marginRight: device_width * 0.03,
+    marginTop: deviceHeight
+   * 0.02,
+    marginRight: deviceWidth * 0.03,
     width: 40,
     height: 40,
-    // width: device_width * 0.1,
-    // height: device_width * 0.1
+    // width: deviceWidth * 0.1,
+    // height: deviceWidth * 0.1
   },
   profileMeArea: {
     backgroundColor: 'white',
-    borderRadius: Math.round(device_width + device_height) / 2,
+    borderRadius: Math.round(deviceWidth + deviceHeight
+    ) / 2,
     borderColor: "black",
     borderWidth: 1.5,
     position: "absolute",
-    top: device_height * 0.02 + 25,
-    right: device_width * 0.03 - 7,
+    top: deviceHeight
+   * 0.02 + 25,
+    right: deviceWidth * 0.03 - 7,
     width: 20,
     height: 20,
-    // width: device_width * 0.05,
-    // height: device_width * 0.05,
+    // width: deviceWidth * 0.05,
+    // height: deviceWidth * 0.05,
     justifyContent: "center",
     alignItems: "center"
   },
@@ -210,9 +241,10 @@ const styles = StyleSheet.create({
 
   },
   rader: {
-    borderRadius: Math.round(device_width + device_height) / 2,
-    width: device_width * 0.7,
-    height: device_width * 0.7,
+    borderRadius: Math.round(deviceWidth + deviceHeight
+    ) / 2,
+    width: radarWidth,
+    height: radarWidth,
     borderColor: mainColor3,
     borderWidth: 5,
     backgroundColor: 'white',
@@ -222,7 +254,8 @@ const styles = StyleSheet.create({
   },
   radar__text: {
     alignItems: 'center',
-    marginBottom: device_height * 0.01,
+    marginBottom: deviceHeight
+   * 0.01,
   },
   radar__text__count: {
     color: 'rgba(255, 255, 255, 0.8)',
@@ -236,7 +269,8 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 18,
     fontWeight: '700',
-    marginBottom: device_height * 0.002,
+    marginBottom: deviceHeight
+   * 0.002,
     textShadowColor: 'rgba(0, 0, 0, 0.4)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 5
@@ -244,12 +278,13 @@ const styles = StyleSheet.create({
   shelterArea: {
     alignItems: 'flex-end',
     position: 'absolute',
-    top: device_height * 0.175,
-    width: device_width * 0.8
+    top: deviceHeight
+   * 0.175,
+    width: deviceWidth * 0.8
   },
   shelterImage: {
-    width: device_width * 0.08,
-    height: device_width * 0.08
+    width: deviceWidth * 0.08,
+    height: deviceWidth * 0.08
   },
   scopes: {
     flexDirection: "row",
