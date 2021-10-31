@@ -1,11 +1,13 @@
-import React from 'react';
-import { Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Dimensions, PermissionsAndroid, Platform } from 'react-native';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import shelter from '../assets/images/shelter.png'
 import wowImoticon from '../assets/images/wowimoticon.png'
 import cloud1 from '../assets/images/cloud1.png'
 import AddButton from '../assets/images/add.png'
+import Geolocation from 'react-native-geolocation-service'
+
 
 const device_width = Dimensions.get('window').width
 const device_height = Dimensions.get('window').height
@@ -14,6 +16,58 @@ const mainColor2 = '#71D2FF'
 const mainColor3 = '#FDA604'
 
 function Main() {
+
+  const [location, setLocation] = useState('unknown')
+
+  async function requestPositionPermissions() {
+    if (Platform.OS === 'ios') {
+      Geolocation.requestAuthorization();
+      Geolocation.setRNConfiguration({
+        skipPermissionRequests: false,
+        authorizationLevel: 'whenInUse',
+      });
+    }
+  
+    if (Platform.OS === 'android') {
+      const locationGranted = await PermissionsAndroid.requestMultiple([
+        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      ]);
+      if (
+        locationGranted['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED &&
+        locationGranted['android.permission.ACCESS_COARSE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED
+        ) {
+        return true
+      } else {
+        return false
+      }
+    }
+  }
+
+  useEffect(() => {
+    console.warn('here')
+    requestPositionPermissions()
+      .then((didGetPermission) => {
+        if (didGetPermission) {
+          Geolocation.getCurrentPosition( position => {
+            const { latitude, longitude } = position.coords
+            console.warn(latitude, longitude)
+            setLocation({
+              latitude,
+              longitude
+            })
+          },
+          error => {
+            console.warn(error.code, error.message)
+          })
+        } else {
+          alert('no location permission')
+        }
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+  }, [])
 
   return (
     <LinearGradient colors={['#A1D1E7', '#CDE4EE']} style={styles.linearGradient}>
