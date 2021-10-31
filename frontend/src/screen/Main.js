@@ -7,6 +7,7 @@ import wowImoticon from '../assets/images/wowimoticon.png'
 import cloud1 from '../assets/images/cloud1.png'
 import AddButton from '../assets/images/add.png'
 import Geolocation from 'react-native-geolocation-service'
+import amazingEmozi from '../assets/images/amazing2.png'
 
 
 const deviceWidth = Dimensions.get('window').width
@@ -136,18 +137,18 @@ function Main() {
       {/* 중앙 내 이모티콘 */}
       <TouchableOpacity 
           style={{
-            left: radarX + radarWidth / 2 - deviceWidth * 0.03,
-            top: radarY + radarWidth / 2 - deviceWidth * 0.03,
+            left: radarX + radarWidth / 2 - deviceWidth * 0.035,
+            top: radarY + radarWidth / 2 - deviceWidth * 0.035,
             position: 'absolute',
             elevation: 5,
           }}
         >
           <Image
             style={{
-              height: deviceWidth * 0.06,
-              width: deviceWidth * 0.06,
+              height: deviceWidth * 0.07,
+              width: deviceWidth * 0.07,
             }}
-            source={wowImoticon}
+            source={amazingEmozi}
             resizeMode="cover"
           />
         </TouchableOpacity>
