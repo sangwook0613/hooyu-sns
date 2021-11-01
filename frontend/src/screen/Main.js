@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dimensions, PermissionsAndroid, Platform } from 'react-native';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import shelter from '../assets/images/shelter.png'
 import wowImoticon from '../assets/images/wowimoticon.png'
@@ -8,7 +8,7 @@ import cloud1 from '../assets/images/cloud1.png'
 import AddButton from '../assets/images/add.png'
 import Geolocation from 'react-native-geolocation-service'
 import amazingEmozi from '../assets/images/amazing2.png'
-
+import { RadderEffect } from './RadderEffect';
 
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
@@ -16,6 +16,7 @@ const radarWidth = Dimensions.get('window').width * 0.7
 const mainColor1 = '#A1D1E7'
 const mainColor2 = '#71D2FF'
 const mainColor3 = '#FDA604'
+const mainColor4 = '#E9E9E9'
 
 const nearUsers = [
   [37.4218683, -122.084],
@@ -23,6 +24,7 @@ const nearUsers = [
   [37.4219883, -122.084],
   [37.4219683, -122.08404]
 ]
+
 
 
 function Main() {
@@ -42,7 +44,7 @@ function Main() {
         authorizationLevel: 'whenInUse',
       });
     }
-  
+
     if (Platform.OS === 'android') {
       const locationGranted = await PermissionsAndroid.requestMultiple([
         PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
@@ -51,7 +53,7 @@ function Main() {
       if (
         locationGranted['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED &&
         locationGranted['android.permission.ACCESS_COARSE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED
-        ) {
+      ) {
         return true
       } else {
         return false
@@ -59,7 +61,7 @@ function Main() {
     }
   }
 
-   // 라디안으로 변환
+  // 라디안으로 변환
   function deg2rad(deg) {
     return deg * Math.PI / 180
   }
@@ -118,7 +120,7 @@ function Main() {
     requestPositionPermissions()
       .then((didGetPermission) => {
         if (didGetPermission) {
-          Geolocation.getCurrentPosition( position => {
+          Geolocation.getCurrentPosition(position => {
             const { latitude, longitude } = position.coords
             setLocation({
               latitude,
@@ -128,9 +130,9 @@ function Main() {
             const k = Math.sqrt((test[0] ** 2 + test[1] ** 2))
             setUser([k, test[0], test[1], test[2]])
           },
-          error => {
-            console.warn(error.code, error.message)
-          })
+            error => {
+              console.warn(error.code, error.message)
+            })
         } else {
           alert('no location permission')
         }
@@ -172,17 +174,51 @@ function Main() {
           ></Image>
         </View>
 
-
-        <View 
-        style={styles.rader}
-        onLayout={({ target }) => {
-          target.measure((x, y, width, height, pageX, pageY) => {
-            setRadarX(x + pageX)
-            setRadarY(y + pageY)
-            setRadarWidth(width)
-          })
-        }}
+        <View
+          style={styles.rader}
+          onLayout={({ target }) => {
+            target.measure((x, y, width, height, pageX, pageY) => {
+              setRadarX(x + pageX)
+              setRadarY(y + pageY)
+              setRadarWidth(width)
+            })
+          }}
         >
+
+          <View
+            style={{
+              borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
+              width: radarWidth / 1.5,
+              height: radarWidth / 1.5,
+              borderColor: mainColor4,
+              borderWidth: 2,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+
+
+            <View
+              style={{
+                borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
+                width: radarWidth / 3,
+                height: radarWidth / 3,
+                borderColor: mainColor4,
+                borderWidth: 2,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+
+              <RadderEffect
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              ></RadderEffect>
+            </View>
+          </View>
+
         </View>
         <View style={{ flexDirection: "row", marginTop: 10 }}>
           <Text style={{ top: -20, marginRight: 20, transform: [{ rotate: '30deg' }] }}>20m</Text>
@@ -203,40 +239,40 @@ function Main() {
         </TouchableOpacity>
       </View>
       {/* 중앙 내 이모티콘 */}
-      <TouchableOpacity 
+      <TouchableOpacity
+        style={{
+          left: radarX + radarWidth / 2 - deviceWidth * 0.035,
+          top: radarY + radarWidth / 2 - deviceWidth * 0.035,
+          position: 'absolute',
+          elevation: 7,
+        }}
+      >
+        <Image
           style={{
-            left: radarX + radarWidth / 2 - deviceWidth * 0.035,
-            top: radarY + radarWidth / 2 - deviceWidth * 0.035,
-            position: 'absolute',
-            elevation: 5,
+            height: deviceWidth * 0.07,
+            width: deviceWidth * 0.07,
           }}
-        >
-          <Image
-            style={{
-              height: deviceWidth * 0.07,
-              width: deviceWidth * 0.07,
-            }}
-            source={amazingEmozi}
-            resizeMode="cover"
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
+          source={amazingEmozi}
+          resizeMode="cover"
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={{
+          left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user[1] / 20),
+          top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user[2] / 20),
+          position: 'absolute',
+          elevation: 7,
+        }}
+      >
+        <Image
           style={{
-            left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user[1] / 20),
-            top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user[2] / 20),
-            position: 'absolute',
-            elevation: 5,
+            height: deviceWidth * 0.07,
+            width: deviceWidth * 0.07,
           }}
-        >
-          <Image
-            style={{
-              height: deviceWidth * 0.07,
-              width: deviceWidth * 0.07,
-            }}
-            source={amazingEmozi}
-            resizeMode="cover"
-          />
-        </TouchableOpacity>
+          source={amazingEmozi}
+          resizeMode="cover"
+        />
+      </TouchableOpacity>
     </LinearGradient >
   )
 }
@@ -250,7 +286,7 @@ const styles = StyleSheet.create({
     height: deviceWidth * 0.12,
     justifyContent: 'center',
     marginTop: deviceHeight
-   * 0.13,
+      * 0.13,
     width: deviceWidth * 0.12,
   },
   addButtonContainer: {
@@ -283,7 +319,7 @@ const styles = StyleSheet.create({
     borderRadius: Math.round(deviceWidth + deviceHeight
     ) / 2,
     top: deviceHeight
-   * 0.02 - 2,
+      * 0.02 - 2,
     right: deviceWidth * 0.03 - 2.5,
     width: 45,
     height: 45,
@@ -292,7 +328,7 @@ const styles = StyleSheet.create({
   },
   profileImoticon: {
     marginTop: deviceHeight
-   * 0.02,
+      * 0.02,
     marginRight: deviceWidth * 0.03,
     width: 40,
     height: 40,
@@ -307,7 +343,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     position: "absolute",
     top: deviceHeight
-   * 0.02 + 25,
+      * 0.02 + 25,
     right: deviceWidth * 0.03 - 7,
     width: 20,
     height: 20,
@@ -341,7 +377,7 @@ const styles = StyleSheet.create({
   radar__text: {
     alignItems: 'center',
     marginBottom: deviceHeight
-   * 0.01,
+      * 0.01,
   },
   radar__text__count: {
     color: 'rgba(255, 255, 255, 0.8)',
@@ -356,7 +392,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     marginBottom: deviceHeight
-   * 0.002,
+      * 0.002,
     textShadowColor: 'rgba(0, 0, 0, 0.4)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 5
@@ -365,7 +401,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     position: 'absolute',
     top: deviceHeight
-   * 0.175,
+      * 0.175,
     width: deviceWidth * 0.8
   },
   shelterImage: {
