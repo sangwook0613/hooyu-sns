@@ -3,6 +3,7 @@ package com.status.backend.user.web;
 import com.status.backend.global.dto.SuccessResponseDto;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.service.ResponseGenerateService;
+import com.status.backend.user.domain.User;
 import com.status.backend.user.dto.*;
 import com.status.backend.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -116,6 +117,16 @@ public class UserController{
         List<UserMapping> list = userService.getUserWithinRadius(requestRadiusDto.getUserPK(),requestRadiusDto.getLat(),requestRadiusDto.getLon(), requestRadiusDto.getRadius());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(list);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/test/{userPK}")
+    public ResponseEntity<SuccessResponseDto> getUserInfoTwo(@PathVariable Long userPK) throws NoUserException {
+        logger.trace("User Controller 진입 getUserInfo param {}", userPK);
+        User user = userService.getUserInfoTwo(userPK);
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(user);
 
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }

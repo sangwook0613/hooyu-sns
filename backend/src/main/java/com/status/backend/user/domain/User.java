@@ -4,13 +4,16 @@ import com.status.backend.global.domain.BaseTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 //@SQLDelete(sql = "UPDATE user set deleted = true where id = ?")
 //@Where(clause = "deleted = false")
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 @Entity
 public class User extends BaseTime {
@@ -47,6 +50,9 @@ public class User extends BaseTime {
     @Enumerated
     @Column(nullable = false)
     private Role role;
+
+    @OneToMany(mappedBy = "user")
+    List<PrivateZone> privateZones = new ArrayList<>();
 
     @Builder
     public User(String name, String email, String userEmoji, String profileImg, Role role){

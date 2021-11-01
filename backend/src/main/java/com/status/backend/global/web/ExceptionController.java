@@ -37,7 +37,7 @@ public class ExceptionController {
     protected ResponseEntity<ExceptionResponseDto> handleNoUser(NoUserException e) {
         logger.error("[No User Exception] ", e);
 
-        String message = "없는 사용자입니다.";
+        String message = e.getMessage();
         HttpStatus status = HttpStatus.NOT_FOUND;
         ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(status, message);
 
@@ -45,10 +45,10 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(NoContentException.class)
-    public ResponseEntity<ExceptionResponseDto> noRouteHandler(NoContentException e) {
+    public ResponseEntity<ExceptionResponseDto> noContentHandler(NoContentException e) {
         logger.error("[No Content Exception] ", e);
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-        String message = "없는 컨탠츠 요청입니다.";
+        String message = e.getMessage();
 
         ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
         return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
