@@ -27,87 +27,96 @@ public class UserController{
 
     @GetMapping("/user/setup/{userPK}")
     public ResponseEntity<SuccessResponseDto> getUserInfo(@PathVariable Long userPK) throws NoUserException {
+        logger.trace("User Controller 진입 getUserInfo param {}", userPK);
         UserResponseDto userResponseDto = userService.getUserInfo(userPK);
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(userResponseDto);
 
-        return new ResponseEntity<SuccessResponseDto>(successResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
     @PostMapping("/user/duplicated/{userName}")
     public ResponseEntity<SuccessResponseDto> DuplicateCheckName(@PathVariable String userName) throws NoUserException {
+        logger.trace("User Controller 진입  DuplicateCheckName param {}", userName);
         String message = userService.DuplicateCheckName(userName);
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
-        return new ResponseEntity<SuccessResponseDto>(successResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
     @PostMapping("/user/nameSet/{userName}")
     public ResponseEntity<SuccessResponseDto> ChangeName(@PathVariable String userName) throws NoUserException {
+        logger.trace("User Controller 진입 ChangeName param {}", userName);
         String message = userService.ChangeName(userName);
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
-        return new ResponseEntity<SuccessResponseDto>(successResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
     @PostMapping("/user/emojiSet")
     public ResponseEntity<SuccessResponseDto> ChangeEmoji(@RequestBody @Valid EmojiDto emojiDto) throws NoUserException {
+        logger.trace("User Controller 진입 ChangeEmoji param {}", emojiDto);
         String message = userService.ChangeEmoji(emojiDto.getUserPK(),emojiDto.getUserEmoji());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
-        return new ResponseEntity<SuccessResponseDto>(successResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
 
     @PostMapping("/user/setPrivate")
     public ResponseEntity<SuccessResponseDto> SetUpPrivateZone(@RequestBody @Valid PrivateZoneDto privateZoneDto) throws NoUserException {
+        logger.trace("User Controller 진입 SetUpPrivateZone param {}", privateZoneDto);
         String message = userService.SetUpPrivateZone(privateZoneDto.getUserPK(), privateZoneDto.getLat(),privateZoneDto.getLon());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
-        return new ResponseEntity<SuccessResponseDto>(successResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
 
     @PostMapping("/user/push/accept")
     public ResponseEntity<SuccessResponseDto> SetPushAlarmReceive(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
+        logger.trace("User Controller 진입 SetPushAlarmReceive param {}", pushAlarmDto);
         String message = userService.SetPushAlarmReceive(pushAlarmDto.getUserPK(),pushAlarmDto.getAccept());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
-        return new ResponseEntity<SuccessResponseDto>(successResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
 
     @PostMapping("/user/push/sync")
     public ResponseEntity<SuccessResponseDto> SetPushAlarmSync(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
+        logger.trace("User Controller 진입 SetPushAlarmSync param {}", pushAlarmDto);
         String message = userService.SetPushAlarmSync(pushAlarmDto.getUserPK(),pushAlarmDto.getSync());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
-        return new ResponseEntity<SuccessResponseDto>(successResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
 
     @GetMapping("/user/push/radius")
     public ResponseEntity<SuccessResponseDto> SetPushAlarmRadius(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
+        logger.trace("User Controller 진입 SetPushAlarmRadius param {}", pushAlarmDto);
         String message = userService.SetPushAlarmRadius(pushAlarmDto.getUserPK(),pushAlarmDto.getRadius());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
-        return new ResponseEntity<SuccessResponseDto>(successResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
 
     @PostMapping("/user/radar")
     public ResponseEntity<SuccessResponseDto> getUserWithinRadius(@RequestBody @Valid RequestRadiusDto requestRadiusDto) throws NoUserException {
+        logger.trace("User Controller 진입 getUserWithinRadius param {}", requestRadiusDto);
         List<UserMapping> list = userService.getUserWithinRadius(requestRadiusDto.getUserPK(),requestRadiusDto.getLat(),requestRadiusDto.getLon(), requestRadiusDto.getRadius());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(list);
 
-        return new ResponseEntity<SuccessResponseDto>(successResponseDto, HttpStatus.OK);
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 }
