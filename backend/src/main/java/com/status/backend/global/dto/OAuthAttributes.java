@@ -5,8 +5,11 @@ import com.status.backend.user.domain.Role;
 import com.status.backend.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
 public class OAuthAttributes {
@@ -15,6 +18,8 @@ public class OAuthAttributes {
     private String name;
     private String email;
     private String profileImg;
+
+    Logger logger = LoggerFactory.getLogger(OAuthAttributes.class);
 
     @Builder
     public OAuthAttributes(Map<String, Object> attributes, String nameAttributeKey, String name, String email, String profileImg) {
@@ -76,8 +81,10 @@ public class OAuthAttributes {
      * @return User객체
      */
     public User toEntity() {
+        String convertPw = UUID.randomUUID().toString().replace("-", "");
+        logger.debug("로그인 user Name : {}",convertPw);
         return User.builder()
-                .name("ProjectName")
+                .name(convertPw)
                 .email(this.email)
                 .profileImg(this.profileImg)
                 .role(Role.USER)
