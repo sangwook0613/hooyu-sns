@@ -18,10 +18,31 @@ const mainColor2 = '#71D2FF'
 const mainColor3 = '#FDA604'
 
 const nearUsers = [
-  [37.4218683, -122.084],
-  [37.4219983, -122.08384],
-  [37.4219883, -122.084],
-  [37.4219683, -122.08404]
+  {
+    name: '나승호',
+    x: 20,
+    y: 2,
+  },
+  {
+    name: '류현선',
+    x: 17,
+    y: 2,
+  },
+  {
+    name: '김승현',
+    x: 0,
+    y: -7,
+  },
+  {
+    name: '최다윗',
+    x: -12,
+    y: -3,
+  },
+  {
+    name: '박상욱',
+    x: 4,
+    y: 9,
+  }
 ]
 
 
@@ -32,7 +53,7 @@ function Main() {
   const [radarY, setRadarY] = useState(0)
   const [radarWidth, setRadarWidth] = useState(0)
 
-  const [user, setUser] = useState([0, 0, 0, 0])
+  const [users, setUsers] = useState([])
 
   async function requestPositionPermissions() {
     if (Platform.OS === 'ios') {
@@ -124,9 +145,8 @@ function Main() {
               latitude,
               longitude
             })
-            const test = distance(latitude, longitude, nearUsers[2][0], nearUsers[2][1])
-            const k = Math.sqrt((test[0] ** 2 + test[1] ** 2))
-            setUser([k, test[0], test[1], test[2]])
+            // 유저 세팅
+            setUsers(nearUsers)
           },
           error => {
             console.warn(error.code, error.message)
@@ -204,39 +224,42 @@ function Main() {
       </View>
       {/* 중앙 내 이모티콘 */}
       <TouchableOpacity 
+        style={{
+          left: radarX + radarWidth / 2 - deviceWidth * 0.035,
+          top: radarY + radarWidth / 2 - deviceWidth * 0.035,
+          position: 'absolute',
+          elevation: 5,
+        }}
+      >
+        <Image
           style={{
-            left: radarX + radarWidth / 2 - deviceWidth * 0.035,
-            top: radarY + radarWidth / 2 - deviceWidth * 0.035,
-            position: 'absolute',
-            elevation: 5,
+            height: deviceWidth * 0.07,
+            width: deviceWidth * 0.07,
           }}
-        >
-          <Image
-            style={{
-              height: deviceWidth * 0.07,
-              width: deviceWidth * 0.07,
-            }}
-            source={amazingEmozi}
-            resizeMode="cover"
-          />
-        </TouchableOpacity>
+          source={amazingEmozi}
+          resizeMode="cover"
+        />
+      </TouchableOpacity>
+      {users.map(user => (
         <TouchableOpacity
+          key={user.name}
           style={{
-            left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user[1] / 20),
-            top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user[2] / 20),
+            left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.x / 23),
+            top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.y / 23),
             position: 'absolute',
             elevation: 5,
           }}
         >
           <Image
             style={{
-              height: deviceWidth * 0.07,
-              width: deviceWidth * 0.07,
+              height: deviceWidth * 0.06,
+              width: deviceWidth * 0.06,
             }}
             source={amazingEmozi}
             resizeMode="cover"
           />
         </TouchableOpacity>
+      ))}
     </LinearGradient >
   )
 }
