@@ -17,12 +17,22 @@ const mainColor1 = '#A1D1E7'
 const mainColor2 = '#71D2FF'
 const mainColor3 = '#FDA604'
 
+const nearUsers = [
+  [37.4218683, -122.084],
+  [37.4219983, -122.08384],
+  [37.4219883, -122.084],
+  [37.4219683, -122.08404]
+]
+
+
 function Main() {
 
   const [location, setLocation] = useState('unknown')
   const [radarX, setRadarX] = useState(0)
   const [radarY, setRadarY] = useState(0)
   const [radarWidth, setRadarWidth] = useState(0)
+
+  const [user, setUser] = useState([0, 0, 0, 0])
 
   async function requestPositionPermissions() {
     if (Platform.OS === 'ios') {
@@ -49,6 +59,61 @@ function Main() {
     }
   }
 
+   // 라디안으로 변환
+  function deg2rad(deg) {
+    return deg * Math.PI / 180
+  }
+
+  // 디그리로 변환
+  function rad2deg(deg) {
+    return deg * 180 / Math.PI
+  }
+
+  function distance(lat1, lon1, lat2, lon2) {
+    const theta = lon1 - lon2
+    const rad_lat1 = deg2rad(lat1)
+    const rad_lat2 = deg2rad(lat2)
+    const rad_lon1 = deg2rad(lon1)
+    const rad_lon2 = deg2rad(lon2)
+
+    let dist = Math.sin(rad_lat1) * Math.sin(rad_lat2) + Math.cos(rad_lat1) * Math.cos(rad_lat2) * Math.cos(deg2rad(theta))
+
+    const y = Math.sin(rad_lon2 - rad_lon1) * Math.cos(rad_lat2)
+    const x = Math.cos(rad_lat1) * Math.sin(rad_lat2) - Math.sin(rad_lat1) * Math.cos(rad_lat2) * Math.cos(rad_lon2 - rad_lon1)
+
+    const bangwee = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360
+
+    dist = Math.acos(dist)
+    dist = rad2deg(dist)
+    dist = dist * 60 * 1.1515 * 1609.344
+
+    if (bangwee < 90) {
+      const r = deg2rad(bangwee)
+      const x_dist = dist * Math.sin(r)
+      const y_dist = -dist * Math.cos(r)
+      return [x_dist, y_dist, bangwee]
+    }
+    else if (bangwee < 180) {
+      const r = deg2rad(bangwee - 90)
+      const x_dist = dist * Math.sin(r)
+      const y_dist = dist * Math.cos(r)
+      return [x_dist, y_dist, bangwee]
+    }
+    else if (bangwee < 270) {
+      const r = deg2rad(bangwee - 180)
+      const x_dist = -dist * Math.sin(r)
+      const y_dist = dist * Math.cos(r)
+      return [x_dist, y_dist, bangwee]
+    }
+    else {
+      const r = deg2rad(bangwee - 270)
+      const x_dist = -dist * Math.sin(r)
+      const y_dist = -dist * Math.cos(r)
+      return [x_dist, y_dist, bangwee]
+    }
+
+  }
+
   useEffect(() => {
     requestPositionPermissions()
       .then((didGetPermission) => {
@@ -59,6 +124,9 @@ function Main() {
               latitude,
               longitude
             })
+            const test = distance(latitude, longitude, nearUsers[2][0], nearUsers[2][1])
+            const k = Math.sqrt((test[0] ** 2 + test[1] ** 2))
+            setUser([k, test[0], test[1], test[2]])
           },
           error => {
             console.warn(error.code, error.message)
@@ -139,6 +207,23 @@ function Main() {
           style={{
             left: radarX + radarWidth / 2 - deviceWidth * 0.035,
             top: radarY + radarWidth / 2 - deviceWidth * 0.035,
+            position: 'absolute',
+            elevation: 5,
+          }}
+        >
+          <Image
+            style={{
+              height: deviceWidth * 0.07,
+              width: deviceWidth * 0.07,
+            }}
+            source={amazingEmozi}
+            resizeMode="cover"
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user[1] / 20),
+            top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user[2] / 20),
             position: 'absolute',
             elevation: 5,
           }}
