@@ -8,14 +8,22 @@ import cloud1 from '../assets/images/cloud1.png'
 import AddButton from '../assets/images/add.png'
 import Geolocation from 'react-native-geolocation-service'
 import amazingEmozi from '../assets/images/amazing2.png'
+import flight from '../assets/images/flight.png'
+import whiteEllipse from '../assets/images/white_ellipse.png'
+import leaves from '../assets/images/leaves.png'
+import ginkgoLeaves from '../assets/images/ginkgo_leaves.png'
 
 
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
 const radarWidth = Dimensions.get('window').width * 0.7
-const mainColor1 = '#A1D1E7'
-const mainColor2 = '#71D2FF'
-const mainColor3 = '#FDA604'
+
+const date = new Date()
+
+const theme = 6 <= date.getHours() && date.getHours() <= 15 ? "morning" : (16 <= date.getHours() && date.getHours() <= 19 ? 'evening' : 'night')
+const mainColor1 = theme == "morning" ? "#A1D1E7" : (theme == "evening" ? '#EC5446' : '#0B1C26')
+const mainColor2 = theme == "morning" ? "#CDE4EE" : (theme == "evening" ? '#F2B332' : '#293A44')
+const mainColor3 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#B4B4B4')
 
 const nearUsers = [
   {
@@ -161,9 +169,37 @@ function Main() {
   }, [])
 
   return (
-    <LinearGradient colors={['#A1D1E7', '#CDE4EE']} style={styles.linearGradient}>
-      <Image source={cloud1} style={styles.cloud1} resizeMode="contain" />
-      <Image source={cloud1} style={styles.cloud2} resizeMode="contain" />
+    <LinearGradient colors={[mainColor1, mainColor2]} style={styles.linearGradient}>
+      {
+      theme == "morning" 
+      ? 
+      <>
+        <Image source={cloud1} style={styles.cloud1} resizeMode="contain" />
+        <Image source={cloud1} style={styles.cloud2} resizeMode="contain" />
+        <Image source={flight} style={styles.flight} resizeMode="contain" />
+      </>
+      :
+      (theme == "evening" 
+      ?
+      <>
+        <Image source={ginkgoLeaves} style={styles.ginkgoLeaves} resizeMode="contain" />
+        <Image source={leaves} style={styles.leaves} resizeMode="contain" />
+        <Image source={whiteEllipse} style={styles.whiteEllipse1} resizeMode="contain" />
+        <Image source={whiteEllipse} style={styles.whiteEllipse2} resizeMode="contain" />
+        <Image source={whiteEllipse} style={styles.whiteEllipse3} resizeMode="contain" />
+        <Image source={whiteEllipse} style={styles.whiteEllipse4} resizeMode="contain" />
+        <Image source={whiteEllipse} style={styles.whiteEllipse5} resizeMode="contain" />
+        <Image source={whiteEllipse} style={styles.whiteEllipse6} resizeMode="contain" />
+      </>
+      :
+      <>
+        <Image source={cloud1} style={styles.cloud1} resizeMode="contain" />
+        <Image source={cloud1} style={styles.cloud2} resizeMode="contain" />
+        <Image source={flight} style={styles.flight} resizeMode="contain" />
+      </>
+      )
+      }
+      
       <View style={styles.profileButton}>
         <TouchableOpacity>
           <View>
@@ -285,13 +321,31 @@ const styles = StyleSheet.create({
   },
   cloud1: {
     position: "absolute",
-    width: deviceWidth * 0.3
+    width: deviceWidth * 0.25
   },
   cloud2: {
     bottom: 30,
     right: 30,
     position: "absolute",
-    width: deviceWidth * 0.4
+    width: deviceWidth * 0.35
+  },
+  flight: {
+    left: 25,
+    position: "absolute",
+    top: -160,
+    width: deviceWidth * 0.1
+  },
+  ginkgoLeaves: {
+    left: 25,
+    position: "absolute",
+    top: -110,
+    width: deviceWidth * 0.13
+  },
+  leaves: {
+    left: 320,
+    position: "absolute",
+    top: 300,
+    width: deviceWidth * 0.2
   },
   linearGradient: {
     flex: 1,
@@ -399,6 +453,42 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 10
   },
+  whiteEllipse1: {
+    left: 30,
+    position: "absolute",
+    top: 15,
+    width: deviceWidth * 0.007
+  },
+  whiteEllipse2: {
+    left: 250,
+    position: "absolute",
+    top: 500,
+    width: deviceWidth * 0.007
+  },
+  whiteEllipse3: {
+    left: 390,
+    position: "absolute",
+    top: 270,
+    width: deviceWidth * 0.007
+  },
+  whiteEllipse4: {
+    left: 40,
+    position: "absolute",
+    top: 350,
+    width: deviceWidth * 0.007
+  },
+  whiteEllipse5: {
+    left: 70,
+    position: "absolute",
+    top: 120,
+    width: deviceWidth * 0.007
+  },
+  whiteEllipse6: {
+    left: 330,
+    position: "absolute",
+    top: 60,
+    width: deviceWidth * 0.007
+  }
 });
 
 
