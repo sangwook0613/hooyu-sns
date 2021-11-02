@@ -8,7 +8,7 @@ const radarWidth = Dimensions.get('window').width * 0.7
 
 class RadderEffect extends React.Component {
   state = {
-    animation: new Animated.Value(0)
+    animation: new Animated.Value(0),
   }
 
   componentDidMount() {
@@ -17,7 +17,7 @@ class RadderEffect extends React.Component {
       {
         toValue: 1,
         duration: 7000,
-      }
+      },
       
     );
 
@@ -41,7 +41,10 @@ class RadderEffect extends React.Component {
         inputRange: [0, 1],
         outputRange: [-radarWidth+5, radarWidth-5]
       }),
-
+      opacity: this.state.animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [1, 0]
+      }),
 
     };
 
@@ -55,7 +58,7 @@ class RadderEffect extends React.Component {
 const objectStyles = {
   object: {
     // backgroundColor: '#FFF8EA',
-    borderWidth: 1.5,
+    borderWidth: 10,
     borderColor:'#FDA604',
     borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
     width: radarWidth,

@@ -8,7 +8,7 @@ import cloud1 from '../assets/images/cloud1.png'
 import AddButton from '../assets/images/add.png'
 import Geolocation from 'react-native-geolocation-service'
 import amazingEmozi from '../assets/images/amazing2.png'
-import { RadderEffect } from './RadderEffect';
+import { RadderEffect } from '../components/Main/RadderEffect';
 
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
