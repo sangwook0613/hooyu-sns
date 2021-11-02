@@ -4,14 +4,12 @@ import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import shelter from '../assets/images/shelter.png'
 import wowImoticon from '../assets/images/wowimoticon.png'
-import cloud1 from '../assets/images/cloud1.png'
 import AddButton from '../assets/images/add.png'
 import Geolocation from 'react-native-geolocation-service'
 import amazingEmozi from '../assets/images/amazing2.png'
-import flight from '../assets/images/flight.png'
-import whiteEllipse from '../assets/images/white_ellipse.png'
-import leaves from '../assets/images/leaves.png'
-import ginkgoLeaves from '../assets/images/ginkgo_leaves.png'
+import morning from '../assets/images/morning.png'
+import evening from '../assets/images/evening.png'
+import night from '../assets/images/night.png'
 
 
 const deviceWidth = Dimensions.get('window').width
@@ -174,28 +172,17 @@ function Main() {
       theme == "morning" 
       ? 
       <>
-        <Image source={cloud1} style={styles.cloud1} resizeMode="contain" />
-        <Image source={cloud1} style={styles.cloud2} resizeMode="contain" />
-        <Image source={flight} style={styles.flight} resizeMode="contain" />
+        <Image source={morning} style={styles.morning} resizeMode="contain" />
       </>
       :
       (theme == "evening" 
       ?
       <>
-        <Image source={ginkgoLeaves} style={styles.ginkgoLeaves} resizeMode="contain" />
-        <Image source={leaves} style={styles.leaves} resizeMode="contain" />
-        <Image source={whiteEllipse} style={styles.whiteEllipse1} resizeMode="contain" />
-        <Image source={whiteEllipse} style={styles.whiteEllipse2} resizeMode="contain" />
-        <Image source={whiteEllipse} style={styles.whiteEllipse3} resizeMode="contain" />
-        <Image source={whiteEllipse} style={styles.whiteEllipse4} resizeMode="contain" />
-        <Image source={whiteEllipse} style={styles.whiteEllipse5} resizeMode="contain" />
-        <Image source={whiteEllipse} style={styles.whiteEllipse6} resizeMode="contain" />
+        <Image source={evening} style={styles.evening} resizeMode="contain" />
       </>
       :
       <>
-        <Image source={cloud1} style={styles.cloud1} resizeMode="contain" />
-        <Image source={cloud1} style={styles.cloud2} resizeMode="contain" />
-        <Image source={flight} style={styles.flight} resizeMode="contain" />
+        <Image source={night} style={styles.night} resizeMode="contain" />
       </>
       )
       }
@@ -329,6 +316,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: deviceWidth * 0.35
   },
+  evening: {
+    left: deviceWidth * 0.025,
+    position: "absolute",
+    top: -deviceHeight * 0.2,
+    width: deviceWidth * 0.95
+  },
   flight: {
     left: 25,
     position: "absolute",
@@ -349,6 +342,18 @@ const styles = StyleSheet.create({
   },
   linearGradient: {
     flex: 1,
+  },
+  morning: {
+    left: deviceWidth * 0.025,
+    position: "absolute",
+    top: -deviceHeight * 0.2,
+    width: deviceWidth * 0.95
+  },
+  night: {
+    left: deviceWidth * 0.025,
+    position: "absolute",
+    top: -deviceHeight * 0.2,
+    width: deviceWidth * 0.95
   },
   profileButton: {
     flex: 0.05,
