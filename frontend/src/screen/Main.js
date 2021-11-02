@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dimensions, PermissionsAndroid, Platform } from 'react-native';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import shelter from '../assets/images/shelter.png'
 import wowImoticon from '../assets/images/wowimoticon.png'
@@ -11,6 +11,7 @@ import morning from '../assets/images/morning.png'
 import evening from '../assets/images/evening.png'
 import night from '../assets/images/night.png'
 
+import { RadderEffect } from '../components/Main/RadderEffect';
 
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
@@ -22,7 +23,7 @@ const theme = 6 <= date.getHours() && date.getHours() <= 15 ? "morning" : (16 <=
 const mainColor1 = theme == "morning" ? "#A1D1E7" : (theme == "evening" ? '#EC5446' : '#0B1C26')
 const mainColor2 = theme == "morning" ? "#CDE4EE" : (theme == "evening" ? '#F2B332' : '#293A44')
 const mainColor3 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#B4B4B4')
-
+const mainColor4 = '#E9E9E9'
 const nearUsers = [
   {
     name: '나승호',
@@ -52,6 +53,7 @@ const nearUsers = [
 ]
 
 
+
 function Main() {
 
   const [location, setLocation] = useState('unknown')
@@ -69,7 +71,7 @@ function Main() {
         authorizationLevel: 'whenInUse',
       });
     }
-  
+
     if (Platform.OS === 'android') {
       const locationGranted = await PermissionsAndroid.requestMultiple([
         PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
@@ -78,7 +80,7 @@ function Main() {
       if (
         locationGranted['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED &&
         locationGranted['android.permission.ACCESS_COARSE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED
-        ) {
+      ) {
         return true
       } else {
         return false
@@ -86,7 +88,7 @@ function Main() {
     }
   }
 
-   // 라디안으로 변환
+  // 라디안으로 변환
   function deg2rad(deg) {
     return deg * Math.PI / 180
   }
@@ -145,7 +147,7 @@ function Main() {
     requestPositionPermissions()
       .then((didGetPermission) => {
         if (didGetPermission) {
-          Geolocation.getCurrentPosition( position => {
+          Geolocation.getCurrentPosition(position => {
             const { latitude, longitude } = position.coords
             setLocation({
               latitude,
@@ -154,9 +156,9 @@ function Main() {
             // 유저 세팅
             setUsers(nearUsers)
           },
-          error => {
-            console.warn(error.code, error.message)
-          })
+            error => {
+              console.warn(error.code, error.message)
+            })
         } else {
           alert('no location permission')
         }
@@ -215,17 +217,51 @@ function Main() {
           ></Image>
         </View>
 
-
-        <View 
-        style={styles.rader}
-        onLayout={({ target }) => {
-          target.measure((x, y, width, height, pageX, pageY) => {
-            setRadarX(x + pageX)
-            setRadarY(y + pageY)
-            setRadarWidth(width)
-          })
-        }}
+        <View
+          style={styles.rader}
+          onLayout={({ target }) => {
+            target.measure((x, y, width, height, pageX, pageY) => {
+              setRadarX(x + pageX)
+              setRadarY(y + pageY)
+              setRadarWidth(width)
+            })
+          }}
         >
+
+          <View
+            style={{
+              borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
+              width: radarWidth / 1.5,
+              height: radarWidth / 1.5,
+              borderColor: mainColor4,
+              borderWidth: 2,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+
+
+            <View
+              style={{
+                borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
+                width: radarWidth / 3,
+                height: radarWidth / 3,
+                borderColor: mainColor4,
+                borderWidth: 2,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+
+              <RadderEffect
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              ></RadderEffect>
+            </View>
+          </View>
+
         </View>
         <View style={{ flexDirection: "row", marginTop: 10 }}>
           <Text style={{ top: -20, marginRight: 20, transform: [{ rotate: '30deg' }] }}>20m</Text>
@@ -296,7 +332,7 @@ const styles = StyleSheet.create({
     height: deviceWidth * 0.12,
     justifyContent: 'center',
     marginTop: deviceHeight
-   * 0.13,
+      * 0.13,
     width: deviceWidth * 0.12,
   },
   addButtonContainer: {
@@ -365,7 +401,7 @@ const styles = StyleSheet.create({
     borderRadius: Math.round(deviceWidth + deviceHeight
     ) / 2,
     top: deviceHeight
-   * 0.02 - 2,
+      * 0.02 - 2,
     right: deviceWidth * 0.03 - 2.5,
     width: 45,
     height: 45,
@@ -374,7 +410,7 @@ const styles = StyleSheet.create({
   },
   profileImoticon: {
     marginTop: deviceHeight
-   * 0.02,
+      * 0.02,
     marginRight: deviceWidth * 0.03,
     width: 40,
     height: 40,
@@ -389,7 +425,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     position: "absolute",
     top: deviceHeight
-   * 0.02 + 25,
+      * 0.02 + 25,
     right: deviceWidth * 0.03 - 7,
     width: 20,
     height: 20,
@@ -423,7 +459,7 @@ const styles = StyleSheet.create({
   radar__text: {
     alignItems: 'center',
     marginBottom: deviceHeight
-   * 0.01,
+      * 0.01,
   },
   radar__text__count: {
     color: 'rgba(255, 255, 255, 0.8)',
@@ -438,7 +474,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     marginBottom: deviceHeight
-   * 0.002,
+      * 0.002,
     textShadowColor: 'rgba(0, 0, 0, 0.4)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 5
@@ -447,7 +483,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     position: 'absolute',
     top: deviceHeight
-   * 0.175,
+      * 0.175,
     width: deviceWidth * 0.8
   },
   shelterImage: {
