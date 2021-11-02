@@ -1,13 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Main from './src/screen/Main'
+import { NavigationContainer } from '@react-navigation/native';
+// import Main from './src/screen/Main';
+import Root from './src/navigation/Root';
 
 
 export default function App() {
   return (
-    <>
-      <Main/>
-    </>
+    <NavigationContainer>
+      <Root />
+      {/* <Main/> */}
+    </NavigationContainer>
   );
 }
 
