@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -28,6 +29,8 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getUserInfo(Long userPK) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         UserResponseDto userResponseDto = new UserResponseDto(user);
+        logger.info("Service In");
+        logger.info("user : {}", user);
         return userResponseDto;
     }
 
@@ -62,8 +65,12 @@ public class UserServiceImpl implements UserService {
     /*
     현재는 privateZone은 유일해야한다.
      */
+    @Transactional
     @Override
     public String SetUpPrivateZone(Long userPK, BigDecimal lat, BigDecimal lon) throws NoUserException {
+        logger.debug("user pk check : {}", userPK);
+        logger.debug("lat check : {}", lat);
+        logger.debug("lon check : {}", lon);
         PrivateZone privateZone;
         if(pzRepository.existsByUserId(userPK)){
             privateZone = pzRepository.findByUserId(userPK).get();
@@ -71,8 +78,14 @@ public class UserServiceImpl implements UserService {
             privateZone.setLongitude(lon);
         }else{
             privateZone = new PrivateZone(lat, lon);
+            logger.debug("privatezone : {}", privateZone);
+
             User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+            logger.debug("user privateZone존재여부 : {}", user.getPrivateZones());
+
             privateZone.setUser(user);
+            logger.debug("user privateZone get(0) : {}", user.getPrivateZones().get(0));
+            userRepository.save(user);
         }
             pzRepository.save(privateZone);
         return null;

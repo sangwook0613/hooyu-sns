@@ -28,10 +28,20 @@ public class UserController{
 
     @GetMapping("/user/setup/{userPK}")
     public ResponseEntity<SuccessResponseDto> getUserInfo(@PathVariable Long userPK) throws NoUserException {
-        logger.trace("User Controller 진입 getUserInfo param {}", userPK);
+        logger.info("User Controller 진입 getUserInfo param {}", userPK);
         UserResponseDto userResponseDto = userService.getUserInfo(userPK);
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(userResponseDto);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/test/{userPK}")
+    public ResponseEntity<SuccessResponseDto> getUserInfoTwo(@PathVariable Long userPK) throws NoUserException {
+        logger.info("User Controller 진입 getUserInfo param {}", userPK);
+        User user = userService.getUserInfoTwo(userPK);
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(user);
 
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
@@ -121,13 +131,4 @@ public class UserController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/user/test/{userPK}")
-    public ResponseEntity<SuccessResponseDto> getUserInfoTwo(@PathVariable Long userPK) throws NoUserException {
-        logger.trace("User Controller 진입 getUserInfo param {}", userPK);
-        User user = userService.getUserInfoTwo(userPK);
-
-        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(user);
-
-        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
-    }
 }

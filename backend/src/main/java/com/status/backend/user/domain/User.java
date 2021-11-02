@@ -1,5 +1,6 @@
 package com.status.backend.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.status.backend.global.domain.BaseTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,6 +52,7 @@ public class User extends BaseTime {
     @Column(nullable = false)
     private Role role;
 
+    @JsonBackReference
     @OneToMany(mappedBy = "user")
     List<PrivateZone> privateZones = new ArrayList<>();
 
