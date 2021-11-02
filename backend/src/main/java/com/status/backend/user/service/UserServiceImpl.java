@@ -88,22 +88,31 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         }
             pzRepository.save(privateZone);
-        return null;
+        return "Success";
     }
 
     @Override
     public String SetPushAlarmReceive(Long userPK, Boolean accept) throws NoUserException {
-        return null;
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        user.setAcceptPush(!user.isAcceptPush());
+        userRepository.save(user);
+        return "Success";
     }
 
     @Override
     public String SetPushAlarmSync(Long userPK, Boolean sync) throws NoUserException {
-        return null;
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        user.setAcceptSync(!user.isAcceptSync());
+        userRepository.save(user);
+        return "Success";
     }
 
     @Override
     public String SetPushAlarmRadius(Long userPK, int radius) throws NoUserException {
-        return null;
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        user.setAcceptRadius(radius);
+        userRepository.save(user);
+        return "Success";
     }
 
     @Override
