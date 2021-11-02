@@ -12,6 +12,7 @@ import flight from '../assets/images/flight.png'
 import whiteEllipse from '../assets/images/white_ellipse.png'
 import leaves from '../assets/images/leaves.png'
 import ginkgoLeaves from '../assets/images/ginkgo_leaves.png'
+import images from '../assets/images';
 
 
 const deviceWidth = Dimensions.get('window').width
@@ -54,7 +55,7 @@ const nearUsers = [
 ]
 
 
-function Main() {
+function Main({ navigation: { navigate }}) {
 
   const [location, setLocation] = useState('unknown')
   const [radarX, setRadarX] = useState(0)
@@ -201,7 +202,7 @@ function Main() {
       }
       
       <View style={styles.profileButton}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigate("Profile", {nickname: 'HELLO', emoji: images.emoji.amazing})}>
           <View>
             <View style={styles.profileBackground}></View>
             <Image
