@@ -173,6 +173,7 @@ function Main() {
   }, [])
 
   return (
+    <>
     <GestureRecognizer
         onSwipeUp={() => {
           mainListRef.current.open()
@@ -192,7 +193,6 @@ function Main() {
         }}
       >
       <LinearGradient colors={[mainColor1, mainColor2]} style={styles.linearGradient}>
-        <MainList ref={mainListRef}/>
         {
         theme == "morning" 
         ? 
@@ -346,6 +346,8 @@ function Main() {
         
       </LinearGradient >
     </GestureRecognizer>
+    <MainList users={users} ref={mainListRef}/>
+    </>
   )
 }
 
