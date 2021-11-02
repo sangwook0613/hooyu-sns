@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Dimensions, PermissionsAndroid, Platform } from 'react-native';
 import { StyleSheet, View, Text, Image, TouchableOpacity, Animated } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -10,8 +10,10 @@ import amazingEmozi from '../assets/images/amazing2.png'
 import morning from '../assets/images/morning.png'
 import evening from '../assets/images/evening.png'
 import night from '../assets/images/night.png'
+import GestureRecognizer from 'react-native-swipe-gestures'
 
 import { RadderEffect } from '../components/Main/RadderEffect';
+import MainList from '../components/Main/MainList';
 
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
@@ -143,6 +145,8 @@ function Main() {
 
   }
 
+  const mainListRef = useRef()
+
   useEffect(() => {
     requestPositionPermissions()
       .then((didGetPermission) => {
@@ -169,83 +173,89 @@ function Main() {
   }, [])
 
   return (
-    <LinearGradient colors={[mainColor1, mainColor2]} style={styles.linearGradient}>
-      {
-      theme == "morning" 
-      ? 
-      <>
-        <Image source={morning} style={styles.morning} resizeMode="contain" />
-      </>
-      :
-      (theme == "evening" 
-      ?
-      <>
-        <Image source={evening} style={styles.evening} resizeMode="contain" />
-      </>
-      :
-      <>
-        <Image source={night} style={styles.night} resizeMode="contain" />
-      </>
-      )
-      }
-      
-      <View style={styles.profileButton}>
-        <TouchableOpacity>
-          <View>
-            <View style={styles.profileBackground}></View>
-            <Image
-              source={wowImoticon}
-              style={styles.profileImoticon}
-            />
-            <View style={styles.profileMeArea}>
-              <Text style={styles.profileMeText}>me</Text>
+    <GestureRecognizer
+        onSwipeUp={() => {
+          mainListRef.current.open()
+        }}
+        onSwipeDown={() => {
+          mainListRef.current.close()
+        }}
+        config={{
+          velocityThreshold: 0.1,
+          directionalOffsetThreshold: 50,
+        }}
+        style={{
+          height: deviceHeight,
+          width: deviceWidth,
+          position: 'absolute',
+          flex: 1,
+        }}
+      >
+      <LinearGradient colors={[mainColor1, mainColor2]} style={styles.linearGradient}>
+        <MainList ref={mainListRef}/>
+        {
+        theme == "morning" 
+        ? 
+        <>
+          <Image source={morning} style={styles.morning} resizeMode="contain" />
+        </>
+        :
+        (theme == "evening" 
+        ?
+        <>
+          <Image source={evening} style={styles.evening} resizeMode="contain" />
+        </>
+        :
+        <>
+          <Image source={night} style={styles.night} resizeMode="contain" />
+        </>
+        )
+        }
+        
+        <View style={styles.profileButton}>
+          <TouchableOpacity>
+            <View>
+              <View style={styles.profileBackground}></View>
+              <Image
+                source={wowImoticon}
+                style={styles.profileImoticon}
+              />
+              <View style={styles.profileMeArea}>
+                <Text style={styles.profileMeText}>me</Text>
+              </View>
             </View>
+
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.raderArea}>
+          <View style={styles.radar__text}>
+            <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
+            <Text style={styles.radar__text__count}>10000</Text>
+          </View>
+          <View style={styles.shelterArea}>
+            <Image
+              source={shelter}
+              style={styles.shelterImage}
+            ></Image>
           </View>
 
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.raderArea}>
-        <View style={styles.radar__text}>
-          <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
-          <Text style={styles.radar__text__count}>10000</Text>
-        </View>
-        <View style={styles.shelterArea}>
-          <Image
-            source={shelter}
-            style={styles.shelterImage}
-          ></Image>
-        </View>
-
-        <View
-          style={styles.rader}
-          onLayout={({ target }) => {
-            target.measure((x, y, width, height, pageX, pageY) => {
-              setRadarX(x + pageX)
-              setRadarY(y + pageY)
-              setRadarWidth(width)
-            })
-          }}
-        >
-
           <View
-            style={{
-              borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
-              width: radarWidth / 1.5,
-              height: radarWidth / 1.5,
-              borderColor: mainColor4,
-              borderWidth: 2,
-              justifyContent: 'center',
-              alignItems: 'center',
+            style={styles.rader}
+            onLayout={({ target }) => {
+              target.measure((x, y, width, height, pageX, pageY) => {
+                setRadarX(x + pageX)
+                setRadarY(y + pageY)
+                setRadarWidth(width)
+              })
             }}
           >
-
 
             <View
               style={{
                 borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
-                width: radarWidth / 3,
-                height: radarWidth / 3,
+                width: radarWidth / 1.5,
+                height: radarWidth / 1.5,
                 borderColor: mainColor4,
                 borderWidth: 2,
                 justifyContent: 'center',
@@ -253,73 +263,89 @@ function Main() {
               }}
             >
 
-              <RadderEffect
+
+              <View
                 style={{
+                  borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
+                  width: radarWidth / 3,
+                  height: radarWidth / 3,
+                  borderColor: mainColor4,
+                  borderWidth: 2,
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
-              ></RadderEffect>
-            </View>
-          </View>
+              >
 
+                <RadderEffect
+                  style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                ></RadderEffect>
+              </View>
+            </View>
+
+          </View>
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            <Text style={{ top: -20, marginRight: 20, transform: [{ rotate: '30deg' }] }}>20m</Text>
+            <Text style={{ marginRight: 20, transform: [{ rotate: '10deg' }] }}>100m</Text>
+            <Text style={{ marginRight: 20, transform: [{ rotate: '-10deg' }] }}>500m</Text>
+            <Text style={{ top: -20, transform: [{ rotate: '-30deg' }] }}>2km</Text>
+          </View>
         </View>
-        <View style={{ flexDirection: "row", marginTop: 10 }}>
-          <Text style={{ top: -20, marginRight: 20, transform: [{ rotate: '30deg' }] }}>20m</Text>
-          <Text style={{ marginRight: 20, transform: [{ rotate: '10deg' }] }}>100m</Text>
-          <Text style={{ marginRight: 20, transform: [{ rotate: '-10deg' }] }}>500m</Text>
-          <Text style={{ top: -20, transform: [{ rotate: '-30deg' }] }}>2km</Text>
+        <View
+          style={styles.addButtonContainer}
+        >
+          <TouchableOpacity style={styles.addButton}>
+            <Image
+              style={styles.addButtonImage}
+              source={AddButton}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
         </View>
-      </View>
-      <View
-        style={styles.addButtonContainer}
-      >
-        <TouchableOpacity style={styles.addButton}>
-          <Image
-            style={styles.addButtonImage}
-            source={AddButton}
-            resizeMode="contain"
-          />
-        </TouchableOpacity>
-      </View>
-      {/* 중앙 내 이모티콘 */}
-      <TouchableOpacity 
-        style={{
-          left: radarX + radarWidth / 2 - deviceWidth * 0.035,
-          top: radarY + radarWidth / 2 - deviceWidth * 0.035,
-          position: 'absolute',
-          elevation: 5,
-        }}
-      >
-        <Image
+        {/* 중앙 내 이모티콘 */}
+        <TouchableOpacity 
           style={{
-            height: deviceWidth * 0.07,
-            width: deviceWidth * 0.07,
-          }}
-          source={amazingEmozi}
-          resizeMode="cover"
-        />
-      </TouchableOpacity>
-      {users.map(user => (
-        <TouchableOpacity
-          key={user.name}
-          style={{
-            left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.x / 23),
-            top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.y / 23),
+            left: radarX + radarWidth / 2 - deviceWidth * 0.035,
+            top: radarY + radarWidth / 2 - deviceWidth * 0.035,
             position: 'absolute',
             elevation: 5,
           }}
         >
           <Image
             style={{
-              height: deviceWidth * 0.06,
-              width: deviceWidth * 0.06,
+              height: deviceWidth * 0.07,
+              width: deviceWidth * 0.07,
             }}
             source={amazingEmozi}
             resizeMode="cover"
           />
         </TouchableOpacity>
-      ))}
-    </LinearGradient >
+        {users.map(user => (
+          <TouchableOpacity
+            key={user.name}
+            style={{
+              left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.x / 23),
+              top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.y / 23),
+              position: 'absolute',
+              elevation: 5,
+            }}
+          >
+            <Image
+              style={{
+                height: deviceWidth * 0.06,
+                width: deviceWidth * 0.06,
+              }}
+              source={amazingEmozi}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+        ))}
+        
+        
+      </LinearGradient >
+    </GestureRecognizer>
   )
 }
 
