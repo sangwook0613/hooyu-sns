@@ -11,6 +11,7 @@ import morning from '../assets/images/morning.png'
 import evening from '../assets/images/evening.png'
 import night from '../assets/images/night.png'
 import GestureRecognizer from 'react-native-swipe-gestures'
+import images from '../assets/images';
 
 import { RadderEffect } from '../components/Main/RadderEffect';
 import MainList from '../components/Main/MainList';
@@ -55,8 +56,7 @@ const nearUsers = [
 ]
 
 
-
-function Main() {
+function Main({ navigation: { navigate }}) {
 
   const [location, setLocation] = useState('unknown')
   const [radarX, setRadarX] = useState(0)
@@ -213,7 +213,7 @@ function Main() {
         }
         
         <View style={styles.profileButton}>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigate("Profile", {nickname: 'HELLO', emoji: images.emoji.amazing})}>
             <View>
               <View style={styles.profileBackground}></View>
               <Image
