@@ -21,7 +21,7 @@ public class User extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(columnDefinition = "LONG UNSIGNED")
+//    @Column(name = "user_id", unique = true, nullable = false)
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -57,7 +57,7 @@ public class User extends BaseTime {
     List<PrivateZone> privateZones = new ArrayList<>();
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "location_id")
     private Location location;
 
     @Builder
