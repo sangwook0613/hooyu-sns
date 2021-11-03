@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import Main from '../screen/Main';
 import ProfileScreen from '../screen/ProfileScreen';
 import SettingScreen from '../screen/SettingScreen';
+import Status from '../screen/contentCreate/Status';
 
 
 const Nav = createNativeStackNavigator()
@@ -13,7 +14,8 @@ const Root = () => {
 
   return (
     <Nav.Navigator
-      initialRouteName="Main"
+      // initialRouteName="Main"
+      initialRouteName="CreateStatus"
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
@@ -52,10 +54,10 @@ const Root = () => {
       
       {/* 컨텐츠 생성 */}
       {/* <Nav.Screen name="Contents" component={ContentScreen} /> */}
-      {/* <Nav.Screen name="CreateStatus" component={CreateStatusScreen} options={{ headerShown: true }} />
-      <Nav.Screen name="CreateImage" component={CreateImageScreen} options={{ headerShown: true }} />
-      <Nav.Screen name="CreateEmoji" component={CreateEmojiScreen} options={{ headerShown: true }} />
-      <Nav.Screen name="CreateSurvey" component={CreateSurveyScreen} options={{ headerShown: true }} /> */}
+      <Nav.Screen name="CreateStatus" component={Status} options={{ headerShown: true }} />
+      {/* <Nav.Screen name="CreateImage" component={CreateImageScreen} options={{ headerShown: true }} /> */}
+      {/* <Nav.Screen name="CreateEmoji" component={CreateEmojiScreen} options={{ headerShown: true }} /> */}
+      {/* <Nav.Screen name="CreateSurvey" component={CreateSurveyScreen} options={{ headerShown: true }} /> */}
     </Nav.Navigator>
   )
 }
