@@ -2,10 +2,7 @@ package com.status.backend.user.dto;
 
 import com.status.backend.content.dto.RequestContentTimeDto;
 import com.status.backend.global.dto.DistDto;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /*
 - 유저 기본 정보 (이모지, 닉네임)
@@ -23,4 +20,13 @@ public class ResponseUserLocationDto {
     private DistDto distDto;
     private Boolean privateZone;
     private RequestContentTimeDto contentTime;
+
+    @Builder
+    public ResponseUserLocationDto(String name, String emoji,Boolean privateZone, DistDto distDto, RequestContentTimeDto contentTimeDto){
+        this.name = name;
+        this.emoji = emoji;
+        this.privateZone = privateZone;
+        this.distDto = distDto;
+        this.contentTime = contentTimeDto;
+    }
 }

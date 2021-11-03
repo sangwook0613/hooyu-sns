@@ -1,8 +1,8 @@
 package com.status.backend.user.service;
 
 import com.status.backend.global.exception.NoUserException;
+import com.status.backend.user.domain.User;
 import com.status.backend.user.dto.ResponseUserLocationDto;
-import com.status.backend.user.dto.UserMapping;
 import com.status.backend.user.dto.UserResponseDto;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public interface UserService {
     String SetPushAlarmSync(Long userPK, Boolean sync) throws NoUserException;
     String SetPushAlarmRadius(Long userPK, int radius) throws NoUserException;
 
-    List<UserMapping> getUserWithinRadius(Long userPK, BigDecimal lat, BigDecimal lon, int radius) throws NoUserException;
+    List<ResponseUserLocationDto> getUserWithinRadius(User user, BigDecimal lat, BigDecimal lon, int radius) throws NoUserException;
     List<ResponseUserLocationDto> getUserList(Long userPK, BigDecimal lat, BigDecimal lon, int radius, List<ResponseUserLocationDto> pastList) throws NoUserException;
 
 }
