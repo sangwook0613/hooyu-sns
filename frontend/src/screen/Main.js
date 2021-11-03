@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Dimensions, PermissionsAndroid, Platform } from 'react-native';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Animated } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Animated } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import shelter from '../assets/images/shelter.png'
 import wowImoticon from '../assets/images/wowimoticon.png'
@@ -34,33 +34,6 @@ const mainColor1 = theme == "morning" ? "#A1D1E7" : (theme == "evening" ? '#EC54
 const mainColor2 = theme == "morning" ? "#CDE4EE" : (theme == "evening" ? '#F2B332' : '#293A44')
 const mainColor3 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#B4B4B4')
 const mainColor4 = '#E9E9E9'
-const nearUsers = [
-  {
-    name: '나승호',
-    x: 20,
-    y: 2,
-  },
-  {
-    name: '류현선',
-    x: 17,
-    y: 2,
-  },
-  {
-    name: '김승현',
-    x: 0,
-    y: -7,
-  },
-  {
-    name: '최다윗',
-    x: -12,
-    y: -3,
-  },
-  {
-    name: '박상욱',
-    x: 4,
-    y: 9,
-  }
-]
 
 
 function Main({ navigation: { navigate }}) {
@@ -71,6 +44,7 @@ function Main({ navigation: { navigate }}) {
   const [radarWidth, setRadarWidth] = useState(0)
 
   const [users, setUsers] = useState([])
+  const [selectedUser, setSelectedUser] = useState(-1)
 
   async function requestPositionPermissions() {
     if (Platform.OS === 'ios') {
@@ -171,9 +145,7 @@ function Main({ navigation: { navigate }}) {
               latitude,
               longitude
             })
-            // 유저 세팅
-            setUsers(nearUsers)
-            // getUsers()
+            getUsers()
           },
             error => {
               console.warn(error.code, error.message)
@@ -187,26 +159,31 @@ function Main({ navigation: { navigate }}) {
       })
   }
 
-  getUsers = async () => {
+  getUsers = () => {
     axios({
       method: 'post',
-      url: SERVER_URL + 'user/user/radars',
+      url: SERVER_URL + 'user/radar',
       data: {
-        list: [],
+        list: [
+        ],
         requestRadiusDto: {
-          lat: location.latitude,
-          lon: location.longitude,
-          radius: myRadius,
-          userPk: userPk
+          lat: 100.12354,
+          lon: 100.12354,
+          radius: 2000,
+          userPK: 2
         }
       }
     })
     .then((res) => {
-      console.warn(res)
+      setUsers(res.data.success)
     })
     .catch((err) => {
       console.warn(err)
     })
+  }
+
+  const selectUser = (idx) => {
+    setSelectedUser(idx)
   }
 
   return (
@@ -234,17 +211,29 @@ function Main({ navigation: { navigate }}) {
         theme == "morning" 
         ? 
         <>
-          <Image source={morning} style={styles.morning} resizeMode="contain" />
+          <TouchableWithoutFeedback
+            onPress={() => mainListRef.current.close()}
+          >
+            <Image source={morning} style={styles.morning} resizeMode="contain" />
+          </TouchableWithoutFeedback>
         </>
         :
         (theme == "evening" 
         ?
         <>
-          <Image source={evening} style={styles.evening} resizeMode="contain" />
+          <TouchableWithoutFeedback
+            onPress={() => mainListRef.current.close()}
+          >
+            <Image source={evening} style={styles.evening} resizeMode="contain" />
+          </TouchableWithoutFeedback>
         </>
         :
         <>
-          <Image source={night} style={styles.night} resizeMode="contain" />
+          <TouchableWithoutFeedback
+            onPress={() => mainListRef.current.close()}
+          >
+            <Image source={night} style={styles.night} resizeMode="contain" />
+          </TouchableWithoutFeedback>
         </>
         )
         }
@@ -277,6 +266,7 @@ function Main({ navigation: { navigate }}) {
             ></Image>
           </View>
 
+          
           <View
             style={styles.rader}
             onLayout={({ target }) => {
@@ -287,7 +277,6 @@ function Main({ navigation: { navigate }}) {
               })
             }}
           >
-
             <View
               style={{
                 borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
@@ -299,8 +288,6 @@ function Main({ navigation: { navigate }}) {
                 alignItems: 'center',
               }}
             >
-
-
               <View
                 style={{
                   borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
@@ -312,7 +299,6 @@ function Main({ navigation: { navigate }}) {
                   alignItems: 'center',
                 }}
               >
-
                 <RadderEffect
                   style={{
                     justifyContent: 'center',
@@ -321,8 +307,8 @@ function Main({ navigation: { navigate }}) {
                 ></RadderEffect>
               </View>
             </View>
-
           </View>
+
           <View style={{ flexDirection: "row", marginTop: 10 }}>
             <Text style={{ top: -20, marginRight: 20, transform: [{ rotate: '30deg' }] }}>20m</Text>
             <Text style={{ marginRight: 20, transform: [{ rotate: '10deg' }] }}>100m</Text>
@@ -330,6 +316,7 @@ function Main({ navigation: { navigate }}) {
             <Text style={{ top: -20, transform: [{ rotate: '-30deg' }] }}>2km</Text>
           </View>
         </View>
+
         <View
           style={styles.addButtonContainer}
         >
@@ -341,6 +328,7 @@ function Main({ navigation: { navigate }}) {
             />
           </TouchableOpacity>
         </View>
+
         {/* 중앙 내 이모티콘 */}
         <TouchableOpacity 
           style={{
@@ -359,31 +347,56 @@ function Main({ navigation: { navigate }}) {
             resizeMode="cover"
           />
         </TouchableOpacity>
-        {users.map(user => (
-          <TouchableOpacity
-            key={user.name}
+
+        {users.map((user, index) => (
+          <View
+            key={index}
             style={{
-              left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.x / 23),
-              top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.y / 23),
-              position: 'absolute',
-              elevation: 5,
+              position: 'absolute'
             }}
           >
-            <Image
+            {index == selectedUser && 
+              <LinearGradient
+                colors={['#AB79EF', '#FC98AB']} 
+                style={{
+                  borderRadius: 20,
+                  left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.xdist / 23),
+                  top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.ydist / 23),
+                  height: deviceWidth * 0.07,
+                  width: deviceWidth * 0.07,
+                  position: 'absolute',
+                  elevation: 6,
+                }}
+              >
+              </LinearGradient>
+            }
+            <TouchableOpacity
               style={{
-                height: deviceWidth * 0.06,
-                width: deviceWidth * 0.06,
+                left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.xdist / 23),
+                top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.ydist / 23),
+                position: 'absolute',
+                elevation: index == selectedUser ? 7 : 5,
               }}
-              source={amazingEmozi}
-              resizeMode="cover"
-            />
-          </TouchableOpacity>
+              onPress={() => {
+                selectUser(index)
+                mainListRef.current.open()
+              }}
+            >
+              <Image
+                style={{
+                  height: deviceWidth * 0.06,
+                  width: deviceWidth * 0.06,
+                }}
+                source={amazingEmozi}
+                resizeMode="cover"
+              />
+            </TouchableOpacity>
+          </View>
         ))}
-        
-        
       </LinearGradient >
     </GestureRecognizer>
-    <MainList users={users} ref={mainListRef}/>
+
+    <MainList users={users} selectUser={selectUser} selectedUser={selectedUser} ref={mainListRef}/>
     </>
   )
 }
