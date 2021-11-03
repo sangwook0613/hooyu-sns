@@ -15,10 +15,17 @@ import images from '../assets/images';
 
 import { RadderEffect } from '../components/Main/RadderEffect';
 import MainList from '../components/Main/MainList';
+import axios from 'axios'
 
+// 이하 redux로 관리해야할 것들
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
 const radarWidth = Dimensions.get('window').width * 0.7
+// 내 위치 보내기에 필요한 정보들
+// 내 원의 반경.
+const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
+const myRadius = 2000
+const userPk = 1
 
 const date = new Date()
 
@@ -148,6 +155,13 @@ function Main({ navigation: { navigate }}) {
   const mainListRef = useRef()
 
   useEffect(() => {
+    getLocation()
+    setInterval(() => {
+      getLocation()
+    }, 10000);
+  }, [])
+
+  getLocation = () => {
     requestPositionPermissions()
       .then((didGetPermission) => {
         if (didGetPermission) {
@@ -159,6 +173,7 @@ function Main({ navigation: { navigate }}) {
             })
             // 유저 세팅
             setUsers(nearUsers)
+            // getUsers()
           },
             error => {
               console.warn(error.code, error.message)
@@ -170,7 +185,29 @@ function Main({ navigation: { navigate }}) {
       .catch((err) => {
         console.warn(err)
       })
-  }, [])
+  }
+
+  getUsers = async () => {
+    axios({
+      method: 'post',
+      url: SERVER_URL + 'user/user/radars',
+      data: {
+        list: [],
+        requestRadiusDto: {
+          lat: location.latitude,
+          lon: location.longitude,
+          radius: myRadius,
+          userPk: userPk
+        }
+      }
+    })
+    .then((res) => {
+      console.warn(res)
+    })
+    .catch((err) => {
+      console.warn(err)
+    })
+  }
 
   return (
     <>
