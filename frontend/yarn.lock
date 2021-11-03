@@ -4735,7 +4735,7 @@
     "kleur" "^3.0.3"
     "sisteransi" "^1.0.5"
 
-"prop-types@^15.6.0", "prop-types@^15.7.2":
+"prop-types@^15.6.0", "prop-types@^15.6.2", "prop-types@^15.7.2":
   "integrity" "sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ=="
   "resolved" "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz"
   "version" "15.7.2"
@@ -4865,6 +4865,13 @@
   "integrity" "sha512-Ns7Bn9H/Tyw278+5SQx9oAblDZ7JixyzeOczcBK8dipQk2pD7Djkcfnf1nB/8RErAmMLL9iXgW0QHqiII8AhKw=="
   "resolved" "https://registry.npmjs.org/react-native-swipe-gestures/-/react-native-swipe-gestures-1.0.5.tgz"
   "version" "1.0.5"
+
+"react-native-web-swiper@^2.2.1":
+  "integrity" "sha512-7q8BCdoCt91dw0fXhdTJ5S61NxOARAQX/F3x3sr5DJg9eGG4DoOSqLgJKFJl/7Z5GJasHbvKchC+SxgvtZVZvA=="
+  "resolved" "https://registry.npmjs.org/react-native-web-swiper/-/react-native-web-swiper-2.2.1.tgz"
+  "version" "2.2.1"
+  dependencies:
+    "prop-types" "^15.6.2"
 
 "react-native-web@0.17.1":
   "integrity" "sha512-lUnn+2O8ynQ6/gJKylSxm7DLi2vHw6AujdDV1+LSa8Epe1bYFJNUcJTEhJf0jNYUFGOujzMtuG8Mkz3HdWTkag=="
