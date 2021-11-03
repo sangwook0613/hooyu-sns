@@ -134,4 +134,23 @@ public class UserServiceImpl implements UserService {
         //return
         return nowList;
     }
+
+    //test
+    public void setUserLocation(Long userPK, BigDecimal lat, BigDecimal lon) throws NoUserException {
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+
+        Location location = user.getLocation();
+        if(location==null){
+            location = Location.builder().user(user).latitude(lat).longitude(lon).build();
+        }else{
+            location.setLatitude(lat);
+            location.setLongitude(lon);
+        }
+        user.setLocation(location);
+        locationRepository.save(location);
+        userRepository.save(user);
+//
+//        List<Location> locationList = locationRepository.selectSQLBylatlon(requestRadiusDto.getLat(),requestRadiusDto.getLon());
+//        logger.debug("test location SQL {}, size {}", locationList.get(0), locationList.size());
+    }
 }

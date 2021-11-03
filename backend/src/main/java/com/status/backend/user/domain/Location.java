@@ -1,17 +1,16 @@
 package com.status.backend.user.domain;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.status.backend.global.domain.BaseTime;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 
-@Getter
-@Setter
+@Getter @Setter
+@ToString
 @NoArgsConstructor
 @Entity
-public class Location {
+public class Location extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +25,12 @@ public class Location {
 
     @Column(nullable = false, precision = 9, scale = 6)
     private BigDecimal longitude;
+
+    @Builder
+    public Location(User user, BigDecimal latitude, BigDecimal longitude){
+        this.user = user;
+        this.latitude = latitude;
+        this.longitude  = longitude;
+    }
+
 }

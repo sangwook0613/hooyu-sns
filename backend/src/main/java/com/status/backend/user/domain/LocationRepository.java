@@ -1,12 +1,18 @@
 package com.status.backend.user.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LocationRepository extends JpaRepository<Location, Long> {
-    // SQL은 테이블의 컬럼명이 snack_id이기 때문에 조건절에 snack_id
-    // SQL 일반 파라미터 쿼리, @Param 사용 X
-//    @Query(value = "select location_id, user_id from location where latitude > ?1 and longitude", nativeQuery = true)
-//    public List<Snack> selectSQLById1(int id);
+    Optional<Location> findByUserId(Long userId);
+
+    @Query(value = "select * from location where latitude between :lat - 0.04 and :lat + 0.04 and longitude between :lon - 0.04 and :lon + 0.04", nativeQuery = true)
+    public List<Location> selectSQLBylatlon(@Param(value = "lat") BigDecimal lat,@Param(value = "lon") BigDecimal lon);
 }

@@ -124,9 +124,10 @@ public class UserController{
     @PostMapping("/radar")
     public ResponseEntity<SuccessResponseDto> getUserWithinRadius(@RequestBody @Valid RequestRadiusDto requestRadiusDto) throws NoUserException {
         logger.trace("User Controller 진입 getUserWithinRadius param {}", requestRadiusDto);
-        List<UserMapping> list = userService.getUserWithinRadius(requestRadiusDto.getUserPK(),requestRadiusDto.getLat(),requestRadiusDto.getLon(), requestRadiusDto.getRadius());
+        userService.setUserLocation(requestRadiusDto.getUserPK(),requestRadiusDto.getLat(),requestRadiusDto.getLon());
+//        List<UserMapping> list = userService.getUserWithinRadius(requestRadiusDto.getUserPK(),requestRadiusDto.getLat(),requestRadiusDto.getLon(), requestRadiusDto.getRadius());
 
-        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(list);
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse("User Set Location");
 
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
