@@ -2,6 +2,7 @@ package com.status.backend.user.web;
 
 import com.status.backend.global.dto.SuccessResponseDto;
 import com.status.backend.global.exception.NoUserException;
+import com.status.backend.global.exception.duplicateNameException;
 import com.status.backend.global.service.ResponseGenerateService;
 import com.status.backend.user.domain.User;
 import com.status.backend.user.dto.*;
@@ -47,19 +48,19 @@ public class UserController{
     }
 
     @PostMapping("/duplicated/{userName}")
-    public ResponseEntity<SuccessResponseDto> DuplicateCheckName(@PathVariable String userName) throws NoUserException {
-        logger.trace("User Controller 진입  DuplicateCheckName param {}", userName);
-        String message = userService.DuplicateCheckName(userName);
+    public ResponseEntity<SuccessResponseDto> duplicateCheckName(@PathVariable String userName) throws NoUserException {
+        logger.trace("User Controller 진입  duplicateCheckName param {}", userName);
+        String message = userService.duplicateCheckName(userName);
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @PostMapping("/nameSet/{userName}")
-    public ResponseEntity<SuccessResponseDto> ChangeName(@PathVariable String userName) throws NoUserException {
-        logger.trace("User Controller 진입 ChangeName param {}", userName);
-        String message = userService.ChangeName(userName);
+    @PostMapping("/nameSet/{userPK}/{userName}")
+    public ResponseEntity<SuccessResponseDto> changeName(@PathVariable Long userPK, @PathVariable String userName) throws NoUserException, duplicateNameException {
+        logger.trace("User Controller 진입 changeName param {}", userName);
+        String message = userService.changeName(userPK, userName);
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
@@ -67,9 +68,9 @@ public class UserController{
     }
 
     @PostMapping("/emojiSet")
-    public ResponseEntity<SuccessResponseDto> ChangeEmoji(@RequestBody @Valid EmojiDto emojiDto) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> changeEmoji(@RequestBody @Valid EmojiDto emojiDto) throws NoUserException {
         logger.trace("User Controller 진입 ChangeEmoji param {}", emojiDto);
-        String message = userService.ChangeEmoji(emojiDto.getUserPK(),emojiDto.getUserEmoji());
+        String message = userService.changeEmoji(emojiDto.getUserPK(),emojiDto.getUserEmoji());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
@@ -78,9 +79,9 @@ public class UserController{
 
 
     @PostMapping("/setPrivate")
-    public ResponseEntity<SuccessResponseDto> SetUpPrivateZone(@RequestBody @Valid PrivateZoneDto privateZoneDto) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> setUpPrivateZone(@RequestBody @Valid PrivateZoneDto privateZoneDto) throws NoUserException {
         logger.trace("User Controller 진입 SetUpPrivateZone param {}", privateZoneDto);
-        String message = userService.SetUpPrivateZone(privateZoneDto.getUserPK(), privateZoneDto.getLat(),privateZoneDto.getLon());
+        String message = userService.setUpPrivateZone(privateZoneDto.getUserPK(), privateZoneDto.getLat(),privateZoneDto.getLon());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
@@ -89,9 +90,9 @@ public class UserController{
 
 
     @PostMapping("/push/accept")
-    public ResponseEntity<SuccessResponseDto> SetPushAlarmReceive(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> setPushAlarmReceive(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
         logger.trace("User Controller 진입 SetPushAlarmReceive param {}", pushAlarmDto);
-        String message = userService.SetPushAlarmReceive(pushAlarmDto.getUserPK(),pushAlarmDto.getAccept());
+        String message = userService.setPushAlarmReceive(pushAlarmDto.getUserPK(),pushAlarmDto.getAccept());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
@@ -100,9 +101,9 @@ public class UserController{
 
 
     @PostMapping("/push/sync")
-    public ResponseEntity<SuccessResponseDto> SetPushAlarmSync(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> setPushAlarmSync(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
         logger.trace("User Controller 진입 SetPushAlarmSync param {}", pushAlarmDto);
-        String message = userService.SetPushAlarmSync(pushAlarmDto.getUserPK(),pushAlarmDto.getSync());
+        String message = userService.setPushAlarmSync(pushAlarmDto.getUserPK(),pushAlarmDto.getSync());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
@@ -111,9 +112,9 @@ public class UserController{
 
 
     @PostMapping("/push/radius")
-    public ResponseEntity<SuccessResponseDto> SetPushAlarmRadius(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> setPushAlarmRadius(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
         logger.trace("User Controller 진입 SetPushAlarmRadius param {}", pushAlarmDto);
-        String message = userService.SetPushAlarmRadius(pushAlarmDto.getUserPK(),pushAlarmDto.getRadius());
+        String message = userService.setPushAlarmRadius(pushAlarmDto.getUserPK(),pushAlarmDto.getRadius());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
