@@ -23,8 +23,8 @@ spring:
             authorization-grant-type: authorization_code
             client-id: 1c97a5b559f464209bff9c4c92edcad8
             client-secret: oqp9w2qm9F8bM7Lw5WMrZ6ZSZ5PfaxUU
-#            redirect-uri: http://localhost:8085/login/oauth2/code/kakao
-            redirectUri: https://k5a101.p.ssafy.io/login/oauth2/code/kakao
+            redirect-uri: http://localhost:8085/login/oauth2/code/kakao
+#            redirectUri: https://k5a101.p.ssafy.io/login/oauth2/code/kakao
             scope:
               - profile_nickname
               - profile_image

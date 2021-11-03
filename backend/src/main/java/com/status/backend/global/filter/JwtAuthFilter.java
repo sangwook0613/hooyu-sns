@@ -58,9 +58,9 @@ public class JwtAuthFilter extends GenericFilterBean {
             Authentication auth = getAuthentication(user);
             SecurityContextHolder.getContext().setAuthentication(auth);
         } else if (access_token != null && tokenService.verifyToken(access_token)) {
-            String email = tokenService.getUid(access_token);
+            Long pk = tokenService.getId(access_token);
 
-            User user = userRepository.findByEmail(email).get();
+            User user = userRepository.findById(pk).get();
             logger.debug("user Info : {}",user);
 
             Authentication auth = getAuthentication(user);
