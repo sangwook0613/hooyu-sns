@@ -1,12 +1,19 @@
 package com.status.backend.global.dto;
 
+import lombok.Builder;
 import lombok.Data;
-
-import java.math.BigDecimal;
 
 @Data
 public class DistDto {
-    private BigDecimal xDist;
-    private BigDecimal yDist;
-    private BigDecimal dist;
+    private double xDist;
+    private double yDist;
+    private double dist;
+
+    @Builder
+    public DistDto(double xDist, double yDist, double dist){
+        this.xDist = xDist;
+        this.yDist = yDist;
+        this.dist = dist;
+    }
+
 }
