@@ -1,9 +1,11 @@
 package com.status.backend.user.service;
 
+import com.status.backend.content.dto.RequestContentTimeDto;
+import com.status.backend.global.dto.DistDto;
 import com.status.backend.global.exception.NoUserException;
+import com.status.backend.global.util.RadarMath;
 import com.status.backend.user.domain.*;
 import com.status.backend.user.dto.ResponseUserLocationDto;
-import com.status.backend.user.dto.UserMapping;
 import com.status.backend.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PrivateZoneRepository pzRepository;
     private final LocationRepository locationRepository;
+    private static RadarMath radarMath = new RadarMath();
 
     Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -80,10 +84,10 @@ public class UserServiceImpl implements UserService {
             logger.debug("privatezone : {}", privateZone);
 
             User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-            logger.debug("user privateZone존재여부 : {}", user.getPrivateZones());
+            logger.info("user privateZone존재여부 : {}", user.getPrivateZones());
 
             privateZone.setUser(user);
-            logger.debug("user privateZone get(0) : {}", user.getPrivateZones().get(0));
+            logger.info("user privateZone get(0) : {}", user.getPrivateZones().get(0));
             userRepository.save(user);
         }
             pzRepository.save(privateZone);
@@ -114,20 +118,18 @@ public class UserServiceImpl implements UserService {
         return "Success";
     }
 
-    @Override
-    public List<UserMapping> getUserWithinRadius(Long userPK, BigDecimal lat, BigDecimal lon, int radius) throws NoUserException {
-
-        return null;
-    }
-
     @Transactional
     @Override
     public List<ResponseUserLocationDto> getUserList(Long userPK, BigDecimal lat, BigDecimal lon, int radius, List<ResponseUserLocationDto> pastList) throws NoUserException {
-        List<ResponseUserLocationDto> nowList = null;
-        // 유저가저와 범위와 location을 수정해준다.
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
 
-        //비교
+        // 유저가저와 범위와 location을 수정해준다.
+        setUserLocation(user,lat,lon);
+
+        //범위에 있는 ResponseUserLocationDto : List 가져오기
+        List<ResponseUserLocationDto> nowList = getUserWithinRadius(user,lat,lon,radius);
+
+        //비교 **주의** 초기 유저의 요청은 pastList가 null이다.
 
         //push
 
@@ -135,22 +137,78 @@ public class UserServiceImpl implements UserService {
         return nowList;
     }
 
+    @Override
+    public List<ResponseUserLocationDto> getUserWithinRadius(User user, BigDecimal lat, BigDecimal lon, int radius) throws NoUserException {
+        List<ResponseUserLocationDto> responseUserLocationDtoList = new ArrayList<>();
+
+        // 범위에 있는 List 가져 옴 (현재 +- 0.04 오차를 두고 있음)
+        List<Location> locationList = locationRepository.selectSQLBylatlon(lat,lon);
+        for (int i = 0; i < locationList.size(); i++) {
+            Location target = locationList.get(i);
+
+            //본인인 경우 out
+            if(target.getUser().getId() == user.getId()) continue;
+
+            DistDto checkDist = radarMath.distance(lat,lon,target.getLatitude(),target.getLongitude());
+            if(checkDist.getDist()>radius) continue;
+
+            //privateZone안에 있는 여부check
+            boolean userInPrivateZone = false;
+            User targetUser = target.getUser();
+            List<PrivateZone> privateZoneList = targetUser.getPrivateZones();
+            if(privateZoneList.size()!=0){
+                PrivateZone targetPrivateZone = privateZoneList.get(0);
+                DistDto targetInPrivateZone = radarMath.distance(targetPrivateZone.getLatitude(), targetPrivateZone.getLongitude(),target.getLatitude(),target.getLongitude());
+                //targetUser의 위치가 privateZone 100 안쪽에 있을때 true
+                if(targetInPrivateZone.getDist()<100)
+                    userInPrivateZone = true;
+            }
+
+            //targetUser의 컨텐츠 time기록을 넘겨준다.
+            RequestContentTimeDto contentTimeDto = null;
+
+            //범위안에 있는 location
+            ResponseUserLocationDto now = ResponseUserLocationDto.builder()
+                    .name(targetUser.getName())
+                    .emoji(targetUser.getUserEmoji())
+                    .distDto(checkDist)
+                    .privateZone(userInPrivateZone)
+                    .contentTimeDto(contentTimeDto)
+                    .build();
+
+            responseUserLocationDtoList.add(now);
+        }
+
+        return responseUserLocationDtoList;
+    }
+
+    //test
+    public void setUserLocation(User user, BigDecimal lat, BigDecimal lon) throws NoUserException {
+
+        Location userLocation = user.getLocation();
+        if(userLocation==null){
+            userLocation = Location.builder().user(user).latitude(lat).longitude(lon).build();
+        }else{
+            userLocation.setLatitude(lat);
+            userLocation.setLongitude(lon);
+        }
+        user.setLocation(userLocation);
+        locationRepository.save(userLocation);
+        userRepository.save(user);
+    }
+
     //test
     public void setUserLocation(Long userPK, BigDecimal lat, BigDecimal lon) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-
-        Location location = user.getLocation();
-        if(location==null){
-            location = Location.builder().user(user).latitude(lat).longitude(lon).build();
+        Location userLocation = user.getLocation();
+        if(userLocation==null){
+            userLocation = Location.builder().user(user).latitude(lat).longitude(lon).build();
         }else{
-            location.setLatitude(lat);
-            location.setLongitude(lon);
+            userLocation.setLatitude(lat);
+            userLocation.setLongitude(lon);
         }
-        user.setLocation(location);
-        locationRepository.save(location);
+        user.setLocation(userLocation);
+        locationRepository.save(userLocation);
         userRepository.save(user);
-//
-//        List<Location> locationList = locationRepository.selectSQLBylatlon(requestRadiusDto.getLat(),requestRadiusDto.getLon());
-//        logger.debug("test location SQL {}, size {}", locationList.get(0), locationList.size());
     }
 }

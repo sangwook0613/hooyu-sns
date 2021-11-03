@@ -17,7 +17,7 @@ spring:
     generate-ddl: true
     showSql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
 
 ## security switch
 #  security:
