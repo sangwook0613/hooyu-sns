@@ -17,6 +17,7 @@ class RadderEffect extends React.Component {
       {
         toValue: 1,
         duration: 7000,
+        useNativeDriver: false,
       },
       
     );
