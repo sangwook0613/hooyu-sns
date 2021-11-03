@@ -122,7 +122,7 @@ public class UserController{
     }
 
     @PostMapping("/radar")
-    public ResponseEntity<SuccessResponseDto> getListUserWithinRadius(@RequestBody @Valid RequestUserLocationDto requestUserLocationDto) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> getListUserWithinRadius(@RequestBody RequestUserLocationDto requestUserLocationDto) throws NoUserException {
         logger.trace("User Controller 진입 getUserWithinRadius param {}", requestUserLocationDto);
         List<ResponseUserLocationDto> list = userService.getUserList(requestUserLocationDto.getRequestRadiusDto().getUserPK(),
                 requestUserLocationDto.getRequestRadiusDto().getLat(),requestUserLocationDto.getRequestRadiusDto().getLon(),
