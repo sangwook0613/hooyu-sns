@@ -57,10 +57,10 @@ public class UserController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @PostMapping("/nameSet/{userPK}/{userName}")
-    public ResponseEntity<SuccessResponseDto> changeName(@PathVariable Long userPK, @PathVariable String userName) throws NoUserException, duplicateNameException {
-        logger.trace("User Controller 진입 changeName param {}", userName);
-        String message = userService.changeName(userPK, userName);
+    @PostMapping("/nameSet")
+    public ResponseEntity<SuccessResponseDto> changeName(@RequestBody NameDto nameDto) throws NoUserException, duplicateNameException {
+        logger.trace("User Controller 진입 changeName param {}", nameDto.getUserName());
+        String message = userService.changeName(nameDto.getUserPK(), nameDto.getUserName());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
