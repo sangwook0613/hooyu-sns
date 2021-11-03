@@ -43,7 +43,7 @@ const dummyStatus = [
   }
 ]
 
-const StatusContent = ({ }) => {
+const SurveyContent = ({ }) => {
   const [currentIndex, setCurrendIndex] = useState(0)
 
   return (
@@ -99,4 +99,4 @@ const StatusContent = ({ }) => {
   )
 }
 
-export default StatusContent;
+export default SurveyContent;
