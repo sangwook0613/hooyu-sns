@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image } from 'react-native';
 
 
 const clientWidth = Dimensions.get('screen').width
@@ -7,7 +7,34 @@ const clientHeight = Dimensions.get('screen').height
 
 const colorArray = ['#FFD0D0', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']
 
-const Status = ({ navigation: { navigate }}) => {
+const Status = ({ navigation, route }) => {
+  
+  const StatusTitle = () => {
+    return (
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <TouchableOpacity onPress={() => {alert('hi')}}>
+          <Image
+            style={{ width: 50, height: 50 }}
+            source={route.params.emoji}
+          />
+        </TouchableOpacity>
+        <Text>{route.params.nickname}</Text>
+      </View>
+    );
+  }
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: (props) => <StatusTitle {...props} />,
+      headerRight: () => (
+        <TouchableOpacity style={{ marginRight: 10 }} >
+          <Text>등록</Text>
+        </TouchableOpacity>
+      )
+    });
+  }, [navigation]);
+
+
   // const [isBlack, setIsBlack] = useState('black')
   const [color, setColor] = useState('FFD0D0')
   const [colorScrollX, setColorScrollX] = useState(0)
