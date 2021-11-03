@@ -3,6 +3,7 @@ package com.status.backend.user.service;
 import com.status.backend.content.dto.RequestContentTimeDto;
 import com.status.backend.global.dto.DistDto;
 import com.status.backend.global.exception.NoUserException;
+import com.status.backend.global.exception.duplicateNameException;
 import com.status.backend.global.util.RadarMath;
 import com.status.backend.user.domain.*;
 import com.status.backend.user.dto.ResponseUserLocationDto;
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String DuplicateCheckName(String userName) throws NoUserException {
+    public String duplicateCheckName(String userName) throws NoUserException {
         if(userRepository.existsByName(userName))
             return "이미 존재하는 이름입니다.";
         else
@@ -50,15 +51,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String ChangeName(String userName) throws NoUserException {
-        User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+    public String changeName(Long userPK, String userName) throws NoUserException, duplicateNameException {
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        if(userRepository.existsByName(userName)){
+            throw new duplicateNameException("이미 존재하는 이름입니다.");
+        }
         user.setName(userName);
         userRepository.save(user);
         return "Success";
     }
 
     @Override
-    public String ChangeEmoji(Long userPK, String userEmoji) throws NoUserException {
+    public String changeEmoji(Long userPK, String userEmoji) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         user.setUserEmoji(userEmoji);
         userRepository.save(user);
@@ -70,7 +74,7 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public String SetUpPrivateZone(Long userPK, BigDecimal lat, BigDecimal lon) throws NoUserException {
+    public String setUpPrivateZone(Long userPK, BigDecimal lat, BigDecimal lon) throws NoUserException {
         logger.debug("user pk check : {}", userPK);
         logger.debug("lat check : {}", lat);
         logger.debug("lon check : {}", lon);
@@ -95,7 +99,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String SetPushAlarmReceive(Long userPK, Boolean accept) throws NoUserException {
+    public String setPushAlarmReceive(Long userPK, Boolean accept) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         user.setAcceptPush(!user.isAcceptPush());
         userRepository.save(user);
@@ -103,7 +107,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String SetPushAlarmSync(Long userPK, Boolean sync) throws NoUserException {
+    public String setPushAlarmSync(Long userPK, Boolean sync) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         user.setAcceptSync(!user.isAcceptSync());
         userRepository.save(user);
@@ -111,7 +115,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String SetPushAlarmRadius(Long userPK, int radius) throws NoUserException {
+    public String setPushAlarmRadius(Long userPK, int radius) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         user.setAcceptRadius(radius);
         userRepository.save(user);
