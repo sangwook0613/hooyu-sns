@@ -15,7 +15,7 @@ public class PrivateZone {
     private Long id;
 
     @JsonManagedReference
-    @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 

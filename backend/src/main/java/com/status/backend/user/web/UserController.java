@@ -110,7 +110,7 @@ public class UserController{
     }
 
 
-    @GetMapping("/user/push/radius")
+    @PostMapping("/user/push/radius")
     public ResponseEntity<SuccessResponseDto> SetPushAlarmRadius(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
         logger.trace("User Controller 진입 SetPushAlarmRadius param {}", pushAlarmDto);
         String message = userService.SetPushAlarmRadius(pushAlarmDto.getUserPK(),pushAlarmDto.getRadius());
@@ -131,4 +131,13 @@ public class UserController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
+    @PostMapping("/user/radars")
+    public ResponseEntity<SuccessResponseDto> getListUserWithinRadius(@RequestBody @Valid RequestUserLocationDto RequestUserLocationDto) throws NoUserException {
+        logger.trace("User Controller 진입 getUserWithinRadius param {}", RequestUserLocationDto);
+        List<UserMapping> list = userService.getUserWithinRadius(RequestUserLocationDto.getRequestRadiusDto().getUserPK(),RequestUserLocationDto.getRequestRadiusDto().getLat(),RequestUserLocationDto.getRequestRadiusDto().getLon(), RequestUserLocationDto.getRequestRadiusDto().getRadius());
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(list);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
 }

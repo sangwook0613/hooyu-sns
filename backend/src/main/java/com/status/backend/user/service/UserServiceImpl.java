@@ -1,10 +1,8 @@
 package com.status.backend.user.service;
 
 import com.status.backend.global.exception.NoUserException;
-import com.status.backend.user.domain.PrivateZone;
-import com.status.backend.user.domain.PrivateZoneRepository;
-import com.status.backend.user.domain.User;
-import com.status.backend.user.domain.UserRepository;
+import com.status.backend.user.domain.*;
+import com.status.backend.user.dto.ResponseUserLocationDto;
 import com.status.backend.user.dto.UserMapping;
 import com.status.backend.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +20,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PrivateZoneRepository pzRepository;
+    private final LocationRepository locationRepository;
 
     Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -117,6 +116,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserMapping> getUserWithinRadius(Long userPK, BigDecimal lat, BigDecimal lon, int radius) throws NoUserException {
+
         return null;
+    }
+
+    @Transactional
+    @Override
+    public List<ResponseUserLocationDto> getUserList(Long userPK, BigDecimal lat, BigDecimal lon, int radius, List<ResponseUserLocationDto> pastList) throws NoUserException {
+        List<ResponseUserLocationDto> nowList = null;
+        // 유저가저와 범위와 location을 수정해준다.
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+
+        //비교
+
+        //push
+
+        //return
+        return nowList;
     }
 }

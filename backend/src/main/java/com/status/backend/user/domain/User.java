@@ -56,6 +56,10 @@ public class User extends BaseTime {
     @OneToMany(mappedBy = "user")
     List<PrivateZone> privateZones = new ArrayList<>();
 
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Location location;
+
     @Builder
     public User(String name, String email, String userEmoji, String profileImg, Role role){
         this.name = name;
