@@ -1,16 +1,20 @@
 package com.status.backend.user.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.status.backend.global.domain.BaseTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 //@SQLDelete(sql = "UPDATE user set deleted = true where id = ?")
 //@Where(clause = "deleted = false")
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 @Entity
 public class User extends BaseTime {
@@ -47,6 +51,14 @@ public class User extends BaseTime {
     @Enumerated
     @Column(nullable = false)
     private Role role;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "user")
+    List<PrivateZone> privateZones = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "id")
+    private Location location;
 
     @Builder
     public User(String name, String email, String userEmoji, String profileImg, Role role){

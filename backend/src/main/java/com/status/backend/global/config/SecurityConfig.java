@@ -5,7 +5,6 @@ import com.status.backend.global.handler.CustomLogoutSuccessHandler;
 import com.status.backend.global.handler.CustomOAuth2SuccessHandler;
 import com.status.backend.global.service.CustomOAuth2UserService;
 import com.status.backend.global.service.TokenService;
-import com.status.backend.user.domain.Role;
 import com.status.backend.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -48,7 +47,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/h2-console/**","/error","/favicon.ico").permitAll()
                 .antMatchers("/auth/**","/oauth2/**").permitAll()
-                .antMatchers("/api/v1/**").hasRole(Role.USER.name())
+//                .antMatchers("/api/v1/**").hasRole(Role.USER.name())
+                .antMatchers("/api/v1/**").permitAll()
 
                 .antMatchers("/api/guest/**","/api/user/**","/push/**").permitAll()
                 .anyRequest().authenticated()
