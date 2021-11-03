@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import Main from '../screen/Main';
 import ProfileScreen from '../screen/ProfileScreen';
 import SettingScreen from '../screen/SettingScreen';
-import Status from '../screen/contentCreate/Status';
+import CreateContent from '../screen/CreateContent';
 
 
 const Nav = createNativeStackNavigator()
@@ -53,8 +53,8 @@ const Root = () => {
       }} /> */}
       
       {/* 컨텐츠 생성 */}
-      {/* <Nav.Screen name="Contents" component={ContentScreen} /> */}
-      <Nav.Screen name="CreateStatus" component={Status} options={{ headerShown: true }} />
+      <Nav.Screen name="CreateContent" component={CreateContent} options={{ headerShown: true }} />
+      {/* <Nav.Screen name="CreateStatus" component={Status} options={{ headerShown: true }} /> */}
       {/* <Nav.Screen name="CreateImage" component={CreateImageScreen} options={{ headerShown: true }} /> */}
       {/* <Nav.Screen name="CreateEmoji" component={CreateEmojiScreen} options={{ headerShown: true }} /> */}
       {/* <Nav.Screen name="CreateSurvey" component={CreateSurveyScreen} options={{ headerShown: true }} /> */}

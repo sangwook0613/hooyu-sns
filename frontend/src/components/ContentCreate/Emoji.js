@@ -7,25 +7,19 @@ const clientHeight = Dimensions.get('screen').height
 
 const colorArray = ['#FFD0D0', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']
 
-const Status = ({ navigation, route }) => {
+const Emoji = ({ navigation, route }) => {
   
-  const StatusTitle = () => {
+  const EmojiTitle = () => {
     return (
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <TouchableOpacity onPress={() => {alert('hi')}}>
-          <Image
-            style={{ width: 50, height: 50 }}
-            source={route.params.emoji}
-          />
-        </TouchableOpacity>
-        <Text>{route.params.nickname}</Text>
+      <View>
+        
       </View>
     );
   }
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: (props) => <StatusTitle {...props} />,
+      headerTitle: (props) => <EmojiTitle {...props} />,
       headerRight: () => (
         <TouchableOpacity style={{ marginRight: 10 }} >
           <Text>등록</Text>
@@ -35,8 +29,7 @@ const Status = ({ navigation, route }) => {
   }, [navigation]);
 
 
-  // const [isBlack, setIsBlack] = useState('black')
-  const [color, setColor] = useState('FFD0D0')
+  const [color, setColor] = useState('#FFD0D0')
   const [colorScrollX, setColorScrollX] = useState(0)
   const statusBackground = useRef()
   const colorScroll = useRef()
@@ -56,7 +49,6 @@ const Status = ({ navigation, route }) => {
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'space-between',
-      // backgroundColor: "#FFD0D0",
       backgroundColor: color,
     }
   }
@@ -68,7 +60,7 @@ const Status = ({ navigation, route }) => {
       </View>
       <View style={styles.statusBox}>
         <TextInput 
-          placeholder={"상태를 입력해주세요"}
+          placeholder={"이모지를 입력해주세요"}
           />
       </View>
       <View style={styles.scrollViewBox} >
@@ -156,4 +148,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default Status;
+export default Emoji;

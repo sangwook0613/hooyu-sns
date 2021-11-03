@@ -296,7 +296,7 @@ function Main({ navigation: { navigate }}) {
         <View
           style={styles.addButtonContainer}
         >
-          <TouchableOpacity style={styles.addButton} onPress={() => navigate("CreateStatus", {nickname: 'HELLO', emoji: images.emoji.amazing})}>
+          <TouchableOpacity style={styles.addButton} onPress={() => navigate("CreateContent", {nickname: 'HELLO', emoji: images.emoji.amazing})}>
             <Image
               style={styles.addButtonImage}
               source={AddButton}
