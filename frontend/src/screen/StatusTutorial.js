@@ -9,7 +9,7 @@ const StatusTutorial = ({ navigation: { navigate }}) => {
   const [inputValue, setInputValue] = useState('')
 
   const registerStatus = () => {
-    console.warn('상태 등록 API')
+    console.warn('회원가입 API')
   }
 
   return (
