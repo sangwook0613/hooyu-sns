@@ -1,6 +1,6 @@
 import React, {useRef, useState, useEffect} from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image, TouchableWithoutFeedback } from 'react-native';
-
+import LinearGradient from 'react-native-linear-gradient';
 
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
@@ -76,7 +76,7 @@ const Status = ({ navigation, route }) => {
           <Text></Text>
         </View>
           <View style={styles.statusBox} >
-            <TextInput 
+            <TextInput style={{ textAlign: 'center'}}
               placeholder={"상태를 입력해주세요"}
               />
           </View>
@@ -100,16 +100,31 @@ const Status = ({ navigation, route }) => {
                   onPress={() => {onColorPress(index)}} 
                   key={index}
                   >
-                    <View
-                      style={{ 
-                        width: 40,
-                        height: 40,
-                        backgroundColor: color,
-                        borderColor: colorArray[parseInt((colorScrollX+35)/70)] === color ? 'black':'white' ,
-                        borderWidth: 2,
-                        marginHorizontal: 15
+                    <LinearGradient
+                      colors={colorArray[parseInt((colorScrollX+35)/70)] === color ? 
+                        ["#AB79EF", "#FC98AB"] : ["white", "white"]}
+                      style={{
+                        width: colorArray[parseInt((colorScrollX+35)/70)] === color ? 
+                        40 : 34,
+                        height: colorArray[parseInt((colorScrollX+35)/70)] === color ? 
+                        40 : 34,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginHorizontal: colorArray[parseInt((colorScrollX+35)/70)] === color ? 
+                        15 : 18,
+                        elevation: 4,
+                        marginTop: colorArray[parseInt((colorScrollX+35)/70)] === color ? 
+                        0 : 6
                       }}
+                    >
+                      <View
+                        style={{ 
+                          width: 34,
+                          height: 34,
+                          backgroundColor: color,
+                        }}
                       ></View>
+                    </LinearGradient>
                   </TouchableOpacity>
                   
                   ))
@@ -160,7 +175,7 @@ const styles = StyleSheet.create({
   },
   statusBox: {
     flex: 3,
-    justifyContent: "center"
+    justifyContent: "center",
   },
   scrollViewBox: {
     flex: 1,
