@@ -13,6 +13,4 @@ public class RequestContentDto {
     private Long userPK;
     private String exon;
     private String color;
-    private String Type;
-
 }
