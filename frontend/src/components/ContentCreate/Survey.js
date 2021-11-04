@@ -1,9 +1,8 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, KeyboardAvoidingView, ScrollView, Dimensions, TextInput, Image, Button } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
 
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
@@ -16,6 +15,11 @@ const emojiArray = [
 const Survey = ({ navigation, route }) => {
   
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
+  const [options, setOptions] = useState(
+    [
+      '', ''
+    ]
+  )
 
   const SurveyTitle = () => {
     return (
@@ -32,6 +36,21 @@ const Survey = ({ navigation, route }) => {
     );
   }
 
+  const onTextChange = (index, text) => {
+    setOptions(options.map((option, index2) => {
+      return index !== index2 ? option: text
+    }))
+  }
+
+  const onOptionDelete = (index) => {
+    const tmpOptions = [...options]
+    console.log(tmpOptions)
+    tmpOptions.splice(index, 1)
+    console.log(tmpOptions)
+    setOptions(tmpOptions)
+    console.log(options)
+  }
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => <SurveyTitle {...props} />,
@@ -43,6 +62,10 @@ const Survey = ({ navigation, route }) => {
     });
   }, [navigation]);
 
+
+  useEffect(() => {
+    setOptions(options)
+  }, [options])
 
   return (
     <LinearGradient colors={["#AB79EF", "#FC98AB"]} style={styles.mainView}>
@@ -63,28 +86,47 @@ const Survey = ({ navigation, route }) => {
             <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
               <TextInput style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}
+                onChangeText={(text) => onTextChange(0, text)}
               />
             </View>
             <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
               <TextInput style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}
+                onChangeText={(text) => onTextChange(1, text)}
               />
             </View>
-            <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
-              <TextInput style={{height: '100%'}}
-                placeholder={"옵션을 입력해주세요"}
-              />
-            </View>
-            <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
-              <TextInput style={{height: '100%'}}
-                placeholder={"옵션을 입력해주세요"}
-              />
-            </View>
-            <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
-              <TextInput style={{height: '100%'}}
-                placeholder={"옵션을 입력해주세요"}
-              />
-            </View>
+            {
+              options.map((option, index) => (
+                index > 1 &&
+                <View key={index} style={{width: clientWidth*0.8, height: 40, flexDirection: 'row', backgroundColor: 'white', borderRadius: 3, justifyContent: 'space-between', alignItems:'center', marginTop: 10, paddingHorizontal: 10}}>
+                  <TextInput style={{height: '100%'}}
+                    placeholder={"옵션을 입력해주세요"}
+                    onChangeText={(text) => onTextChange(index, text)}
+                    value={options[index]}
+                  />
+                  <TouchableOpacity 
+                    onPress={()=> onOptionDelete(index)}
+                  >
+                    <View style={styles.minusOption}>
+                      <Text style={{ fontSize: 16 }}>-</Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              ))
+            }
+            {
+              options.length < 5 && 
+              <TouchableOpacity 
+                style={{ alignItems: 'center', marginTop: 15 }}
+                onPress={()=> {
+                  setOptions((prevState) => [...prevState, ''])
+                }}
+              >
+                <View style={styles.addOption}>
+                  <Text style={{fontSize: 20}}>+</Text>
+                </View>
+              </TouchableOpacity>
+            }
           </View>
         </KeyboardAwareScrollView>
       </TouchableWithoutFeedback>
@@ -97,7 +139,6 @@ const Survey = ({ navigation, route }) => {
                   <TouchableOpacity
                     onPress={() => {
                       setIsEmojiSelect(false)
-                      console.warn(index, index2)
                     }}
                     >
                     <Image 
@@ -155,6 +196,26 @@ const styles = StyleSheet.create({
     height: '100%',
     padding: 5
   },
+  addOption: {
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  minusOption: {
+    // position: 'absolute',
+    borderWidth: 2,
+    // right: -5,
+    // bottom: -5,
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 });
 
 
