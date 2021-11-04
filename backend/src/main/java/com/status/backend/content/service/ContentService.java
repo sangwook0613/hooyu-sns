@@ -26,4 +26,6 @@ public interface ContentService {
     List<ResponseContentDto> imageContent(String userName) throws NoUserException, NoContentException;
     List<ResponseSurveyDto> surveyContent(String userName) throws NoUserException, NoContentException;
 
+    //삭제
+
 }

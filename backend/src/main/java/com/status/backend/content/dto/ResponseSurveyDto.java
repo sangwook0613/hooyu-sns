@@ -22,7 +22,7 @@ public class ResponseSurveyDto {
 
     private List<String> answerList;
 
-    private HashMap<String, Integer> count;
+    private HashMap<Long, Integer> count;
 
     public ResponseSurveyDto(Content entity) {
         this.contentPK = entity.getId();
