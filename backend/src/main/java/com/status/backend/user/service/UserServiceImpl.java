@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
             }
 
             //targetUser의 컨텐츠 time기록을 넘겨준다.
-            RequestContentTimeDto contentTimeDto = null;
+            RequestContentTimeDto contentTimeDto = new RequestContentTimeDto(target.getUser().getRecordTime());
 
             //범위안에 있는 location
             ResponseUserLocationDto now = ResponseUserLocationDto.builder()
