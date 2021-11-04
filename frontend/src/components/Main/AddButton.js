@@ -14,7 +14,7 @@ const mainColor3 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED56
 const mainColor4 = '#E9E9E9'
 
 
-const AddButton = () => {
+const AddButton = ({ navigate }) => {
 
   const open = useRef(new Animated.Value(0)).current
   const [isOpen, setIsOpened] = useState(false)
@@ -34,7 +34,7 @@ const AddButton = () => {
       style={styles.addButtonContainer}
     >
       <TouchableWithoutFeedback
-        onPress={() => alert('상태')}
+        onPress={() => navigate('NicknameTutorial')}
       >
         <Animated.View style={[styles.addButtonEl, {
           left: open.interpolate({

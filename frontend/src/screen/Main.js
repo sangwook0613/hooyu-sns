@@ -317,7 +317,7 @@ function Main({ navigation: { navigate }}) {
           </View>
         </View>
 
-        <AddButton />
+        <AddButton navigate={navigate} />
 
         {/* 중앙 내 이모티콘 */}
         <TouchableOpacity 
