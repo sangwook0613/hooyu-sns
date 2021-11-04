@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Animated, Dimensions, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback, __spread } from 'react-native'
 import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons"
+import images from '../../assets/images';
+
 
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
@@ -47,7 +49,7 @@ const AddButton = ({ navigate }) => {
       </TouchableWithoutFeedback>
 
       <TouchableWithoutFeedback
-        onPress={() => alert('기분')}
+        onPress={() => navigate('CreateContent', { emoji: images.emoji.amazing })}
       >
         <Animated.View style={[styles.addButtonEl, {
           left: open.interpolate({
