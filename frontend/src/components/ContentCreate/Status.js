@@ -1,5 +1,6 @@
-import React, {useRef, useState} from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image } from 'react-native';
+import React, {useRef, useState, useEffect} from 'react';
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image, TouchableWithoutFeedback } from 'react-native';
+
 
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
@@ -13,10 +14,11 @@ const emojiArray = [
 
 const Status = ({ navigation, route }) => {
   
+  
   const StatusTitle = () => {
     return (
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        <TouchableOpacity onPress={() => setIsEmojiSelect(true)}
+        <TouchableOpacity onPress={() => setIsEmojiSelect(isEmojiSelect+1)}
         >
           <Image
             style={{ width: 40, height: 40 }}
@@ -39,7 +41,11 @@ const Status = ({ navigation, route }) => {
     });
   }, [navigation]);
 
-  const [isEmojiSelect, setIsEmojiSelect] = useState(false)
+  // useEffect(() => {
+  //   alert(isEmojiSelect)
+  // }, [isEmojiSelect])
+  
+  const [isEmojiSelect, setIsEmojiSelect] = useState(0)
   const [color, setColor] = useState('#FFD0D0')
   const [colorScrollX, setColorScrollX] = useState(0)
   const statusBackground = useRef()
@@ -64,76 +70,80 @@ const Status = ({ navigation, route }) => {
   }
 
   return (
-    <View style={backgroundStyle(color)} ref={statusBackground}>
-      <View style={styles.foo}>
-        <Text></Text>
-      </View>
-      <View style={styles.statusBox}>
-        <TextInput 
-          placeholder={"상태를 입력해주세요"}
-          />
-      </View>
-      <View style={styles.scrollViewBox} >
-        <View style={styles.scrollViewInner}>
-          <ScrollView 
-            style={styles.scrollView}
-            showsHorizontalScrollIndicator={false}
-            horizontal={true}
-            onScroll = {(e) => {
-              setColorScrollX(e.nativeEvent.contentOffset.x)
-              setColor(colorArray[parseInt((colorScrollX+35)/70)])
-            }}
-            onScrollEndDrag={onEndScroll}
-            ref={colorScroll}
-          >
-            <View style={styles.blankBox}></View>
-            {
-              colorArray.map((color, index) => (
-                <TouchableOpacity 
-                onPress={() => {onColorPress(index)}} 
-                key={index}
-                >
-                  <View
-                    style={{ 
-                      width: 40,
-                      height: 40,
-                      backgroundColor: color,
-                      borderColor: colorArray[parseInt((colorScrollX+35)/70)] === color ? 'black':'white' ,
-                      borderWidth: 2,
-                      marginHorizontal: 15
-                    }}
-                  ></View>
-                </TouchableOpacity>
-                
-              ))
-            }
-            <View style={styles.blankBox}></View>
-
-          </ScrollView>
+    <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
+      <View style={backgroundStyle(color)} ref={statusBackground}>
+        <View style={styles.foo}>
+          <Text></Text>
         </View>
-      </View>
-      { isEmojiSelect && 
-      <View style={styles.emojiSelect}>
-        { [0, 1].map((num, index) => (
-          <View key={index} style={styles.emojiSelectRow}>
-            {emojiArray[num].map((emotion, index) => (
-              <View key={index} style={styles.emojiSelectCol}>
-                <TouchableOpacity
-                  onPress={() => {setIsEmojiSelect(false)}}
-                >
-                  <Image 
-                    source={route.params.emoji}
-                    // source={require(`../../assets/images/${emotion}`)}
-                    style={{width: '100%', height: '100%'}}
-                  />
-                </TouchableOpacity>
-              </View>
-              ))}
+          <View style={styles.statusBox} >
+            <TextInput 
+              placeholder={"상태를 입력해주세요"}
+              />
           </View>
-        ))}
+        <View style={styles.scrollViewBox} >
+          <View style={styles.scrollViewInner}>
+            <ScrollView 
+              style={styles.scrollView}
+              showsHorizontalScrollIndicator={false}
+              horizontal={true}
+              onScroll = {(e) => {
+                setColorScrollX(e.nativeEvent.contentOffset.x)
+                setColor(colorArray[parseInt((colorScrollX+35)/70)])
+              }}
+              onScrollEndDrag={onEndScroll}
+              ref={colorScroll}
+              >
+              <View style={styles.blankBox}></View>
+              {
+                colorArray.map((color, index) => (
+                  <TouchableOpacity 
+                  onPress={() => {onColorPress(index)}} 
+                  key={index}
+                  >
+                    <View
+                      style={{ 
+                        width: 40,
+                        height: 40,
+                        backgroundColor: color,
+                        borderColor: colorArray[parseInt((colorScrollX+35)/70)] === color ? 'black':'white' ,
+                        borderWidth: 2,
+                        marginHorizontal: 15
+                      }}
+                      ></View>
+                  </TouchableOpacity>
+                  
+                  ))
+                }
+              <View style={styles.blankBox}></View>
+
+            </ScrollView>
+          </View>
+        </View>
+        { Boolean(isEmojiSelect%2) && 
+        <View style={styles.emojiSelect}>
+          { [0, 1].map((num, index) => (
+            <View key={index} style={styles.emojiSelectRow}>
+              {emojiArray[num].map((emotion, index2) => (
+                <View key={index2} style={styles.emojiSelectCol}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setIsEmojiSelect(false)
+                      console.warn(index, index2)
+                    }}
+                    >
+                    <Image 
+                      source={route.params.emoji}
+                      style={{width: '100%', height: '100%'}}
+                      />
+                  </TouchableOpacity>
+                </View>
+                ))}
+            </View>
+          ))}
+        </View>
+        }
       </View>
-      }
-    </View>
+    </TouchableWithoutFeedback>
   )
 }
 
@@ -178,7 +188,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 300,
     height: 100,
-    borderWidth: 2,
+    borderWidth: 1,
+    borderColor: "#B4B4B4",
     borderRadius: 10,
     backgroundColor: 'white',
     elevation: 4,
