@@ -66,7 +66,7 @@ public class User extends BaseTime {
     List<Content> contents = new ArrayList<>();
 
     @OneToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "record_id")
     private RecordTime recordTime;
 
     @Builder

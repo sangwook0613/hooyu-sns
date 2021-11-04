@@ -2,15 +2,12 @@ package com.status.backend.content.domain;
 
 import com.status.backend.global.domain.BaseTime;
 import com.status.backend.user.domain.User;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
+@Getter @Setter
+@ToString
 @NoArgsConstructor
 @Entity
 public class Content extends BaseTime {
