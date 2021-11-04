@@ -4,7 +4,6 @@ import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedba
 import LinearGradient from 'react-native-linear-gradient';
 import shelter from '../assets/images/shelter.png'
 import wowImoticon from '../assets/images/wowimoticon.png'
-import AddButton from '../assets/images/add.png'
 import Geolocation from 'react-native-geolocation-service'
 import amazingEmozi from '../assets/images/amazing2.png'
 import morning from '../assets/images/morning.png'
@@ -15,6 +14,7 @@ import images from '../assets/images';
 
 import { RadderEffect } from '../components/Main/RadderEffect';
 import MainList from '../components/Main/MainList';
+import AddButton from '../components/Main/AddButton'
 import axios from 'axios'
 
 // 이하 redux로 관리해야할 것들
@@ -145,7 +145,7 @@ function Main({ navigation: { navigate }}) {
               latitude,
               longitude
             })
-            getUsers()
+            // getUsers()
           },
             error => {
               console.warn(error.code, error.message)
@@ -317,17 +317,7 @@ function Main({ navigation: { navigate }}) {
           </View>
         </View>
 
-        <View
-          style={styles.addButtonContainer}
-        >
-          <TouchableOpacity style={styles.addButton}>
-            <Image
-              style={styles.addButtonImage}
-              source={AddButton}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        </View>
+        <AddButton />
 
         {/* 중앙 내 이모티콘 */}
         <TouchableOpacity 
@@ -402,24 +392,6 @@ function Main({ navigation: { navigate }}) {
 }
 
 const styles = StyleSheet.create({
-  addButton: {
-    alignItems: 'center',
-    backgroundColor: mainColor3,
-    borderRadius: 35,
-    elevation: 4,
-    height: deviceWidth * 0.12,
-    justifyContent: 'center',
-    marginTop: deviceHeight
-      * 0.13,
-    width: deviceWidth * 0.12,
-  },
-  addButtonContainer: {
-    alignItems: 'center',
-    flex: 0.25,
-  },
-  addButtonImage: {
-    width: deviceWidth * 0.06,
-  },
   cloud1: {
     position: "absolute",
     width: deviceWidth * 0.25
