@@ -7,6 +7,7 @@ import SettingScreen from '../screen/SettingScreen';
 import NicknameTutorial from '../screen/NicknameTutorial';
 import StatusTutorial from '../screen/StatusTutorial'
 import EmojiTutorial from '../screen/EmojiTutorial'
+import CreateContent from '../screen/CreateContent';
 
 
 const Nav = createNativeStackNavigator()
@@ -16,6 +17,7 @@ const Root = () => {
 
   return (
     <Nav.Navigator
+      // initialRouteName="Main"
       initialRouteName="Main"
       screenOptions={{
         headerShown: false,
@@ -54,11 +56,11 @@ const Root = () => {
       }} /> */}
       
       {/* 컨텐츠 생성 */}
-      {/* <Nav.Screen name="Contents" component={ContentScreen} /> */}
-      {/* <Nav.Screen name="CreateStatus" component={CreateStatusScreen} options={{ headerShown: true }} />
-      <Nav.Screen name="CreateImage" component={CreateImageScreen} options={{ headerShown: true }} />
-      <Nav.Screen name="CreateEmoji" component={CreateEmojiScreen} options={{ headerShown: true }} />
-      <Nav.Screen name="CreateSurvey" component={CreateSurveyScreen} options={{ headerShown: true }} /> */}
+      <Nav.Screen name="CreateContent" component={CreateContent} options={{ headerShown: true }} />
+      {/* <Nav.Screen name="CreateStatus" component={Status} options={{ headerShown: true }} /> */}
+      {/* <Nav.Screen name="CreateImage" component={CreateImageScreen} options={{ headerShown: true }} /> */}
+      {/* <Nav.Screen name="CreateEmoji" component={CreateEmojiScreen} options={{ headerShown: true }} /> */}
+      {/* <Nav.Screen name="CreateSurvey" component={CreateSurveyScreen} options={{ headerShown: true }} /> */}
     </Nav.Navigator>
   )
 }
