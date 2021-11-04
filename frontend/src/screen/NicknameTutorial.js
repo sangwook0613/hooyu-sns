@@ -10,7 +10,7 @@ const NicknameTutorial = ({ navigation: { navigate }}) => {
 
   const registerNickname = () => {
     console.warn('중복 체크 및 다음 스텝 이동 필요')
-    navigate('StatusTutorial')
+    navigate('EmojiTutorial')
   }
 
   return (

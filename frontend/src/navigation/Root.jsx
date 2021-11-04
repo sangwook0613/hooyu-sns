@@ -6,6 +6,7 @@ import ProfileScreen from '../screen/ProfileScreen';
 import SettingScreen from '../screen/SettingScreen';
 import NicknameTutorial from '../screen/NicknameTutorial';
 import StatusTutorial from '../screen/StatusTutorial'
+import EmojiTutorial from '../screen/EmojiTutorial'
 
 
 const Nav = createNativeStackNavigator()
@@ -26,7 +27,7 @@ const Root = () => {
       {/* <Nav.Screen name="Loading" component={Loading} /> */}
       <Nav.Screen name="NicknameTutorial" component={NicknameTutorial} />
       <Nav.Screen name="StatusTutorial" component={StatusTutorial} />
-      {/* <Nav.Screen name="EmojiTutorial" component={EmojiTutorial} /> */}
+      <Nav.Screen name="EmojiTutorial" component={EmojiTutorial} />
 
       <Nav.Screen name="Main" component={Main} />
       <Nav.Screen name="Profile" component={ProfileScreen}
