@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import Main from '../screen/Main';
 import ProfileScreen from '../screen/ProfileScreen';
 import SettingScreen from '../screen/SettingScreen';
+import NicknameTutorial from '../screen/NicknameTutorial';
 
 
 const Nav = createNativeStackNavigator()
@@ -22,8 +23,8 @@ const Root = () => {
 
       {/* 로그인 화면 */}
       {/* <Nav.Screen name="Loading" component={Loading} /> */}
-      {/* <Nav.Screen name="NicknameTutorial" component={NicknameTutorial} />
-      <Nav.Screen name="StatusTutorial" component={StatusTutorial} />
+      <Nav.Screen name="NicknameTutorial" component={NicknameTutorial} />
+      {/* <Nav.Screen name="StatusTutorial" component={StatusTutorial} />
       <Nav.Screen name="EmojiTutorial" component={EmojiTutorial} /> */}
 
       <Nav.Screen name="Main" component={Main} />
