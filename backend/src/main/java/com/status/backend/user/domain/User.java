@@ -2,6 +2,7 @@ package com.status.backend.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.status.backend.content.domain.Content;
+import com.status.backend.content.domain.RecordTime;
 import com.status.backend.global.domain.BaseTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -63,6 +64,10 @@ public class User extends BaseTime {
 
     @OneToMany(mappedBy = "user")
     List<Content> contents = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "id")
+    private RecordTime recordTime;
 
     @Builder
     public User(String name, String email, String userEmoji, String profileImg, Role role){

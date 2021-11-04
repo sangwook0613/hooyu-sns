@@ -1,6 +1,5 @@
 package com.status.backend.content.domain;
 
-import com.status.backend.global.domain.BaseTime;
 import com.status.backend.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,31 +12,26 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
-public class Content extends BaseTime {
+public class SurveyContentAnswer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(nullable = true)
-    private String exon;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "content_id")
+    private Content content;
 
-    @Column(nullable = true)
-    private String color;
-
-    @Enumerated
-    @Column(nullable = false)
-    private Type type;
+    private String answer;
 
     @Builder
-    public Content(User user, String exon, String color, Type type){
+    public SurveyContentAnswer(User user, Content content, String answer){
         this.user = user;
-        this.exon = exon;
-        this.color = color;
-        this.type = type;
+        this.content = content;
+        this.answer = answer;
     }
 }
