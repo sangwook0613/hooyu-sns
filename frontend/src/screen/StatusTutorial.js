@@ -4,18 +4,17 @@ import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput } from 
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
 
-const NicknameTutorial = ({ navigation: { navigate }}) => {
+const StatusTutorial = ({ navigation: { navigate }}) => {
 
   const [inputValue, setInputValue] = useState('')
 
-  const registerNickname = () => {
-    console.warn('중복 체크 및 다음 스텝 이동 필요')
-    navigate('StatusTutorial')
+  const registerStatus = () => {
+    console.warn('상태 등록 API')
   }
 
   return (
     <View>
-      <View style={styles.nicknameContainer}>
+      <View style={styles.statusContainer}>
         <View style={{
             width: deviceWidth * 0.8
           }}
@@ -25,18 +24,18 @@ const NicknameTutorial = ({ navigation: { navigate }}) => {
             fontSize: 22,
             fontWeight: 'bold',
           }}>
-            닉네임 설정
+            오늘 내 기분은?
           </Text>
           <Text style={{
             color: '#4F5457',
             fontSize: 14,
             marginTop: deviceHeight * 0.01,
           }}>
-            당신의 닉네임을 설정해주세요.
+            오늘 당신의 기분은 어떠신가요?
           </Text>
         </View>
         <View
-          style={styles.nicknameInput}
+          style={styles.statusInput}
         >
           <TextInput
             style={{
@@ -46,7 +45,7 @@ const NicknameTutorial = ({ navigation: { navigate }}) => {
             value={inputValue}
             onChangeText={(e) => setInputValue(e)}
             maxLength={10}
-            placeholder='닉네임 입력'
+            placeholder='상태 입력'
           />
         </View>
       </View>
@@ -54,7 +53,7 @@ const NicknameTutorial = ({ navigation: { navigate }}) => {
         <TouchableOpacity
           style={[styles.register, inputValue === '' && { backgroundColor: '#A1A1A1'}]}
           disabled={inputValue === ''}
-          onPress={() => registerNickname()}
+          onPress={() => registerStatus()}
         >
           <Text
             style={styles.register__text}
@@ -68,11 +67,11 @@ const NicknameTutorial = ({ navigation: { navigate }}) => {
 }
 
 const styles = StyleSheet.create({
-  nicknameContainer: {
+  statusContainer: {
     alignItems: 'center',
     marginTop: deviceHeight * 0.15,
   },
-  nicknameInput: {
+  statusInput: {
     borderBottomColor: '#0B1C26',
     borderBottomWidth: 2,
     marginTop: deviceHeight * 0.1,
@@ -97,4 +96,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default NicknameTutorial;
+export default StatusTutorial;
