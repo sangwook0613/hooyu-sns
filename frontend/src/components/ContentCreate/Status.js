@@ -9,12 +9,19 @@ const clientHeight = Dimensions.get('screen').height
 
 const colorArray = ['#FFD0D0', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']
 const emojiArray = [
-  ['amazing', 'amazing2', 'amazing3', 'amazing', 'amazing', 'amazing'], 
+  ['amazing', 'amazing2', 'amazing3', 'amazing4', 'amazing5', 'amazing6'], 
   ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
 ]
 
 
 const Status = ({ navigation, route }) => {
+  const [emoji, setEmoji] = useState('amazing')
+  const [isEmojiSelect, setIsEmojiSelect] = useState(0)
+  const [color, setColor] = useState('#FFD0D0')
+  const [colorScrollX, setColorScrollX] = useState(0)
+  const [status, setStatus] = useState('')
+  const statusBackground = useRef()
+  const colorScroll = useRef()
   
   
   const StatusTitle = () => {
@@ -46,15 +53,8 @@ const Status = ({ navigation, route }) => {
         </TouchableOpacity>
       )
     });
-  }, [navigation, status, color]);
+  }, [navigation, status, color, emoji]);
 
-  const [emoji, setEmoji] = useState('amazing')
-  const [isEmojiSelect, setIsEmojiSelect] = useState(0)
-  const [color, setColor] = useState('#FFD0D0')
-  const [colorScrollX, setColorScrollX] = useState(0)
-  const [status, setStatus] = useState('')
-  const statusBackground = useRef()
-  const colorScroll = useRef()
 
   const onEndScroll = () => {
     colorScroll.current.scrollTo({ x : parseInt((colorScrollX+35)/70)*70 })
@@ -76,6 +76,23 @@ const Status = ({ navigation, route }) => {
 
   
 
+  const createEmoji = () => {
+    axios({
+      method: 'post',
+      url: SERVER_URL + 'user/emojiSet',
+      data: {
+        "userEmoji": emoji,
+        "userPK": 1
+      }
+    })
+    .then((res) => {
+      console.log(res.data.success)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
+
   const createStatus = () => {
     axios({
       method: 'post',
@@ -95,22 +112,6 @@ const Status = ({ navigation, route }) => {
     })
   }
 
-  const createEmoji = () => {
-    axios({
-      method: 'post',
-      url: SERVER_URL + 'user/emojiSet',
-      data: {
-        "userEmoji": emoji,
-        "userPK": 1
-      }
-    })
-    .then((res) => {
-      console.log(res.data.success)
-    })
-    .catch((err) => {
-      console.log(err)
-    })
-  }
 
 
   return (

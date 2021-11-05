@@ -3,23 +3,28 @@ import { Text, TouchableOpacity, View, StyleSheet, KeyboardAvoidingView, ScrollV
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import axios from 'axios'
 
+
+const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
 
 const emojiArray = [
-  ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing'], 
+  ['amazing', 'amazing2', 'amazing3', 'amazing4', 'amazing5', 'amazing6'], 
   ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
 ]
 
 const Survey = ({ navigation, route }) => {
-  
+  const [emoji, setEmoji] = useState('amazing')
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
+  const [title, setTitle] = useState('')
   const [options, setOptions] = useState(
     [
       '', ''
     ]
   )
+  
 
   const SurveyTitle = () => {
     return (
@@ -44,28 +49,67 @@ const Survey = ({ navigation, route }) => {
 
   const onOptionDelete = (index) => {
     const tmpOptions = [...options]
-    console.log(tmpOptions)
     tmpOptions.splice(index, 1)
-    console.log(tmpOptions)
     setOptions(tmpOptions)
-    console.log(options)
   }
 
-  React.useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => <SurveyTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} >
+        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
+          createSurvey()
+          navigation.navigate('Main')
+          }}
+        >
           <Text>등록</Text>
         </TouchableOpacity>
       )
     });
-  }, [navigation]);
-
-
-  useEffect(() => {
     setOptions(options)
-  }, [options])
+  }, [navigation, emoji, options]);
+
+  const createEmoji = () => {
+    axios({
+      method: 'post',
+      url: SERVER_URL + 'user/emojiSet',
+      data: {
+        "userEmoji": emoji,
+        "userPK": 1
+      }
+    })
+    .then((res) => {
+      console.log(res.data.success)
+      createEmoji()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
+
+  const createSurvey = () => {
+    console.log(title)
+    axios({
+      method: 'post',
+      url: SERVER_URL + 'content/create/survey',
+      data: {
+        "answerList": [...options],
+        "requestContentDto": {
+          "color": '',
+          "exon": title,
+          "userPK": 1
+        }
+      }
+    })
+    .then((res) => {
+      console.log(res.data.success)
+      createEmoji()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
+
 
   return (
     <LinearGradient colors={["#AB79EF", "#FC98AB"]} style={styles.mainView}>
@@ -78,6 +122,7 @@ const Survey = ({ navigation, route }) => {
             <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
               <TextInput style={{height: '100%'}}
                 placeholder={"질문을 입력해주세요"}
+                onChangeText={(text) => setTitle(text)}
               />
             </View>
           </View>
@@ -139,6 +184,8 @@ const Survey = ({ navigation, route }) => {
                   <TouchableOpacity
                     onPress={() => {
                       setIsEmojiSelect(false)
+                      setEmoji(emojiArray[index][index2])
+                      console.warn(index, index2)
                     }}
                     >
                     <Image 
@@ -207,11 +254,9 @@ const styles = StyleSheet.create({
   minusOption: {
     // position: 'absolute',
     borderWidth: 2,
-    // right: -5,
-    // bottom: -5,
-    height: 20,
-    width: 20,
-    borderRadius: 10,
+    height: 25,
+    width: 25,
+    borderRadius: 15,
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center'

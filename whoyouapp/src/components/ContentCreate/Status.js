@@ -1,18 +1,27 @@
 import React, {useRef, useState, useEffect} from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import axios from 'axios'
 
+const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
 
 const colorArray = ['#FFD0D0', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']
 const emojiArray = [
-  ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing'], 
+  ['amazing', 'amazing2', 'amazing3', 'amazing4', 'amazing5', 'amazing6'], 
   ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
 ]
 
 
 const Status = ({ navigation, route }) => {
+  const [emoji, setEmoji] = useState('amazing')
+  const [isEmojiSelect, setIsEmojiSelect] = useState(0)
+  const [color, setColor] = useState('#FFD0D0')
+  const [colorScrollX, setColorScrollX] = useState(0)
+  const [status, setStatus] = useState('')
+  const statusBackground = useRef()
+  const colorScroll = useRef()
   
   
   const StatusTitle = () => {
@@ -30,26 +39,22 @@ const Status = ({ navigation, route }) => {
     );
   }
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => <StatusTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} >
+        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
+          createStatus()
+          navigation.navigate('Main')
+          console.log(color)
+          console.log(status)
+        }}>
           <Text>등록</Text>
         </TouchableOpacity>
       )
     });
-  }, [navigation]);
+  }, [navigation, status, color, emoji]);
 
-  // useEffect(() => {
-  //   alert(isEmojiSelect)
-  // }, [isEmojiSelect])
-  
-  const [isEmojiSelect, setIsEmojiSelect] = useState(0)
-  const [color, setColor] = useState('#FFD0D0')
-  const [colorScrollX, setColorScrollX] = useState(0)
-  const statusBackground = useRef()
-  const colorScroll = useRef()
 
   const onEndScroll = () => {
     colorScroll.current.scrollTo({ x : parseInt((colorScrollX+35)/70)*70 })
@@ -69,6 +74,46 @@ const Status = ({ navigation, route }) => {
     }
   }
 
+  
+
+  const createEmoji = () => {
+    axios({
+      method: 'post',
+      url: SERVER_URL + 'user/emojiSet',
+      data: {
+        "userEmoji": emoji,
+        "userPK": 1
+      }
+    })
+    .then((res) => {
+      console.log(res.data.success)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
+
+  const createStatus = () => {
+    axios({
+      method: 'post',
+      url: SERVER_URL + 'content/create/status',
+      data: {
+        "color": color,
+        "exon": status,
+        "userPK": 1
+      }
+    })
+    .then((res) => {
+      console.log(res.data.success)
+      createEmoji()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
+
+
+
   return (
     <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
       <View style={backgroundStyle(color)} ref={statusBackground}>
@@ -78,6 +123,7 @@ const Status = ({ navigation, route }) => {
           <View style={styles.statusBox} >
             <TextInput style={{ textAlign: 'center'}}
               placeholder={"상태를 입력해주세요"}
+              onChangeText={(text) => setStatus(text)}
               />
           </View>
         <View style={styles.scrollViewBox} >
@@ -143,6 +189,7 @@ const Status = ({ navigation, route }) => {
                   <TouchableOpacity
                     onPress={() => {
                       setIsEmojiSelect(false)
+                      setEmoji(emojiArray[index][index2])
                       console.warn(index, index2)
                     }}
                     >

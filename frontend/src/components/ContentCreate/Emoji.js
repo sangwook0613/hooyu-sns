@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import axios from 'axios'
@@ -6,7 +6,7 @@ import axios from 'axios'
 const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 
 const emojiArray = [
-  ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing'], 
+  ['amazing', 'amazing2', 'amazing3', 'amazing4', 'amazing5', 'amazing6'], 
   ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
 ]
 
@@ -14,6 +14,7 @@ const Emoji = ({ navigation, route }) => {
   
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [emoji, setEmoji] = useState('amazing')
+  const [checked, setChecked] = useState(false)
 
   const EmojiTitle = () => {
     return (
@@ -23,7 +24,7 @@ const Emoji = ({ navigation, route }) => {
     );
   }
 
-  React.useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => <EmojiTitle {...props} />,
       headerRight: () => (
@@ -32,9 +33,14 @@ const Emoji = ({ navigation, route }) => {
         </TouchableOpacity>
       )
     });
-  }, [navigation]);
+    if (checked) {
+      createEmoji()
+      navigation.navigate('Main')
+    }
+  }, [navigation, emoji]);
 
   const createEmoji = () => {
+    console.log(emoji)
     axios({
       method: 'post',
       url: SERVER_URL + 'user/emojiSet',
@@ -73,8 +79,7 @@ const Emoji = ({ navigation, route }) => {
                   onPress={() => {
                     setIsEmojiSelect(false)
                     setEmoji(emojiArray[index][index2])
-                    createEmoji()
-                    navigation.navigate('Main')
+                    setChecked(true)
                     console.warn(index, index2)
                   }}
                   >
