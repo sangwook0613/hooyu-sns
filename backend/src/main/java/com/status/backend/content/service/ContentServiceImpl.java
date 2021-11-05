@@ -189,7 +189,7 @@ public class ContentServiceImpl implements ContentService {
                 }
                 if (user.getId() == s.getUser().getId()) {
                     coutingMap.put(target, coutingMap.get(target) - 1);
-                    logger.info("test!!!!!!!!!!!!!! : {},     : {}", user.getId(), s.getUser().getId());
+                    logger.debug("test!!!!!!!!!!!!!! : {},     : {}", user.getId(), s.getUser().getId());
                     return target;
                 }
                 return null;
