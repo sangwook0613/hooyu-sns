@@ -1,5 +1,6 @@
 package com.status.backend.content.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.status.backend.global.domain.BaseTime;
 import com.status.backend.user.domain.User;
 import lombok.*;
@@ -16,6 +17,7 @@ public class Content extends BaseTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
