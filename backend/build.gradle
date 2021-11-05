@@ -47,8 +47,6 @@ dependencies {
     // Firebase Admin SDK
     implementation 'com.google.firebase:firebase-admin:6.8.1'
 
-    //google login
-    implementation group: 'com.google.api.client', name: 'google-api-client-auth-oauth2'
 }
 
 test {
