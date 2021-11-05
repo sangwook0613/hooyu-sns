@@ -17,6 +17,7 @@ const emojiArray = [
 
 const Survey = ({ navigation, route }) => {
   
+  const [emoji, setEmoji] = useState('amazing')
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [title, setTitle] = useState('')
   const [options, setOptions] = useState(
@@ -58,6 +59,7 @@ const Survey = ({ navigation, route }) => {
       headerRight: () => (
         <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
           createSurvey()
+          navigation.navigate('Main')
           }}
         >
           <Text>등록</Text>
@@ -65,6 +67,24 @@ const Survey = ({ navigation, route }) => {
       )
     });
   }, [navigation]);
+
+  const createEmoji = () => {
+    axios({
+      method: 'post',
+      url: SERVER_URL + 'user/emojiSet',
+      data: {
+        "userEmoji": emoji,
+        "userPK": 1
+      }
+    })
+    .then((res) => {
+      console.log(res.data.success)
+      createEmoji()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
 
   const createSurvey = () => {
     console.log(title)
@@ -82,6 +102,7 @@ const Survey = ({ navigation, route }) => {
     })
     .then((res) => {
       console.log(res.data.success)
+      createEmoji()
     })
     .catch((err) => {
       console.log(err)
@@ -166,6 +187,8 @@ const Survey = ({ navigation, route }) => {
                   <TouchableOpacity
                     onPress={() => {
                       setIsEmojiSelect(false)
+                      setEmoji(emojiArray[index][index2])
+                      console.warn(index, index2)
                     }}
                     >
                     <Image 
