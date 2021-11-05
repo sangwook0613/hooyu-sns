@@ -1,5 +1,6 @@
 package com.status.backend.user.web;
 
+import com.status.backend.global.domain.Token;
 import com.status.backend.global.dto.SuccessResponseDto;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.exception.DuplicateNameException;
@@ -10,7 +11,9 @@ import com.status.backend.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,20 @@ public class UserController{
     private final ResponseGenerateService responseGenerateService;
 
     Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    @PostMapping("/login/google")
+    public ResponseEntity<SuccessResponseDto> loginGoogle(@RequestBody GoogleLoginDto googleLoginDto) throws Exception {
+        logger.info("User Controller 진입 loginGoogle param {}", googleLoginDto);
+        Token token = userService.googleLogin(googleLoginDto.getGoogleIdToken());
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse("Success!");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("access_token", token.getAccess_token());
+        headers.add("refresh_token", token.getRefresh_token());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return new ResponseEntity<>(successResponseDto, headers, HttpStatus.OK);
+    }
 
     @GetMapping("/setup/{userPK}")
     public ResponseEntity<SuccessResponseDto> getUserInfo(@PathVariable Long userPK) throws NoUserException {
