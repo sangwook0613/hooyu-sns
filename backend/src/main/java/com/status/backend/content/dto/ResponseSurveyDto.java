@@ -22,7 +22,8 @@ public class ResponseSurveyDto {
 
     private List<String> answerList;
 
-    private HashMap<Long, Integer> count;
+    private HashMap<String, Integer> count;
+    private HashMap<String, Long> answerPK;
 
     public ResponseSurveyDto(Content entity) {
         this.contentPK = entity.getId();
@@ -30,6 +31,7 @@ public class ResponseSurveyDto {
         this.color = entity.getColor();
         this.answerList = new ArrayList<>();
         this.count = new HashMap<>();
+        this.answerPK = new HashMap<>();
     }
 
 }
