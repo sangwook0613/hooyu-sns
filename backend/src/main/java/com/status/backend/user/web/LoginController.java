@@ -3,7 +3,9 @@ package com.status.backend.user.web;
 import com.status.backend.global.domain.Token;
 import com.status.backend.global.dto.SuccessResponseDto;
 import com.status.backend.global.service.ResponseGenerateService;
+import com.status.backend.global.service.TokenService;
 import com.status.backend.user.dto.GoogleLoginDto;
+import com.status.backend.user.dto.UserResponseDto;
 import com.status.backend.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginController {
     private final UserServiceImpl userService;
+    private final TokenService tokenService;
     private final ResponseGenerateService responseGenerateService;
 
     Logger logger = LoggerFactory.getLogger(LoginController.class);
@@ -31,7 +34,8 @@ public class LoginController {
         logger.info("User LoginController 진입 loginGoogle param {}", googleLoginDto);
         Token token = userService.googleLogin(googleLoginDto.getGoogleIdToken());
 
-        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse("Success!");
+        UserResponseDto userResponseDto = userService.getUserInfo(tokenService.getId(token.getAccess_token()));
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(userResponseDto);
         HttpHeaders headers = new HttpHeaders();
         headers.add("access_token", token.getAccess_token());
         headers.add("refresh_token", token.getRefresh_token());
