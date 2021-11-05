@@ -4,6 +4,7 @@ import com.status.backend.content.domain.Type;
 import com.status.backend.content.dto.*;
 import com.status.backend.content.service.ContentServiceImpl;
 import com.status.backend.global.dto.SuccessResponseDto;
+import com.status.backend.global.exception.NoAuthorityUserException;
 import com.status.backend.global.exception.NoContentException;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.service.ResponseGenerateService;
@@ -134,12 +135,43 @@ public class ContentController{
     }
 
     @DeleteMapping("/status")
-    public ResponseEntity<SuccessResponseDto> deleteStatusContent(@RequestBody RequestDeleteContentDto requestDeleteContentDto) throws NoContentException, NoUserException {
+    public ResponseEntity<SuccessResponseDto> deleteStatusContent(@RequestBody RequestDeleteContentDto requestDeleteContentDto) throws NoContentException, NoUserException, NoAuthorityUserException {
         logger.trace("ContentController 진입  createContent param {}", requestDeleteContentDto);
 
-        String message = contentService.deleteStatusContent(
+        String message = contentService.deleteContent(
                 requestDeleteContentDto.getUserPK(),
-                requestDeleteContentDto.getContentPK()
+                requestDeleteContentDto.getContentPK(),
+                Type.STATUS
+        );
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/image")
+    public ResponseEntity<SuccessResponseDto> deleteImageContent(@RequestBody RequestDeleteContentDto requestDeleteContentDto) throws NoContentException, NoUserException, NoAuthorityUserException {
+        logger.trace("ContentController 진입  createContent param {}", requestDeleteContentDto);
+
+        String message = contentService.deleteContent(
+                requestDeleteContentDto.getUserPK(),
+                requestDeleteContentDto.getContentPK(),
+                Type.IMAGE
+        );
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/survey")
+    public ResponseEntity<SuccessResponseDto> deleteSurveyContent(@RequestBody RequestDeleteContentDto requestDeleteContentDto) throws NoContentException, NoUserException, NoAuthorityUserException {
+        logger.trace("ContentController 진입  createContent param {}", requestDeleteContentDto);
+
+        String message = contentService.deleteContent(
+                requestDeleteContentDto.getUserPK(),
+                requestDeleteContentDto.getContentPK(),
+                Type.SURVEY
         );
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);

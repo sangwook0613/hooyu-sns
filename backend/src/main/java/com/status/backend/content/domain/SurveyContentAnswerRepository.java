@@ -14,4 +14,6 @@ public interface SurveyContentAnswerRepository extends JpaRepository<SurveyConte
     List<SurveyContentAnswer> findByUserIdAndContentId(Long userPk, Long contentPk);
     List<SurveyContentAnswer> findByContentId(Long contentPk);
     Optional<SurveyContentAnswer> findById(Long answerPK);
+
+    void deleteByContentId(Long contentPK);
 }

@@ -1,7 +1,7 @@
 package com.status.backend.user.service;
 
 import com.status.backend.global.exception.NoUserException;
-import com.status.backend.global.exception.duplicateNameException;
+import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.user.domain.User;
 import com.status.backend.user.dto.ResponseUserLocationDto;
 import com.status.backend.user.dto.UserResponseDto;
@@ -16,7 +16,7 @@ public interface UserService {
     UserResponseDto getUserInfo(Long userPK) throws NoUserException;
 
     String duplicateCheckName(String userName) throws NoUserException;
-    String changeName(Long userPK, String userName) throws NoUserException, duplicateNameException;
+    String changeName(Long userPK, String userName) throws NoUserException, DuplicateNameException;
 
     String changeEmoji(Long userPK, String userEmoji) throws NoUserException;
 

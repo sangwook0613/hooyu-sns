@@ -11,11 +11,12 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ResponseContentDto {
-//    private Long contentPk;
+    private Long contentPk;
     private String exon;
     private String color;
 
     public ResponseContentDto(Content entity) {
+        this.contentPk = entity.getId();
         this.exon = entity.getExon();
         this.color = entity.getColor();
     }
