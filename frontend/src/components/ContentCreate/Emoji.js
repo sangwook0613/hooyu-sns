@@ -74,6 +74,7 @@ const Emoji = ({ navigation, route }) => {
                     setIsEmojiSelect(false)
                     setEmoji(emojiArray[index][index2])
                     createEmoji()
+                    navigation.navigate('Main')
                     console.warn(index, index2)
                   }}
                   >
