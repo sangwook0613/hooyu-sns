@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -143,8 +144,8 @@ public class ContentServiceImpl implements ContentService {
     public List<ResponseContentDto> statusContent(String userName) throws NoUserException, NoContentException {
         User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(Type.STATUS, user.getId());
-        if (contents.isEmpty())
-            throw new NoContentException("해당하는 컨탠츠는 없습니다.");
+//        if (contents.isEmpty())
+//            throw new NoContentException("해당하는 컨탠츠는 없습니다.");
 
         return contents.stream().map((e) -> {
             ResponseContentDto responseContentDto = new ResponseContentDto(e);
@@ -157,8 +158,8 @@ public class ContentServiceImpl implements ContentService {
     public List<ResponseContentDto> imageContent(String userName) throws NoUserException, NoContentException {
         User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(Type.IMAGE, user.getId());
-        if (contents.isEmpty())
-            throw new NoContentException("해당하는 컨탠츠는 없습니다.");
+//        if (contents.isEmpty())
+//            throw new NoContentException("해당하는 컨탠츠는 없습니다.");
 
         return contents.stream().map((e) -> {
             ResponseContentDto responseContentDto = new ResponseContentDto(e);
@@ -172,7 +173,9 @@ public class ContentServiceImpl implements ContentService {
         User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(Type.SURVEY, user.getId());
         if (contents.isEmpty())
-            throw new NoContentException("해당하는 컨탠츠는 없습니다.");
+//            throw new NoContentException("해당하는 컨탠츠는 없습니다.");
+            return new ArrayList<>();
+
         List<ResponseSurveyDto> list = contents.stream().map((e) -> {
             ResponseSurveyDto responseSurveyDto = new ResponseSurveyDto(e);
             HashMap<String, Integer> coutingMap = responseSurveyDto.getCount();

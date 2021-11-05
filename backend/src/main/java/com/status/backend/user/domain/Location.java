@@ -17,9 +17,8 @@ public class Location extends BaseTime {
     @Column(name = "location_id")
     private Long id;
 
-    @OneToOne(mappedBy = "location")
-//    @OneToOne
-//    @JoinColumn(name = "user_id")
+    @OneToOne
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(nullable = false, precision = 9, scale = 6)
@@ -35,4 +34,9 @@ public class Location extends BaseTime {
         this.longitude  = longitude;
     }
 
+//    @Builder
+//    public Location(BigDecimal latitude, BigDecimal longitude){
+//        this.latitude = latitude;
+//        this.longitude  = longitude;
+//    }
 }
