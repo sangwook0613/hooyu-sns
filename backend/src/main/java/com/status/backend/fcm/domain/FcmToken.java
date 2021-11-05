@@ -1,5 +1,6 @@
 package com.status.backend.fcm.domain;
 
+import com.status.backend.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,15 +16,16 @@ public class FcmToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column
     private String token;
 
     @Builder
-    public FcmToken(Long userId, String token) {
-        this.userId = userId;
+    public FcmToken(User user, String token) {
+        this.user = user;
         this.token = token;
     }
 

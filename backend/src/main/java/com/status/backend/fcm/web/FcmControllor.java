@@ -2,6 +2,8 @@ package com.status.backend.fcm.web;
 
 import com.status.backend.fcm.service.FcmService;
 import com.status.backend.global.dto.SuccessResponseDto;
+import com.status.backend.global.exception.NoBrowserTokenException;
+import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.service.ResponseGenerateService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,23 +29,22 @@ public class FcmControllor {
 
     Logger logger = LoggerFactory.getLogger(FcmControllor.class);
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<SuccessResponseDto> setToken (@PathVariable("userId") Long userId, ServletRequest request, ServletResponse response) {
+    @GetMapping("/{userPK}")
+    public ResponseEntity<SuccessResponseDto> setToken (@PathVariable("userPK") Long userPK, ServletRequest request, ServletResponse response) throws NoBrowserTokenException, NoUserException {
         String message = "";
 
         String browser_token = ((HttpServletRequest)request).getHeader("browser_token");
         logger.trace("브라우저토큰 왔음 {} ",browser_token);
         HttpStatus status;
         if(browser_token != null){
-            message = fcmService.setBrowserToken(userId,browser_token);
+            message = fcmService.setBrowserToken(userPK,browser_token);
             status = HttpStatus.OK;
         }else{
-            message = "브라우저토큰이 null입니다....";
-            status = HttpStatus.BAD_REQUEST;
+            throw new NoBrowserTokenException("브라우저토큰이 null입니다....");
         }
         logger.trace("브라우저토큰"+message);
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
-        return new ResponseEntity<SuccessResponseDto>(successResponseDto, status);
+        return new ResponseEntity<>(successResponseDto, status);
     }
 }

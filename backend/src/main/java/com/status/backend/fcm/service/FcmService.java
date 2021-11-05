@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.status.backend.fcm.domain.FcmToken;
 import com.status.backend.fcm.domain.FcmTokenRepository;
 import com.status.backend.fcm.dto.FcmMessageDto;
+import com.status.backend.global.exception.NoUserException;
+import com.status.backend.user.domain.User;
+import com.status.backend.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +30,7 @@ public class FcmService {
             "https://fcm.googleapis.com/fcm/send";
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final FcmTokenRepository fcmTokenRepository;
+    private final UserRepository userRepository;
 
     public void sendMessageTo(String targetToken,String title, String body) throws IOException {
         String message = makeMessage(targetToken, title, body);
@@ -56,13 +60,14 @@ public class FcmService {
         return objectMapper.writeValueAsString(fcmMessageDto);
     }
 
-    public String setBrowserToken(Long userId, String browserToken){
+    public String setBrowserToken(Long userPK, String browserToken) throws NoUserException {
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         FcmToken fcmToken;
-        if(fcmTokenRepository.existsByUserId(userId)){
-            fcmToken = fcmTokenRepository.findFcmTokenByUserId(userId).get(0);
+        if(fcmTokenRepository.existsByUserId(userPK)){
+            fcmToken = fcmTokenRepository.findFcmTokenByUserId(userPK).get(0);
             fcmToken.update(browserToken);
         }else{
-            fcmToken = FcmToken.builder().userId(userId).token(browserToken).build();
+            fcmToken = FcmToken.builder().user(user).token(browserToken).build();
         }
         fcmTokenRepository.save(fcmToken);
         return "성공";

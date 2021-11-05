@@ -73,6 +73,16 @@ public class ExceptionController {
         return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
     }
 
+    @ExceptionHandler(NoBrowserTokenException.class)
+    public ResponseEntity<ExceptionResponseDto> noContentHandler(NoBrowserTokenException e) {
+        logger.error("[No Content Exception] ", e);
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        String message = e.getMessage();
+
+        ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
+        return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
+    }
+
     @ExceptionHandler(NoAuthorityUserException.class)
     public ResponseEntity<ExceptionResponseDto> noContentHandler(NoAuthorityUserException e) {
         logger.error("[No Content Exception] ", e);
