@@ -3,14 +3,13 @@ import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextI
 import LinearGradient from 'react-native-linear-gradient';
 import axios from 'axios'
 
-
 const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
 
 const colorArray = ['#FFD0D0', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']
 const emojiArray = [
-  ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing'], 
+  ['amazing', 'amazing2', 'amazing3', 'amazing', 'amazing', 'amazing'], 
   ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
 ]
 
@@ -39,6 +38,7 @@ const Status = ({ navigation, route }) => {
       headerRight: () => (
         <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
           createStatus()
+          navigation.navigate('Main')
           console.log(color)
           console.log(status)
         }}>
@@ -48,7 +48,7 @@ const Status = ({ navigation, route }) => {
     });
   }, [navigation, status, color]);
 
-  
+  const [emoji, setEmoji] = useState('amazing')
   const [isEmojiSelect, setIsEmojiSelect] = useState(0)
   const [color, setColor] = useState('#FFD0D0')
   const [colorScrollX, setColorScrollX] = useState(0)
@@ -83,6 +83,24 @@ const Status = ({ navigation, route }) => {
       data: {
         "color": color,
         "exon": status,
+        "userPK": 1
+      }
+    })
+    .then((res) => {
+      console.log(res.data.success)
+      createEmoji()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
+
+  const createEmoji = () => {
+    axios({
+      method: 'post',
+      url: SERVER_URL + 'user/emojiSet',
+      data: {
+        "userEmoji": emoji,
         "userPK": 1
       }
     })
@@ -170,6 +188,7 @@ const Status = ({ navigation, route }) => {
                   <TouchableOpacity
                     onPress={() => {
                       setIsEmojiSelect(false)
+                      setEmoji(emojiArray[index][index2])
                       console.warn(index, index2)
                     }}
                     >
