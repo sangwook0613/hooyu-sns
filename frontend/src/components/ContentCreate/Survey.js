@@ -11,12 +11,11 @@ const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
 
 const emojiArray = [
-  ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing'], 
+  ['amazing', 'amazing2', 'amazing3', 'amazing4', 'amazing5', 'amazing6'], 
   ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
 ]
 
 const Survey = ({ navigation, route }) => {
-  
   const [emoji, setEmoji] = useState('amazing')
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [title, setTitle] = useState('')
@@ -25,6 +24,7 @@ const Survey = ({ navigation, route }) => {
       '', ''
     ]
   )
+  
 
   const SurveyTitle = () => {
     return (
@@ -53,7 +53,7 @@ const Survey = ({ navigation, route }) => {
     setOptions(tmpOptions)
   }
 
-  React.useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => <SurveyTitle {...props} />,
       headerRight: () => (
@@ -66,7 +66,8 @@ const Survey = ({ navigation, route }) => {
         </TouchableOpacity>
       )
     });
-  }, [navigation]);
+    setOptions(options)
+  }, [navigation, emoji, options]);
 
   const createEmoji = () => {
     axios({
@@ -109,10 +110,6 @@ const Survey = ({ navigation, route }) => {
     })
   }
 
-
-  useEffect(() => {
-    setOptions(options)
-  }, [options])
 
   return (
     <LinearGradient colors={["#AB79EF", "#FC98AB"]} style={styles.mainView}>
