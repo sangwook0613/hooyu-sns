@@ -53,6 +53,16 @@ public class ExceptionController {
         return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
     }
 
+    @ExceptionHandler(NoEmotionException.class)
+    public ResponseEntity<ExceptionResponseDto> noContentHandler(NoEmotionException e) {
+        logger.error("[No Content Exception] ", e);
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        String message = e.getMessage();
+
+        ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
+        return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
+    }
+
     @ExceptionHandler(DuplicateNameException.class)
     public ResponseEntity<ExceptionResponseDto> noContentHandler(DuplicateNameException e) {
         logger.error("[No Content Exception] ", e);
