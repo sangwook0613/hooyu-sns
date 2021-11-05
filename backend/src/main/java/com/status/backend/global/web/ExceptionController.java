@@ -1,6 +1,8 @@
 package com.status.backend.global.web;
 
 import com.status.backend.global.dto.ExceptionResponseDto;
+import com.status.backend.global.exception.DuplicateNameException;
+import com.status.backend.global.exception.NoAuthorityUserException;
 import com.status.backend.global.exception.NoContentException;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.service.ResponseGenerateService;
@@ -46,6 +48,26 @@ public class ExceptionController {
 
     @ExceptionHandler(NoContentException.class)
     public ResponseEntity<ExceptionResponseDto> noContentHandler(NoContentException e) {
+        logger.error("[No Content Exception] ", e);
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        String message = e.getMessage();
+
+        ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
+        return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
+    }
+
+    @ExceptionHandler(DuplicateNameException.class)
+    public ResponseEntity<ExceptionResponseDto> noContentHandler(DuplicateNameException e) {
+        logger.error("[No Content Exception] ", e);
+        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        String message = e.getMessage();
+
+        ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
+        return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
+    }
+
+    @ExceptionHandler(NoAuthorityUserException.class)
+    public ResponseEntity<ExceptionResponseDto> noContentHandler(NoAuthorityUserException e) {
         logger.error("[No Content Exception] ", e);
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
         String message = e.getMessage();

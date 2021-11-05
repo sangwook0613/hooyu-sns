@@ -3,6 +3,7 @@ package com.status.backend.content.service;
 import com.status.backend.content.domain.Type;
 import com.status.backend.content.dto.ResponseContentDto;
 import com.status.backend.content.dto.ResponseSurveyDto;
+import com.status.backend.global.exception.NoAuthorityUserException;
 import com.status.backend.global.exception.NoContentException;
 import com.status.backend.global.exception.NoUserException;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,6 @@ public interface ContentService {
     List<ResponseSurveyDto> surveyContent(String userName) throws NoUserException, NoContentException;
 
     //삭제
-    String deleteStatusContent(Long userPK, Long contentPK) throws NoContentException, NoUserException;
-    String deleteImageContent(Long userPK, Long contentPK);
-    String deleteSurveyContent(Long userPK, Long contentPK);
+    String deleteContent(Long userPK, Long contentPK, Type type) throws NoContentException, NoUserException, NoAuthorityUserException;
 
 }
