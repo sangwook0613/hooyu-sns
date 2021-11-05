@@ -3,7 +3,7 @@ package com.status.backend.user.service;
 import com.status.backend.content.dto.RequestContentTimeDto;
 import com.status.backend.global.dto.DistDto;
 import com.status.backend.global.exception.NoUserException;
-import com.status.backend.global.exception.duplicateNameException;
+import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.util.RadarMath;
 import com.status.backend.user.domain.*;
 import com.status.backend.user.dto.ResponseUserLocationDto;
@@ -51,10 +51,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String changeName(Long userPK, String userName) throws NoUserException, duplicateNameException {
+    public String changeName(Long userPK, String userName) throws NoUserException, DuplicateNameException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         if(userRepository.existsByName(userName)){
-            throw new duplicateNameException("이미 존재하는 이름입니다.");
+            throw new DuplicateNameException("이미 존재하는 이름입니다.");
         }
         user.setName(userName);
         userRepository.save(user);

@@ -3,6 +3,7 @@ package com.status.backend.content.service;
 import com.status.backend.content.domain.*;
 import com.status.backend.content.dto.ResponseContentDto;
 import com.status.backend.content.dto.ResponseSurveyDto;
+import com.status.backend.global.exception.NoAuthorityUserException;
 import com.status.backend.global.exception.NoContentException;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.user.domain.User;
@@ -174,27 +175,43 @@ public class ContentServiceImpl implements ContentService {
             throw new NoContentException("해당하는 컨탠츠는 없습니다.");
         List<ResponseSurveyDto> list = contents.stream().map((e) -> {
             ResponseSurveyDto responseSurveyDto = new ResponseSurveyDto(e);
-            HashMap<Long, Integer> coutingMap = responseSurveyDto.getCount();
+            HashMap<String, Integer> coutingMap = responseSurveyDto.getCount();
+            HashMap<String, Long> answerPKMap = responseSurveyDto.getAnswerPK();
 
-            responseSurveyDto.setAnswerList(surveyContentAnswerRepository.findByUserIdAndContentId(e.getUser().getId(), e.getId()).stream().map((s) -> {
-                Long target = s.getId();
+            List<String> tmp = surveyContentAnswerRepository.findByContentId(e.getId()).stream().map((s) -> {
+                String target = s.getAnswer();
                 // answer 선택받은 횟수
                 if (coutingMap.containsKey(target)) {
                     coutingMap.put(target, coutingMap.get(target) + 1);
                 } else {
                     coutingMap.put(target, 1);
+                    answerPKMap.put(target, s.getId());
                 }
-
                 if (user.getId() == s.getUser().getId()) {
                     coutingMap.put(target, coutingMap.get(target) - 1);
+                    logger.info("test!!!!!!!!!!!!!! : {},     : {}", user.getId(), s.getUser().getId());
+                    return target;
                 }
-
-                return s.getAnswer();
-            }).collect(Collectors.toList()));
+                return null;
+            }).collect(Collectors.toList());
+            responseSurveyDto.setAnswerList(tmp.stream().filter(t->t != null).collect(Collectors.toList()));
 
             return responseSurveyDto;
         }).collect(Collectors.toList());
         return list;
+    }
+
+    @Transactional
+    @Override
+    public String deleteContent(Long userPK, Long contentPK, Type type) throws NoContentException, NoUserException, NoAuthorityUserException {
+        if (!userRepository.existsById(userPK)) throw new NoUserException("해당하는 사용자가 없습니다.");
+        if (!contentRepository.existsById(contentPK)) throw new NoContentException("해당하는 컨탠츠는 없습니다.");
+        Content content = contentRepository.findByUserIdAndIdAndType(userPK,contentPK,type).orElseThrow(() -> new NoContentException("컨탠츠 삭제 실패했습니다."));
+        if(content.getUser().getId() != userPK)
+            throw new NoAuthorityUserException("해당 컨텐츠 삭재할 권한이 없습니다.");
+        surveyContentAnswerRepository.deleteByContentId(contentPK);
+        contentRepository.deleteById(contentPK);
+        return "Success!";
     }
 
 }

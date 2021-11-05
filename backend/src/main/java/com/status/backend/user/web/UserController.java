@@ -2,7 +2,7 @@ package com.status.backend.user.web;
 
 import com.status.backend.global.dto.SuccessResponseDto;
 import com.status.backend.global.exception.NoUserException;
-import com.status.backend.global.exception.duplicateNameException;
+import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.service.ResponseGenerateService;
 import com.status.backend.user.domain.User;
 import com.status.backend.user.dto.*;
@@ -58,7 +58,7 @@ public class UserController{
     }
 
     @PostMapping("/nameSet")
-    public ResponseEntity<SuccessResponseDto> changeName(@RequestBody NameDto nameDto) throws NoUserException, duplicateNameException {
+    public ResponseEntity<SuccessResponseDto> changeName(@RequestBody NameDto nameDto) throws NoUserException, DuplicateNameException {
         logger.trace("User Controller 진입 changeName param {}", nameDto.getUserName());
         String message = userService.changeName(nameDto.getUserPK(), nameDto.getUserName());
 
