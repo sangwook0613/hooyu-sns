@@ -1,16 +1,33 @@
 import React, { useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
+import axios from 'axios'
 
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
+const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 
 const NicknameTutorial = ({ navigation: { navigate }}) => {
 
   const [inputValue, setInputValue] = useState('')
 
   const registerNickname = () => {
-    console.warn('중복 체크 및 다음 스텝 이동 필요')
-    navigate('EmojiTutorial')
+    axios({
+      url: SERVER_URL + `user/duplicated/${inputValue}`,
+      method: 'post',
+      data: {
+        userName: inputValue  
+      }
+    })
+    .then((res) => {
+      if (res.data.success !== 'Success') {
+        alert('중복된 닉네임입니다.')
+      } else {
+        navigate('EmojiTutorial', {nickname: inputValue})
+      }
+    })
+    .catch((err) => {
+      console.warn(err)
+    })
   }
 
   return (
