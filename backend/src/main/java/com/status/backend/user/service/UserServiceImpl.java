@@ -10,6 +10,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.status.backend.content.dto.RequestContentTimeDto;
 import com.status.backend.global.domain.Token;
 import com.status.backend.global.dto.DistDto;
+import com.status.backend.global.exception.GoogleLoginFailException;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.service.TokenService;
@@ -52,15 +53,13 @@ public class UserServiceImpl implements UserService {
 
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
                 .setAudience(Collections.singletonList(GOOGLE_CLIENT_ID))
-                //.setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
                 .build();
-        String userId = null;
         String email = null;
         try {
             GoogleIdToken idToken = verifier.verify(googleIdToken);
+            if(idToken == null) throw new GoogleLoginFailException("Google에서 인증하지 않았습니다.");
 
             GoogleIdToken.Payload payload = idToken.getPayload();
-            userId = payload.getSubject();
             email = payload.getEmail();
         } catch (GeneralSecurityException e) {
             logger.debug("{}",e.getLocalizedMessage());
