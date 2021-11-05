@@ -1,9 +1,19 @@
 package com.status.backend.user.service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.LowLevelHttpRequest;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.status.backend.content.dto.RequestContentTimeDto;
+import com.status.backend.global.domain.Token;
 import com.status.backend.global.dto.DistDto;
+import com.status.backend.global.exception.GoogleLoginFailException;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.exception.DuplicateNameException;
+import com.status.backend.global.service.TokenService;
 import com.status.backend.global.util.RadarMath;
 import com.status.backend.user.domain.*;
 import com.status.backend.user.dto.ResponseUserLocationDto;
@@ -14,9 +24,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -25,9 +39,49 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PrivateZoneRepository pzRepository;
     private final LocationRepository locationRepository;
-    private static RadarMath radarMath = new RadarMath();
+    private final TokenService tokenService;
 
+    private static RadarMath radarMath = new RadarMath();
+    private static final String GOOGLE_CLIENT_ID = "5095342969-dcob776t7ckfeu2gddkb2j4ke2cprfst.apps.googleusercontent.com";
     Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+
+    @Transactional
+    @Override
+    public Token googleLogin(String googleIdToken) throws Exception {
+        HttpTransport transport = new NetHttpTransport();
+        JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+                .setAudience(Collections.singletonList(GOOGLE_CLIENT_ID))
+                .build();
+        String email = null;
+        try {
+            GoogleIdToken idToken = verifier.verify(googleIdToken);
+            if(idToken == null) throw new GoogleLoginFailException("Google에서 인증하지 않았습니다.");
+
+            GoogleIdToken.Payload payload = idToken.getPayload();
+            email = payload.getEmail();
+        } catch (GeneralSecurityException e) {
+            logger.debug("{}",e.getLocalizedMessage());
+        } catch (IOException e) {
+            logger.debug("{}",e.getLocalizedMessage());
+        }
+
+        String convertPw = UUID.randomUUID().toString().replace("-", "");
+        logger.debug("로그인 user Name : {}",convertPw);
+
+        User user = userRepository.findByEmail(email).orElse(User.builder().name(convertPw).email(email).role(Role.USER).build());
+
+        //JWT 만들기 및 전달하기
+        Token token = tokenService.generateToken(user.getId(), user.getName(), "USER");
+        logger.debug("성공적인 로그인 진행중 만든 token : {}", token);
+
+        //회원 테이블에 삽입
+        user.updateRefreshToken(token.getRefresh_token());
+        userRepository.save(user);
+
+        return token;
+    }
 
     @Override
     public UserResponseDto getUserInfo(Long userPK) throws NoUserException {
