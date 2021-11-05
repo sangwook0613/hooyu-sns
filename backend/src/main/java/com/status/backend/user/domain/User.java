@@ -58,7 +58,7 @@ public class User extends BaseTime {
     @OneToMany(mappedBy = "user")
     List<PrivateZone> privateZones = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne
     @JoinColumn(name = "location_id")
     private Location location = new Location();
 
