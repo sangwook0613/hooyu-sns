@@ -1,5 +1,7 @@
 package com.status.backend.user.service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.status.backend.global.domain.Token;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.user.domain.User;
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Service
 public interface UserService {
+
+    Token googleLogin(String googleIdToken) throws Exception;
 
     UserResponseDto getUserInfo(Long userPK) throws NoUserException;
 
