@@ -5,11 +5,10 @@ import amazingEmozi from '../assets/images/amazing2.png'
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
 
-const EmojiTutorial = ({ navigation: { navigate }}) => {
+const EmojiTutorial = ({ navigation: { navigate }, route}) => {
 
   const registerEmoji = () => {
-    console.warn('이모지 넘기기')
-    navigate('StatusTutorial')
+    navigate('StatusTutorial', {...route.params, emoji: 'emoji'})
   }
 
   return (
