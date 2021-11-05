@@ -186,7 +186,6 @@ public class UserServiceImpl implements UserService {
         return responseUserLocationDtoList;
     }
 
-    //test
     public void setUserLocation(User user, BigDecimal lat, BigDecimal lon) throws NoUserException {
 
         Location userLocation = user.getLocation();
