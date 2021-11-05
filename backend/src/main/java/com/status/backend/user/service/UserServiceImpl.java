@@ -7,6 +7,8 @@ import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.status.backend.content.domain.RecordTime;
+import com.status.backend.content.domain.RecordTimeRepository;
 import com.status.backend.content.dto.RequestContentTimeDto;
 import com.status.backend.global.domain.Token;
 import com.status.backend.global.dto.DistDto;
@@ -39,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PrivateZoneRepository pzRepository;
     private final LocationRepository locationRepository;
+    private final RecordTimeRepository recordTimeRepository;
     private final TokenService tokenService;
 
     private static RadarMath radarMath = new RadarMath();
@@ -72,6 +75,14 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.findByEmail(email).orElse(User.builder().name(convertPw).email(email).role(Role.USER).build());
         userRepository.save(user);
+
+        //회원 초기 세팅 DB값
+        Location location = Location.builder().user(user).latitude(new BigDecimal(0)).longitude(new BigDecimal(0)).build();
+        locationRepository.save(location);
+
+        RecordTime recordTime = RecordTime.builder().build();
+        user.setRecordTime(recordTime);
+        recordTimeRepository.save(recordTime);
 
         //JWT 만들기 및 전달하기
         Token token = tokenService.generateToken(user.getId(), user.getName(), "USER");
@@ -243,16 +254,16 @@ public class UserServiceImpl implements UserService {
 
     public void setUserLocation(User user, BigDecimal lat, BigDecimal lon) throws NoUserException {
 
-        Location userLocation = user.getLocation();
+        Location userLocation = locationRepository.findByUserId(user.getId()).orElse(null);
         if(userLocation==null){
             userLocation = Location.builder().user(user).latitude(lat).longitude(lon).build();
         }else{
             userLocation.setLatitude(lat);
             userLocation.setLongitude(lon);
         }
-        user.setLocation(userLocation);
         locationRepository.save(userLocation);
-        userRepository.save(user);
+//        user.setLocation(userLocation);
+//        userRepository.save(user);
     }
 
 }

@@ -13,7 +13,6 @@ spring:
 #            clientSecret: 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
 #            redirectUri: http://localhost:8085/login/oauth2/code/google
             redirectUri: https://k5a101.p.ssafy.io/login/oauth2/code/google
-#            redirectUri: https://k5a101.p.ssafy.io/login/oauth2/callback/google
             scope: email, profile
 #              accessTokenUri: https://accounts.google.com/o/oauth2/token
 #              userAuthorizationUri: https://accounts.google.com/o/oauth2/auth

@@ -1,9 +1,13 @@
 package com.status.backend.global.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.status.backend.content.domain.RecordTime;
+import com.status.backend.content.domain.RecordTimeRepository;
 import com.status.backend.global.domain.Token;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.service.TokenService;
+import com.status.backend.user.domain.Location;
+import com.status.backend.user.domain.LocationRepository;
 import com.status.backend.user.domain.User;
 import com.status.backend.user.domain.UserRepository;
 import com.status.backend.user.dto.UserRequestDto;
@@ -21,6 +25,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 /**
  * OAuth2의 인증 공급자로부터 인증이 성공한 후 취득한 사용자 정보를 처리하는 핸들러
@@ -35,6 +40,8 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
     private final TokenService tokenService;
     private final UserRepository userRepository;
     private final UserRequestMapper userRequestMapper;
+    private final LocationRepository locationRepository;
+    private final RecordTimeRepository recordTimeRepository;
     private final ObjectMapper objectMapper;
 
     Logger logger = LoggerFactory.getLogger(CustomOAuth2SuccessHandler.class);
@@ -51,6 +58,14 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
 
         Token token = tokenService.generateToken(user.getId(), userRequestDto.getName(), "USER");
         logger.debug("성공적인 로그인 진행중 만든 token : {}", token);
+
+        //회원 초기 세팅 DB값
+        Location location = Location.builder().user(user).latitude(new BigDecimal(0)).longitude(new BigDecimal(0)).build();
+        locationRepository.save(location);
+
+        RecordTime recordTime = RecordTime.builder().build();
+        user.setRecordTime(recordTime);
+        recordTimeRepository.save(recordTime);
 
         //회원 테이블에 삽입
         user.updateRefreshToken(token.getRefresh_token());

@@ -58,9 +58,8 @@ public class User extends BaseTime {
     @OneToMany(mappedBy = "user")
     List<PrivateZone> privateZones = new ArrayList<>();
 
-    @OneToOne
-    @JoinColumn(name = "location_id")
-    private Location location = new Location();
+//    @OneToOne(mappedBy = "user")
+//    private Location location;
 
     @JsonBackReference
     @OneToMany(mappedBy = "user")
@@ -68,7 +67,7 @@ public class User extends BaseTime {
 
     @OneToOne
     @JoinColumn(name = "record_id")
-    private RecordTime recordTime = new RecordTime();
+    private RecordTime recordTime;
 
     @Builder
     public User(String name, String email, String userEmoji, String profileImg, Role role){

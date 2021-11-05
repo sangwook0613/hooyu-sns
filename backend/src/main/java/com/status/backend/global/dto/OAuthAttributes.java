@@ -1,6 +1,9 @@
 package com.status.backend.global.dto;
 
 
+import com.status.backend.content.domain.RecordTime;
+import com.status.backend.user.domain.Location;
+import com.status.backend.user.domain.LocationRepository;
 import com.status.backend.user.domain.Role;
 import com.status.backend.user.domain.User;
 import lombok.Builder;
@@ -8,6 +11,7 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
