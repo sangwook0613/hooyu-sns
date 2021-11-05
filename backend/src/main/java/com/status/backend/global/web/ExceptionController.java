@@ -1,10 +1,7 @@
 package com.status.backend.global.web;
 
 import com.status.backend.global.dto.ExceptionResponseDto;
-import com.status.backend.global.exception.DuplicateNameException;
-import com.status.backend.global.exception.NoAuthorityUserException;
-import com.status.backend.global.exception.NoContentException;
-import com.status.backend.global.exception.NoUserException;
+import com.status.backend.global.exception.*;
 import com.status.backend.global.service.ResponseGenerateService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -59,7 +56,17 @@ public class ExceptionController {
     @ExceptionHandler(DuplicateNameException.class)
     public ResponseEntity<ExceptionResponseDto> noContentHandler(DuplicateNameException e) {
         logger.error("[No Content Exception] ", e);
-        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        HttpStatus httpStatus = HttpStatus.CONFLICT;
+        String message = e.getMessage();
+
+        ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
+        return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, httpStatus);
+    }
+
+    @ExceptionHandler(GoogleLoginFailException.class)
+    public ResponseEntity<ExceptionResponseDto> noContentHandler(GoogleLoginFailException e) {
+        logger.error("[No Content Exception] ", e);
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
         String message = e.getMessage();
 
         ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
@@ -69,7 +76,7 @@ public class ExceptionController {
     @ExceptionHandler(NoAuthorityUserException.class)
     public ResponseEntity<ExceptionResponseDto> noContentHandler(NoAuthorityUserException e) {
         logger.error("[No Content Exception] ", e);
-        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
         String message = e.getMessage();
 
         ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(httpStatus, message);
