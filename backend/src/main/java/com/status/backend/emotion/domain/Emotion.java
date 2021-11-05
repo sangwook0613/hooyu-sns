@@ -1,18 +1,18 @@
-package com.status.backend.content.domain;
+package com.status.backend.emotion.domain;
 
+import com.status.backend.content.domain.Content;
+import com.status.backend.global.domain.BaseTime;
 import com.status.backend.user.domain.User;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @Entity
-public class SurveyContentAnswer {
+public class Emotion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,12 +27,12 @@ public class SurveyContentAnswer {
     private Content content;
 
     @Column
-    private String answer;
+    private String contentEmoji;
 
     @Builder
-    public SurveyContentAnswer(User user, Content content, String answer){
+    public Emotion(User user, Content content, String contentEmoji){
         this.user = user;
         this.content = content;
-        this.answer = answer;
+        this.contentEmoji = contentEmoji;
     }
 }

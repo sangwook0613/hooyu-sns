@@ -1,6 +1,5 @@
 package com.status.backend.user.service;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.status.backend.global.domain.Token;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.exception.DuplicateNameException;

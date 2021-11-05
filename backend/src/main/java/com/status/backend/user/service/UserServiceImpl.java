@@ -71,6 +71,7 @@ public class UserServiceImpl implements UserService {
         logger.debug("로그인 user Name : {}",convertPw);
 
         User user = userRepository.findByEmail(email).orElse(User.builder().name(convertPw).email(email).role(Role.USER).build());
+        userRepository.save(user);
 
         //JWT 만들기 및 전달하기
         Token token = tokenService.generateToken(user.getId(), user.getName(), "USER");
