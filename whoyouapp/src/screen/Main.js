@@ -386,7 +386,7 @@ function Main({ navigation: { navigate }}) {
       </LinearGradient >
     </GestureRecognizer>
 
-    <MainList users={users} selectUser={selectUser} selectedUser={selectedUser} ref={mainListRef}/>
+    <MainList navigate={navigate} users={users} selectUser={selectUser} selectedUser={selectedUser} ref={mainListRef}/>
     </>
   )
 }

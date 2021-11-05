@@ -3,49 +3,72 @@ import { Dimensions, Button, Text, Image, View, TouchableOpacity, ScrollView, Fl
 import { AntDesign } from '@expo/vector-icons';
 import ImageContent from '../components/ImageContent';
 import StatusContent from '../components/StatusContent';
-import DeleteModal from '../components/modal/deleteModal';
+import ReportModal from '../components/modal/reportModal';
+import BlockModal from '../components/modal/blockModal';
+import images from '../assets/images';
   
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
 
-const ProfileScreen = ({ navigation, route }) => {
+const moveTo = [
+  // 그냥 프로필을 눌러서 들어온 경우
+
+  // 하나만 있는 경우
+  
+  // 두개만 있는 경우
+
+  // 세개만 있는 경우
+]
+
+const UserScreen = ({ navigation, route }) => {
   const [isStatus, setIsStatus] = useState(true)
   const [isImage, setIsImage] = useState(true)
-  const [isSurvey, setIsSurvey] = useState(true)
-  const [isModalVisible, setModalVisible] = useState(false)
+  const [isSurvey, setIsSurvey] = useState(false)
+  const [isBlockModalVisible, setBlockModalVisible] = useState(false)
+  const [isReportModalVisible, setReportModalVisible] = useState(false)
+  const [userName, setUserName] = useState('USERNAME')
   const scrollRef = useRef()
   
+  const getPointToScroll = () => {
+    const checkList = [isStatus, isImage, isSurvey]
+    
+    console.log(checkList, route.params.content)
+  }
+
   useEffect(() => {
+    getPointToScroll()
     setTimeout(() => {
-        const node = scrollRef.current
-        node.scrollTo({ y: 500, animated: true })
+      const node = scrollRef.current
+      node.scrollTo({ y: 500, animated: true })
     }, 400)
   },[])
 
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible)
+  const toggleBlockModal = () => {
+    setBlockModalVisible(!isBlockModalVisible)
+  }
+  
+  const toggleReportModal = () => {
+    setReportModalVisible(!isReportModalVisible)
   }
 
-  const ProfileTitle = () => {
+  const UserTitle = () => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <TouchableOpacity onPress={() => { console.log('EMOJI!!') }}>
-          <Image
-            style={{ width: 50, height: 50 }}
-            source={route.params.emoji}
-          />
-        </TouchableOpacity>
-        <Text>{route.params.nickname}</Text>
+        <Image
+          style={{ width: 50, height: 50 }}
+          source={images.emoji.amazing2}
+        />
+        <Text>{userName}</Text>
       </View>
     );
   }
 
-  React.useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
-      headerTitle: (props) => <ProfileTitle {...props} />,
+      headerTitle: (props) => <UserTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => navigation.navigate('Setting')}>
-          <Text>설정</Text>
+        <TouchableOpacity style={{ marginRight: 10 }} onPress={toggleBlockModal}>
+          <Text>차단</Text>
         </TouchableOpacity>
       )
     });
@@ -58,10 +81,15 @@ const ProfileScreen = ({ navigation, route }) => {
         ref={scrollRef}
       >
         <View style={{ flex: 1 }}>
-          <DeleteModal
+          <BlockModal
             contentId={1}
-            isModalVisible={isModalVisible}
-            setModalVisible={setModalVisible}
+            isModalVisible={isBlockModalVisible}
+            setModalVisible={setBlockModalVisible}
+          />
+          <ReportModal
+            contentId={1}
+            isModalVisible={isReportModalVisible}
+            setModalVisible={setReportModalVisible}
           />
         </View>
         {isStatus && (
@@ -79,7 +107,7 @@ const ProfileScreen = ({ navigation, route }) => {
               }}
             >
               <Text>상태창</Text>
-              <TouchableOpacity onPress={toggleModal}>
+              <TouchableOpacity onPress={toggleReportModal}>
                 <AntDesign name="exclamationcircleo" size={24} color="black" />
               </TouchableOpacity>
             </View>
@@ -102,7 +130,7 @@ const ProfileScreen = ({ navigation, route }) => {
               }}
             >
               <Text>이미지</Text>
-              <TouchableOpacity onPress={toggleModal}>
+              <TouchableOpacity onPress={toggleReportModal}>
                 <AntDesign name="exclamationcircleo" size={24} color="black" />
               </TouchableOpacity>
             </View>
@@ -114,4 +142,4 @@ const ProfileScreen = ({ navigation, route }) => {
   )
 }
 
-export default ProfileScreen;
+export default UserScreen;
