@@ -30,20 +30,6 @@ public class UserController{
 
     Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @PostMapping("/login/google")
-    public ResponseEntity<SuccessResponseDto> loginGoogle(@RequestBody GoogleLoginDto googleLoginDto) throws Exception {
-        logger.info("User Controller 진입 loginGoogle param {}", googleLoginDto);
-        Token token = userService.googleLogin(googleLoginDto.getGoogleIdToken());
-
-        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse("Success!");
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("access_token", token.getAccess_token());
-        headers.add("refresh_token", token.getRefresh_token());
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        return new ResponseEntity<>(successResponseDto, headers, HttpStatus.OK);
-    }
-
     @GetMapping("/setup/{userPK}")
     public ResponseEntity<SuccessResponseDto> getUserInfo(@PathVariable Long userPK) throws NoUserException {
         logger.info("User Controller 진입 getUserInfo param {}", userPK);
