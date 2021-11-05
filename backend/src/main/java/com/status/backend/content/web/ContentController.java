@@ -132,4 +132,18 @@ public class ContentController{
 
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
+
+    @DeleteMapping("/status")
+    public ResponseEntity<SuccessResponseDto> deleteStatusContent(@RequestBody RequestDeleteContentDto requestDeleteContentDto) throws NoContentException, NoUserException {
+        logger.trace("ContentController 진입  createContent param {}", requestDeleteContentDto);
+
+        String message = contentService.deleteStatusContent(
+                requestDeleteContentDto.getUserPK(),
+                requestDeleteContentDto.getContentPK()
+        );
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
 }
