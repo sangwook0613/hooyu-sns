@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image, Button } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
@@ -11,7 +11,7 @@ const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
 
 const emojiArray = [
-  ['amazing', 'amazing2', 'amazing3', 'amazing', 'amazing', 'amazing'], 
+  ['amazing', 'amazing2', 'amazing3', 'amazing4', 'amazing5', 'amazing6'], 
   ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
 ]
 
@@ -36,7 +36,7 @@ const Picture = ({ navigation, route }) => {
     );
   }
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => <PictureTitle {...props} />,
       headerRight: () => (
@@ -49,7 +49,7 @@ const Picture = ({ navigation, route }) => {
         </TouchableOpacity>
       )
     });
-  }, [navigation]);
+  }, [navigation, emoji]);
 
   const [imageFile, setImageFile] = useState('')
 
@@ -171,8 +171,10 @@ const Picture = ({ navigation, route }) => {
                 <View key={index2} style={styles.emojiSelectCol}>
                   <TouchableOpacity
                     onPress={() => {
-                      setIsEmojiSelect(false)
+                      // console.log('onpress')
                       setEmoji(emojiArray[index][index2])
+                      // console.log(emoji)
+                      setIsEmojiSelect(false)
                     }}
                     >
                     <Image 
