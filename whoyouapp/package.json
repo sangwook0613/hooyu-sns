@@ -7,12 +7,9 @@
     "start": "react-native start"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@react-native-async-storage/async-storage": "~1.15.0",
-=======
     "@react-native-firebase/app": "^13.0.1",
     "@react-native-firebase/messaging": "^13.0.1",
->>>>>>> feature/fe-fcm-push
     "@react-native-google-signin/google-signin": "^7.0.1",
     "@react-navigation/native": "^6.0.6",
     "@react-navigation/native-stack": "^6.2.5",
