@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Dimensions, PermissionsAndroid, Platform } from 'react-native';
-import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Animated } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import React, { useState, useEffect, useRef } from 'react'
+import { Dimensions, PermissionsAndroid, Platform } from 'react-native'
+import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Animated } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
+import { connect } from 'react-redux'
+import { actionCreators } from '../store/reducers'
+
 import shelter from '../assets/images/shelter.png'
 import wowImoticon from '../assets/images/wowimoticon.png'
 import Geolocation from 'react-native-geolocation-service'
@@ -10,22 +13,13 @@ import morning from '../assets/images/morning.png'
 import evening from '../assets/images/evening.png'
 import night from '../assets/images/night.png'
 import GestureRecognizer from 'react-native-swipe-gestures'
-import images from '../assets/images';
+import images from '../assets/images'
 
-import { RadderEffect } from '../components/Main/RadderEffect';
-import MainList from '../components/Main/MainList';
+import { RadderEffect } from '../components/Main/RadderEffect'
+import MainList from '../components/Main/MainList'
 import AddButton from '../components/Main/AddButton'
 import axios from 'axios'
 
-// 이하 redux로 관리해야할 것들
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
-const radarWidth = Dimensions.get('window').width * 0.7
-// 내 위치 보내기에 필요한 정보들
-// 내 원의 반경.
-const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
-const myRadius = 2000
-const userPk = 1
 
 const date = new Date()
 
@@ -36,7 +30,9 @@ const mainColor3 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED56
 const mainColor4 = '#E9E9E9'
 
 
-function Main({ navigation: { navigate }}) {
+function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK, setMyRadius}) {
+
+  const styles = styleSheet(deviceWidth, deviceHeight, deviceWidth * 0.7)
 
   const [location, setLocation] = useState('unknown')
   const [radarX, setRadarX] = useState(0)
@@ -69,61 +65,6 @@ function Main({ navigation: { navigate }}) {
         return false
       }
     }
-  }
-
-  // 라디안으로 변환
-  function deg2rad(deg) {
-    return deg * Math.PI / 180
-  }
-
-  // 디그리로 변환
-  function rad2deg(deg) {
-    return deg * 180 / Math.PI
-  }
-
-  function distance(lat1, lon1, lat2, lon2) {
-    const theta = lon1 - lon2
-    const rad_lat1 = deg2rad(lat1)
-    const rad_lat2 = deg2rad(lat2)
-    const rad_lon1 = deg2rad(lon1)
-    const rad_lon2 = deg2rad(lon2)
-
-    let dist = Math.sin(rad_lat1) * Math.sin(rad_lat2) + Math.cos(rad_lat1) * Math.cos(rad_lat2) * Math.cos(deg2rad(theta))
-
-    const y = Math.sin(rad_lon2 - rad_lon1) * Math.cos(rad_lat2)
-    const x = Math.cos(rad_lat1) * Math.sin(rad_lat2) - Math.sin(rad_lat1) * Math.cos(rad_lat2) * Math.cos(rad_lon2 - rad_lon1)
-
-    const bangwee = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360
-
-    dist = Math.acos(dist)
-    dist = rad2deg(dist)
-    dist = dist * 60 * 1.1515 * 1609.344
-
-    if (bangwee < 90) {
-      const r = deg2rad(bangwee)
-      const x_dist = dist * Math.sin(r)
-      const y_dist = -dist * Math.cos(r)
-      return [x_dist, y_dist, bangwee]
-    }
-    else if (bangwee < 180) {
-      const r = deg2rad(bangwee - 90)
-      const x_dist = dist * Math.sin(r)
-      const y_dist = dist * Math.cos(r)
-      return [x_dist, y_dist, bangwee]
-    }
-    else if (bangwee < 270) {
-      const r = deg2rad(bangwee - 180)
-      const x_dist = -dist * Math.sin(r)
-      const y_dist = dist * Math.cos(r)
-      return [x_dist, y_dist, bangwee]
-    }
-    else {
-      const r = deg2rad(bangwee - 270)
-      const x_dist = -dist * Math.sin(r)
-      const y_dist = -dist * Math.cos(r)
-      return [x_dist, y_dist, bangwee]
-    }
-
   }
 
   const mainListRef = useRef()
@@ -169,8 +110,8 @@ function Main({ navigation: { navigate }}) {
         requestRadiusDto: {
           lat: 100.12354,
           lon: 100.12354,
-          radius: 2000,
-          userPK: 2
+          radius: myRadius,
+          userPK: userPK
         }
       }
     })
@@ -350,8 +291,8 @@ function Main({ navigation: { navigate }}) {
                 colors={['#AB79EF', '#FC98AB']} 
                 style={{
                   borderRadius: 20,
-                  left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.xdist / 23),
-                  top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.ydist / 23),
+                  left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
+                  top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
                   height: deviceWidth * 0.07,
                   width: deviceWidth * 0.07,
                   position: 'absolute',
@@ -362,8 +303,8 @@ function Main({ navigation: { navigate }}) {
             }
             <TouchableOpacity
               style={{
-                left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.xdist / 23),
-                top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.ydist / 23),
+                left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
+                top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
                 position: 'absolute',
                 elevation: index == selectedUser ? 7 : 5,
               }}
@@ -391,40 +332,12 @@ function Main({ navigation: { navigate }}) {
   )
 }
 
-const styles = StyleSheet.create({
-  cloud1: {
-    position: "absolute",
-    width: deviceWidth * 0.25
-  },
-  cloud2: {
-    bottom: 30,
-    right: 30,
-    position: "absolute",
-    width: deviceWidth * 0.35
-  },
+const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create({
   evening: {
     left: deviceWidth * 0.025,
     position: "absolute",
     top: -deviceHeight * 0.2,
     width: deviceWidth * 0.95
-  },
-  flight: {
-    left: 25,
-    position: "absolute",
-    top: -160,
-    width: deviceWidth * 0.1
-  },
-  ginkgoLeaves: {
-    left: 25,
-    position: "absolute",
-    top: -110,
-    width: deviceWidth * 0.13
-  },
-  leaves: {
-    left: 320,
-    position: "absolute",
-    top: 300,
-    width: deviceWidth * 0.2
   },
   linearGradient: {
     flex: 1,
@@ -449,14 +362,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     backgroundColor: 'white',
     borderRadius: Math.round(deviceWidth + deviceHeight
-    ) / 2,
+      ) / 2,
     top: deviceHeight
       * 0.02 - 2,
     right: deviceWidth * 0.03 - 2.5,
     width: 45,
     height: 45,
-    // width: deviceWidth * 0.11,
-    // height: deviceWidth * 0.11,
   },
   profileImoticon: {
     marginTop: deviceHeight
@@ -464,8 +375,6 @@ const styles = StyleSheet.create({
     marginRight: deviceWidth * 0.03,
     width: 40,
     height: 40,
-    // width: deviceWidth * 0.1,
-    // height: deviceWidth * 0.1
   },
   profileMeArea: {
     backgroundColor: 'white',
@@ -479,8 +388,6 @@ const styles = StyleSheet.create({
     right: deviceWidth * 0.03 - 7,
     width: 20,
     height: 20,
-    // width: deviceWidth * 0.05,
-    // height: deviceWidth * 0.05,
     justifyContent: "center",
     alignItems: "center"
   },
@@ -544,43 +451,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginTop: 10
   },
-  whiteEllipse1: {
-    left: 30,
-    position: "absolute",
-    top: 15,
-    width: deviceWidth * 0.007
-  },
-  whiteEllipse2: {
-    left: 250,
-    position: "absolute",
-    top: 500,
-    width: deviceWidth * 0.007
-  },
-  whiteEllipse3: {
-    left: 390,
-    position: "absolute",
-    top: 270,
-    width: deviceWidth * 0.007
-  },
-  whiteEllipse4: {
-    left: 40,
-    position: "absolute",
-    top: 350,
-    width: deviceWidth * 0.007
-  },
-  whiteEllipse5: {
-    left: 70,
-    position: "absolute",
-    top: 120,
-    width: deviceWidth * 0.007
-  },
-  whiteEllipse6: {
-    left: 330,
-    position: "absolute",
-    top: 60,
-    width: deviceWidth * 0.007
+})
+
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    myRadius: state.user.myRadius,
+    SERVER_URL: state.user.SERVER_URL,
+    userPK: state.user.userPK,
   }
-});
+}
 
+function mapDispatchToProps(dispatch) {
+  return {
+    setMyRadius: (radius) => {
+      dispatch(actionCreators.setRadius(radius))
+    }
+  }
+}
 
-export default Main;
+export default connect(mapStateToProps, mapDispatchToProps)(Main)

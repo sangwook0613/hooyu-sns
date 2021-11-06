@@ -1,12 +1,12 @@
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
+import { connect } from 'react-redux'
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
-const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 
-const StatusTutorial = ({ navigation: { navigate }, route}) => {
+const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, SERVER_URL}) => {
+
+  const styles = styleSheet(deviceWidth, deviceHeight)
 
   const [inputValue, setInputValue] = useState('')
 
@@ -125,7 +125,7 @@ const StatusTutorial = ({ navigation: { navigate }, route}) => {
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create({
   statusContainer: {
     alignItems: 'center',
     marginTop: deviceHeight * 0.15,
@@ -155,4 +155,12 @@ const styles = StyleSheet.create({
   }
 })
 
-export default StatusTutorial;
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    SERVER_URL: state.user.SERVER_URL,
+  }
+}
+
+export default connect(mapStateToProps)(StatusTutorial)
