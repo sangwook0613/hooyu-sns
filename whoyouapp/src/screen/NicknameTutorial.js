@@ -1,23 +1,17 @@
 import React, { useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
-import axios from 'axios'
+import Api from '../utils/api'
+import { connect } from 'react-redux'
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
-const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 
-const NicknameTutorial = ({ navigation: { navigate }}) => {
+const NicknameTutorial = ({ navigation: { navigate }, deviceWidth, deviceHeight, SERVER_URL}) => {
+
+  const styles = styleSheet(deviceWidth, deviceHeight)
 
   const [inputValue, setInputValue] = useState('')
 
   const registerNickname = () => {
-    axios({
-      url: SERVER_URL + `user/duplicated/${inputValue}`,
-      method: 'post',
-      data: {
-        userName: inputValue  
-      }
-    })
+    Api.isDuplicatedNickname(inputValue)
     .then((res) => {
       if (res.data.success !== 'Success') {
         alert('중복된 닉네임입니다.')
@@ -84,7 +78,7 @@ const NicknameTutorial = ({ navigation: { navigate }}) => {
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight) => StyleSheet.create({
   nicknameContainer: {
     alignItems: 'center',
     marginTop: deviceHeight * 0.15,
@@ -114,4 +108,12 @@ const styles = StyleSheet.create({
   }
 })
 
-export default NicknameTutorial;
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    SERVER_URL: state.user.SERVER_URL,
+  }
+}
+
+export default connect(mapStateToProps)(NicknameTutorial)

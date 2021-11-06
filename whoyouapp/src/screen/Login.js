@@ -5,7 +5,7 @@ import images from '../assets/images'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import jwt_decode from "jwt-decode";
-import Api from "../utlis/api"
+import Api from "../utils/api"
 import {
   SafeAreaView,
   StyleSheet,
