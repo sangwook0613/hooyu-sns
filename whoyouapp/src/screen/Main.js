@@ -30,7 +30,7 @@ const mainColor3 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED56
 const mainColor4 = '#E9E9E9'
 
 
-function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK, setMyRadius}) {
+function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK, setMyRadius }) {
 
   const styles = styleSheet(deviceWidth, deviceHeight, deviceWidth * 0.7)
 
@@ -71,6 +71,7 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 
   useEffect(() => {
     getLocation()
+    // getUsers()
     setInterval(() => {
       getLocation()
     }, 10000);
@@ -101,6 +102,7 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   }
 
   getUsers = () => {
+    console.log(myRadius)
     axios({
       method: 'post',
       url: SERVER_URL + 'user/radar',
@@ -115,12 +117,12 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         }
       }
     })
-    .then((res) => {
-      setUsers(res.data.success)
-    })
-    .catch((err) => {
-      console.warn(err)
-    })
+      .then((res) => {
+        setUsers(res.data.success)
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
   }
 
   const selectUser = (idx) => {
@@ -129,7 +131,7 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 
   return (
     <>
-    <GestureRecognizer
+      <GestureRecognizer
         onSwipeUp={() => {
           mainListRef.current.open()
         }}
@@ -147,187 +149,233 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
           flex: 1,
         }}
       >
-      <LinearGradient colors={[mainColor1, mainColor2]} style={styles.linearGradient}>
-        {
-        theme == "morning" 
-        ? 
-        <>
-          <TouchableWithoutFeedback
-            onPress={() => mainListRef.current.close()}
-          >
-            <Image source={morning} style={styles.morning} resizeMode="contain" />
-          </TouchableWithoutFeedback>
-        </>
-        :
-        (theme == "evening" 
-        ?
-        <>
-          <TouchableWithoutFeedback
-            onPress={() => mainListRef.current.close()}
-          >
-            <Image source={evening} style={styles.evening} resizeMode="contain" />
-          </TouchableWithoutFeedback>
-        </>
-        :
-        <>
-          <TouchableWithoutFeedback
-            onPress={() => mainListRef.current.close()}
-          >
-            <Image source={night} style={styles.night} resizeMode="contain" />
-          </TouchableWithoutFeedback>
-        </>
-        )
-        }
-        
-        <View style={styles.profileButton}>
-          <TouchableOpacity onPress={() => navigate("Profile", {nickname: 'HELLO', emoji: images.emoji.amazing})}>
-            <View>
-              <View style={styles.profileBackground}></View>
-              <Image
-                source={wowImoticon}
-                style={styles.profileImoticon}
-              />
-              <View style={styles.profileMeArea}>
-                <Text style={styles.profileMeText}>me</Text>
+        <LinearGradient colors={[mainColor1, mainColor2]} style={styles.linearGradient}>
+          {
+            theme == "morning"
+              ?
+              <>
+                <TouchableWithoutFeedback
+                  onPress={() => mainListRef.current.close()}
+                >
+                  <Image source={morning} style={styles.morning} resizeMode="contain" />
+                </TouchableWithoutFeedback>
+              </>
+              :
+              (theme == "evening"
+                ?
+                <>
+                  <TouchableWithoutFeedback
+                    onPress={() => mainListRef.current.close()}
+                  >
+                    <Image source={evening} style={styles.evening} resizeMode="contain" />
+                  </TouchableWithoutFeedback>
+                </>
+                :
+                <>
+                  <TouchableWithoutFeedback
+                    onPress={() => mainListRef.current.close()}
+                  >
+                    <Image source={night} style={styles.night} resizeMode="contain" />
+                  </TouchableWithoutFeedback>
+                </>
+              )
+          }
+
+          <View style={styles.profileButton}>
+            <TouchableOpacity onPress={() => navigate("Profile", { nickname: 'HELLO', emoji: images.emoji.amazing })}>
+              <View>
+                <View style={styles.profileBackground}></View>
+                <Image
+                  source={wowImoticon}
+                  style={styles.profileImoticon}
+                />
+                <View style={styles.profileMeArea}>
+                  <Text style={styles.profileMeText}>me</Text>
+                </View>
               </View>
+
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.raderArea}>
+            <View style={styles.radar__text}>
+              <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
+              <Text style={styles.radar__text__count}>10000</Text>
+            </View>
+            <View style={styles.shelterArea}>
+              <Image
+                source={shelter}
+                style={styles.shelterImage}
+              ></Image>
             </View>
 
-          </TouchableOpacity>
-        </View>
 
-        <View style={styles.raderArea}>
-          <View style={styles.radar__text}>
-            <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
-            <Text style={styles.radar__text__count}>10000</Text>
-          </View>
-          <View style={styles.shelterArea}>
-            <Image
-              source={shelter}
-              style={styles.shelterImage}
-            ></Image>
-          </View>
-
-          
-          <View
-            style={styles.rader}
-            onLayout={({ target }) => {
-              target.measure((x, y, width, height, pageX, pageY) => {
-                setRadarX(x + pageX)
-                setRadarY(y + pageY)
-                setRadarWidth(width)
-              })
-            }}
-          >
             <View
-              style={{
-                borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
-                width: radarWidth / 1.5,
-                height: radarWidth / 1.5,
-                borderColor: mainColor4,
-                borderWidth: 2,
-                justifyContent: 'center',
-                alignItems: 'center',
+              style={styles.rader}
+              onLayout={({ target }) => {
+                target.measure((x, y, width, height, pageX, pageY) => {
+                  setRadarX(x + pageX)
+                  setRadarY(y + pageY)
+                  setRadarWidth(width)
+                })
               }}
             >
               <View
                 style={{
                   borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
-                  width: radarWidth / 3,
-                  height: radarWidth / 3,
+                  width: radarWidth / 1.5,
+                  height: radarWidth / 1.5,
                   borderColor: mainColor4,
                   borderWidth: 2,
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
               >
-                <RadderEffect
+                <View
                   style={{
+                    borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
+                    width: radarWidth / 3,
+                    height: radarWidth / 3,
+                    borderColor: mainColor4,
+                    borderWidth: 2,
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}
-                ></RadderEffect>
+                >
+                  <RadderEffect
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  ></RadderEffect>
+                </View>
               </View>
+            </View>
+
+            <View style={{ flexDirection: "row", marginTop: deviceWidth * 0.023 }}>
+              {
+                myRadius == 20 &&
+                <LinearGradient colors={['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0)']} style={{ top: -deviceWidth * 0.05, marginRight: deviceWidth * 0.05, transform: [{ rotate: '30deg' }], borderTopLeftRadius:10, borderTopRightRadius:10,}}>
+                  <View>
+                    <Text style={{color:'#FFFFFF'}}>20m</Text>
+                  </View>
+                </LinearGradient>
+              }
+              {
+                myRadius != 20 &&
+                <View style={{ top: -deviceWidth * 0.05, marginRight: deviceWidth * 0.05, transform: [{ rotate: '30deg' }] }}>
+                  <Text onPress={() => setMyRadius(20)} >20m</Text>
+                </View>
+              }
+              {
+                myRadius == 100 &&
+                <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '10deg' }] }}>
+                  <Text style={{color:'#FFFFFF'}}>100m</Text>
+                </View>
+              }
+              {
+                myRadius != 100 &&
+                <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '10deg' }] }}>
+                  <Text onPress={() => setMyRadius(100)}>100m</Text>
+                </View>
+              }
+              {
+                myRadius == 500 &&
+                <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '-10deg' }] }}>
+                  <Text style={{color:'#FFFFFF'}}>500m</Text>
+                </View>
+              }
+              {
+                myRadius != 500 &&
+                <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '-10deg' }] }}>
+                  <Text onPress={() => setMyRadius(500)}>500m</Text>
+                </View>
+              }
+              {
+                myRadius == 2000 &&
+                <View style={{ top: -deviceWidth * 0.05, transform: [{ rotate: '-30deg' }] }}>
+                  <Text style={{color:'#FFFFFF'}}>2km</Text>
+                </View>
+              }
+              {
+                myRadius != 2000 &&
+                <View style={{ top: -deviceWidth * 0.05, transform: [{ rotate: '-30deg' }] }}>
+                  <Text onPress={() => setMyRadius(2000)}>2km</Text>
+                </View>
+              }
             </View>
           </View>
 
-          <View style={{ flexDirection: "row", marginTop: 10 }}>
-            <Text style={{ top: -20, marginRight: 20, transform: [{ rotate: '30deg' }] }}>20m</Text>
-            <Text style={{ marginRight: 20, transform: [{ rotate: '10deg' }] }}>100m</Text>
-            <Text style={{ marginRight: 20, transform: [{ rotate: '-10deg' }] }}>500m</Text>
-            <Text style={{ top: -20, transform: [{ rotate: '-30deg' }] }}>2km</Text>
-          </View>
-        </View>
+          <AddButton navigate={navigate} />
 
-        <AddButton navigate={navigate} />
-
-        {/* 중앙 내 이모티콘 */}
-        <TouchableOpacity 
-          style={{
-            left: radarX + radarWidth / 2 - deviceWidth * 0.035,
-            top: radarY + radarWidth / 2 - deviceWidth * 0.035,
-            position: 'absolute',
-            elevation: 5,
-          }}
-        >
-          <Image
+          {/* 중앙 내 이모티콘 */}
+          <TouchableOpacity
             style={{
-              height: deviceWidth * 0.07,
-              width: deviceWidth * 0.07,
-            }}
-            source={amazingEmozi}
-            resizeMode="cover"
-          />
-        </TouchableOpacity>
-
-        {users.map((user, index) => (
-          <View
-            key={index}
-            style={{
-              position: 'absolute'
+              left: radarX + radarWidth / 2 - deviceWidth * 0.035,
+              top: radarY + radarWidth / 2 - deviceWidth * 0.035,
+              position: 'absolute',
+              elevation: 5,
             }}
           >
-            {index == selectedUser && 
-              <LinearGradient
-                colors={['#AB79EF', '#FC98AB']} 
-                style={{
-                  borderRadius: 20,
-                  left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
-                  top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
-                  height: deviceWidth * 0.07,
-                  width: deviceWidth * 0.07,
-                  position: 'absolute',
-                  elevation: 6,
-                }}
-              >
-              </LinearGradient>
-            }
-            <TouchableOpacity
+            <Image
               style={{
-                left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
-                top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
-                position: 'absolute',
-                elevation: index == selectedUser ? 7 : 5,
+                height: deviceWidth * 0.07,
+                width: deviceWidth * 0.07,
               }}
-              onPress={() => {
-                selectUser(index)
-                mainListRef.current.open()
+              source={amazingEmozi}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+
+          {users.map((user, index) => (
+            <View
+              key={index}
+              style={{
+                position: 'absolute'
               }}
             >
-              <Image
+              {index == selectedUser &&
+                <LinearGradient
+                  colors={['#AB79EF', '#FC98AB']}
+                  style={{
+                    borderRadius: 20,
+                    left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
+                    top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
+                    height: deviceWidth * 0.07,
+                    width: deviceWidth * 0.07,
+                    position: 'absolute',
+                    elevation: 6,
+                  }}
+                >
+                </LinearGradient>
+              }
+              <TouchableOpacity
                 style={{
-                  height: deviceWidth * 0.06,
-                  width: deviceWidth * 0.06,
+                  left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
+                  top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
+                  position: 'absolute',
+                  elevation: index == selectedUser ? 7 : 5,
                 }}
-                source={amazingEmozi}
-                resizeMode="cover"
-              />
-            </TouchableOpacity>
-          </View>
-        ))}
-      </LinearGradient >
-    </GestureRecognizer>
+                onPress={() => {
+                  selectUser(index)
+                  mainListRef.current.open()
+                }}
+              >
+                <Image
+                  style={{
+                    height: deviceWidth * 0.06,
+                    width: deviceWidth * 0.06,
+                  }}
+                  source={amazingEmozi}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </LinearGradient >
+      </GestureRecognizer>
 
-    <MainList users={users} selectUser={selectUser} selectedUser={selectedUser} ref={mainListRef}/>
+      <MainList users={users} selectUser={selectUser} selectedUser={selectedUser} ref={mainListRef} />
     </>
   )
 }
@@ -362,7 +410,7 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     position: "absolute",
     backgroundColor: 'white',
     borderRadius: Math.round(deviceWidth + deviceHeight
-      ) / 2,
+    ) / 2,
     top: deviceHeight
       * 0.02 - 2,
     right: deviceWidth * 0.03 - 2.5,
