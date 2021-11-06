@@ -18,8 +18,8 @@ const Root = () => {
 
   return (
     <Nav.Navigator
-      // initialRouteName="Main"
-      initialRouteName="Login"
+      initialRouteName="Main"
+      // initialRouteName="Login"
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
