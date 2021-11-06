@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Dimensions, Button, Text, Image, View, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import ImageContent from '../components/ImageContent';
 import StatusContent from '../components/StatusContent';
+import SurveyContent from '../components/SurveyContent';
 import DeleteModal from '../components/modal/deleteModal';
   
 const deviceWidth = Dimensions.get('window').width
@@ -29,18 +30,16 @@ const ProfileScreen = ({ navigation, route }) => {
   const ProfileTitle = () => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <TouchableOpacity onPress={() => { console.log('EMOJI!!') }}>
-          <Image
-            style={{ width: 50, height: 50 }}
-            source={route.params.emoji}
-          />
-        </TouchableOpacity>
+        <Image
+          style={{ width: 50, height: 50 }}
+          source={route.params.emoji}
+        />
         <Text>{route.params.nickname}</Text>
       </View>
     );
   }
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => <ProfileTitle {...props} />,
       headerRight: () => (
@@ -51,6 +50,8 @@ const ProfileScreen = ({ navigation, route }) => {
     });
   }, [navigation]);
 
+  // setIsEmojiSelect(!isEmojiSelect)
+  // console.log(isEmojiSelect)
 
   return (
     <>
@@ -107,6 +108,30 @@ const ProfileScreen = ({ navigation, route }) => {
               </TouchableOpacity>
             </View>
             <ImageContent />
+          </>
+        )}
+
+        
+        {isSurvey && (
+          <>
+            <View
+              style={{
+                width: deviceWidth,
+                height: 50,
+                backgroundColor: 'white',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingLeft: 20,
+                paddingRight: 20,
+                alignItems: 'center'
+              }}
+            >
+              <Text>설문</Text>
+              <TouchableOpacity onPress={toggleModal}>
+                <AntDesign name="exclamationcircleo" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+            <SurveyContent />
           </>
         )}
       </ScrollView>
