@@ -28,6 +28,12 @@ const mainColor1 = theme == "morning" ? "#A1D1E7" : (theme == "evening" ? '#EC54
 const mainColor2 = theme == "morning" ? "#CDE4EE" : (theme == "evening" ? '#F2B332' : '#293A44')
 const mainColor3 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#B4B4B4')
 const mainColor4 = '#E9E9E9'
+// 선택 안된 반경
+const mainColor5 = theme == "morning" ? "#B2B2B2" : (theme == "evening" ? '#FFFFFF' : '#B2B2B2')
+// 선택 된 반경
+const mainColor6 = theme == "morning" ? "#000000" : (theme == "evening" ? '#000000' : '#FFFFFF')
+// 선택 된 반경 옆 표시색
+const mainColor7 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#FFFFFF')
 
 
 function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK, setMyRadius }) {
@@ -255,52 +261,58 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
             <View style={{ flexDirection: "row", marginTop: deviceWidth * 0.023 }}>
               {
                 myRadius == 20 &&
-                <LinearGradient colors={['rgba(255, 255, 255, 0.7)', 'rgba(255, 255, 255, 0)']} style={{ top: -deviceWidth * 0.05, marginRight: deviceWidth * 0.05, transform: [{ rotate: '30deg' }], borderTopLeftRadius:10, borderTopRightRadius:10,}}>
-                  <View>
-                    <Text style={{color:'#FFFFFF'}}>20m</Text>
-                  </View>
-                </LinearGradient>
+                <View style={{ top: -deviceWidth * 0.06, marginRight: deviceWidth * 0.05, transform: [{ rotate: '30deg' }] }}>
+                  <View style={{ position: "absolute", left: 0, backgroundColor: mainColor7, width: 2, height:"100%" }}></View>
+                  <View style={{ position: "absolute", right: 0, backgroundColor: mainColor7, width: 2, height:"100%" }}></View>
+                  <Text style={{ color: mainColor6, paddingRight:5, paddingLeft:5 }}>20m</Text>
+                </View>
               }
               {
                 myRadius != 20 &&
-                <View style={{ top: -deviceWidth * 0.05, marginRight: deviceWidth * 0.05, transform: [{ rotate: '30deg' }] }}>
-                  <Text onPress={() => setMyRadius(20)} >20m</Text>
+                <View style={{ top: -deviceWidth * 0.06, marginRight: deviceWidth * 0.05, transform: [{ rotate: '30deg' }] }}>
+                  <Text onPress={() => setMyRadius(20)} style={{ color: mainColor5, paddingRight:5, paddingLeft:5 }}>20m</Text>
                 </View>
               }
               {
                 myRadius == 100 &&
                 <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '10deg' }] }}>
-                  <Text style={{color:'#FFFFFF'}}>100m</Text>
+                  <View style={{ position: "absolute", left: 0, backgroundColor: mainColor7, width: 2, height:"100%" }}></View>
+                  <View style={{ position: "absolute", right: 0, backgroundColor: mainColor7, width: 2, height:"100%" }}></View>
+                  <Text style={{ color: mainColor6, paddingRight:5, paddingLeft:5 }}>100m</Text>
                 </View>
               }
               {
                 myRadius != 100 &&
                 <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '10deg' }] }}>
-                  <Text onPress={() => setMyRadius(100)}>100m</Text>
+                  <Text onPress={() => setMyRadius(100)} style={{ color: mainColor5, paddingRight:5, paddingLeft:5 }}>100m</Text>
                 </View>
               }
               {
                 myRadius == 500 &&
                 <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '-10deg' }] }}>
-                  <Text style={{color:'#FFFFFF'}}>500m</Text>
+                  <View style={{ position: "absolute", left: 0, backgroundColor: mainColor7, width: 2, height:"100%" }}></View>
+                  <View style={{ position: "absolute", right: 0, backgroundColor: mainColor7, width: 2, height:"100%" }}></View>
+                  <Text style={{ color: mainColor6, paddingRight:5, paddingLeft:5 }}>500m</Text>
                 </View>
               }
               {
                 myRadius != 500 &&
                 <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '-10deg' }] }}>
-                  <Text onPress={() => setMyRadius(500)}>500m</Text>
+                  <Text onPress={() => setMyRadius(500)} style={{ color: mainColor5, paddingRight:5, paddingLeft:5 }}>500m</Text>
                 </View>
               }
               {
                 myRadius == 2000 &&
-                <View style={{ top: -deviceWidth * 0.05, transform: [{ rotate: '-30deg' }] }}>
-                  <Text style={{color:'#FFFFFF'}}>2km</Text>
+                <View style={{ top: -deviceWidth * 0.06, transform: [{ rotate: '-30deg' }] }}>
+                  <View style={{ position: "absolute", left: 0, backgroundColor: mainColor7, width: 2, height:"100%" }}></View>
+                  <View style={{ position: "absolute", right: 0, backgroundColor: mainColor7, width: 2, height:"100%" }}></View>
+                  <Text style={{ color: mainColor6, paddingRight:5, paddingLeft:5 }}>2km</Text>
                 </View>
               }
               {
                 myRadius != 2000 &&
-                <View style={{ top: -deviceWidth * 0.05, transform: [{ rotate: '-30deg' }] }}>
-                  <Text onPress={() => setMyRadius(2000)}>2km</Text>
+                <View style={{ top: -deviceWidth * 0.06, transform: [{ rotate: '-30deg' }] }}>
+                  <Text onPress={() => setMyRadius(2000)} style={{ color: mainColor5, paddingRight:5, paddingLeft:5 }}>2km</Text>
                 </View>
               }
             </View>
