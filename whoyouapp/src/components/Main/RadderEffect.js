@@ -16,10 +16,10 @@ class RadderEffect extends React.Component {
       this.state.animation,
       {
         toValue: 1,
-        duration: 7000,
+        duration: 10000,
         useNativeDriver: false
       },
-      
+
     );
 
     Animated.loop(
@@ -27,7 +27,7 @@ class RadderEffect extends React.Component {
       {
         iterations: -1,
       },
-      
+
 
     ).start();
   }
@@ -35,16 +35,16 @@ class RadderEffect extends React.Component {
   render() {
     const animationStyles = {
       width: this.state.animation.interpolate({
-        inputRange: [0, 1],
-        outputRange: [-radarWidth+5, radarWidth-5]
+        inputRange: [0, 0.7, 1],
+        outputRange: [-radarWidth + 5, radarWidth - 5, radarWidth - 5]
       }),
       height: this.state.animation.interpolate({
-        inputRange: [0, 1],
-        outputRange: [-radarWidth+5, radarWidth-5]
+        inputRange: [0, 0.7, 1],
+        outputRange: [-radarWidth + 5, radarWidth - 5, radarWidth - 5]
       }),
       opacity: this.state.animation.interpolate({
-        inputRange: [0, 1],
-        outputRange: [1, 0]
+        inputRange: [0, 0.7, 1],
+        outputRange: [1, 0, 0]
       }),
 
     };
@@ -60,7 +60,7 @@ const objectStyles = {
   object: {
     // backgroundColor: '#FFF8EA',
     borderWidth: 10,
-    borderColor:'#FDA604',
+    borderColor: '#FDA604',
     borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
     width: radarWidth,
     height: radarWidth,
