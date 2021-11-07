@@ -240,6 +240,24 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                   }
                 ]}
               ></Image>
+              <View
+                style={[
+                  styles.shelterCount,
+                  { 
+                    opacity: myRadius === 500 || myRadius === 2000 ? 1 : 0
+                  }
+                ]}
+              >
+                <Text
+                  style={{
+                    color: 'white',
+                    fontSize: 12,
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {privateZoneUsers.length}
+                </Text>
+              </View>
             </View>
           </TouchableOpacity>
 
@@ -498,6 +516,18 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     top: deviceHeight
       * 0.175,
     width: deviceWidth * 0.8
+  },
+  shelterCount: {
+    alignItems: 'center',
+    backgroundColor: 'red',
+    borderRadius: Math.round(deviceWidth + deviceHeight
+      ) / 2,
+    height: deviceWidth * 0.04,
+    justifyContent: 'center',
+    left: deviceWidth * 0.045,
+    paddingHorizontal: 3,
+    position: 'absolute',
+    minWidth: deviceWidth * 0.04,
   },
   shelterImage: {
     width: deviceWidth * 0.08,
