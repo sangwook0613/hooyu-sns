@@ -145,7 +145,7 @@ function Main({ navigation: { navigate }}) {
               latitude,
               longitude
             })
-            // getUsers()
+            getUsers()
           },
             error => {
               console.warn(error.code, error.message)

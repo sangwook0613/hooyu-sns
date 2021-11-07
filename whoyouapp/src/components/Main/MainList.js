@@ -103,7 +103,7 @@ const MainList = forwardRef(({ navigate, users, selectUser, selectedUser }, ref)
                     <TouchableOpacity
                       key={index}
                       style={styles.userMenuButton}
-                      onPress={() => {navigate('User', {content: contentName})}}
+                      onPress={() => {navigate('User', {username: user.name, content: contentName})}}
                     >
                       <Text style={{
                         color: 'white',
