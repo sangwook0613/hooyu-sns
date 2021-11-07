@@ -29,9 +29,15 @@ const mainColor1 = theme == "morning" ? "#A1D1E7" : (theme == "evening" ? '#EC54
 const mainColor2 = theme == "morning" ? "#CDE4EE" : (theme == "evening" ? '#F2B332' : '#293A44')
 const mainColor3 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#B4B4B4')
 const mainColor4 = '#E9E9E9'
+// 선택 안된 반경
+const mainColor5 = theme == "morning" ? "#B2B2B2" : (theme == "evening" ? '#FFFFFF' : '#B2B2B2')
+// 선택 된 반경
+const mainColor6 = theme == "morning" ? "#000000" : (theme == "evening" ? '#000000' : '#FFFFFF')
+// 선택 된 반경 옆 표시색
+const mainColor7 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#FFFFFF')
 
 
-function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK, setMyRadius}) {
+function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK, setMyRadius }) {
 
   const styles = styleSheet(deviceWidth, deviceHeight, deviceWidth * 0.7)
 
@@ -106,6 +112,7 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   }
 
   getUsers = () => {
+    console.log(myRadius)
     axios({
       method: 'post',
       url: SERVER_URL + 'user/radar',
@@ -120,14 +127,14 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         }
       }
     })
-    .then((res) => {
-      setUsers(res.data.success.filter(user => user.privateZone !== true))
-      setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
-      // console.warn(res.data.success[0])
-    })
-    .catch((err) => {
-      console.warn(err)
-    })
+      .then((res) => {
+        setUsers(res.data.success.filter(user => user.privateZone !== true))
+        setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
+        // console.warn(res.data.success[0])
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
   }
 
   const selectUser = (idx) => {
@@ -140,7 +147,7 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 
   return (
     <>
-    <GestureRecognizer
+      <GestureRecognizer
         onSwipeUp={() => {
           shelterListRef.current.close()
           mainListRef.current.open()
@@ -160,248 +167,300 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
           flex: 1,
         }}
       >
-      <LinearGradient colors={[mainColor1, mainColor2]} style={styles.linearGradient}>
-        {
-        theme == "morning" 
-        ? 
-        <>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              mainListRef.current.close()
-              shelterListRef.current.close()
-            }}
-          >
-            <Image source={morning} style={styles.morning} resizeMode="contain" />
-          </TouchableWithoutFeedback>
-        </>
-        :
-        (theme == "evening" 
-        ?
-        <>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              mainListRef.current.close()
-              shelterListRef.current.close()
-            }}
-          >
-            <Image source={evening} style={styles.evening} resizeMode="contain" />
-          </TouchableWithoutFeedback>
-        </>
-        :
-        <>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              mainListRef.current.close()
-              shelterListRef.current.close()
-            }}
-          >
-            <Image source={night} style={styles.night} resizeMode="contain" />
-          </TouchableWithoutFeedback>
-        </>
-        )
-        }
-        
-        <View style={styles.profileButton}>
-          <TouchableOpacity onPress={() => navigate("Profile", {nickname: 'HELLO', emoji: images.emoji.amazing})}>
-            <View>
-              <View style={styles.profileBackground}></View>
-              <Image
-                source={wowImoticon}
-                style={styles.profileImoticon}
-              />
-              <View style={styles.profileMeArea}>
-                <Text style={styles.profileMeText}>me</Text>
+        <LinearGradient colors={[mainColor1, mainColor2]} style={styles.linearGradient}>
+          {
+            theme == "morning"
+              ?
+              <>
+                <TouchableWithoutFeedback
+                  onPress={() => {
+                    mainListRef.current.close()
+                    shelterListRef.current.close()
+                  }}
+                >
+                  <Image source={morning} style={styles.morning} resizeMode="contain" />
+                </TouchableWithoutFeedback>
+              </>
+              :
+              (theme == "evening"
+                ?
+                <>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      mainListRef.current.close()
+                      shelterListRef.current.close()
+                    }}
+                  >
+                    <Image source={evening} style={styles.evening} resizeMode="contain" />
+                  </TouchableWithoutFeedback>
+                </>
+                :
+                <>
+                  <TouchableWithoutFeedback
+                    onPress={() => {
+                      mainListRef.current.close()
+                      shelterListRef.current.close()
+                    }}
+                  >
+                    <Image source={night} style={styles.night} resizeMode="contain" />
+                  </TouchableWithoutFeedback>
+                </>
+              )
+          }
+
+          <View style={styles.profileButton}>
+            <TouchableOpacity onPress={() => navigate("Profile", { nickname: 'HELLO', emoji: images.emoji.amazing })}>
+              <View>
+                <View style={styles.profileBackground}></View>
+                <Image
+                  source={wowImoticon}
+                  style={styles.profileImoticon}
+                />
+                <View style={styles.profileMeArea}>
+                  <Text style={styles.profileMeText}>me</Text>
+                </View>
               </View>
-            </View>
-
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.raderArea}>
-          <View style={styles.radar__text}>
-            <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
-            <Text style={styles.radar__text__count}>10000</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
+
+
+          <View style={styles.raderArea}>
+            <View style={styles.radar__text}>
+              <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
+              <Text style={styles.radar__text__count}>10000</Text>
+            </View>
+            <TouchableOpacity
               style={styles.shelterArea}
-              disabled={myRadius === 500 || myRadius === 2000 ? false : true }
+              disabled={myRadius === 500 || myRadius === 2000 ? false : true}
               onPress={() => {
                 mainListRef.current.close()
                 shelterListRef.current.open()
               }}
             >
-            <View >
-              <Image
-                source={shelter}
-                style={[
-                  styles.shelterImage, 
-                  { 
-                    opacity: myRadius === 500 || myRadius === 2000 ? 1 : 0.2 
-                  }
-                ]}
-              ></Image>
-              <View
-                style={[
-                  styles.shelterCount,
-                  { 
-                    opacity: myRadius === 500 || myRadius === 2000 ? 1 : 0
-                  }
-                ]}
-              >
-                <Text
-                  style={{
-                    color: 'white',
-                    fontSize: 12,
-                    fontWeight: 'bold',
-                  }}
+              <View >
+                <Image
+                  source={shelter}
+                  style={[
+                    styles.shelterImage,
+                    {
+                      opacity: myRadius === 500 || myRadius === 2000 ? 1 : 0.2
+                    }
+                  ]}
+                ></Image>
+                <View
+                  style={[
+                    styles.shelterCount,
+                    {
+                      opacity: myRadius === 500 || myRadius === 2000 ? 1 : 0
+                    }
+                  ]}
                 >
-                  {privateZoneUsers.length}
-                </Text>
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontSize: 12,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {privateZoneUsers.length}
+                  </Text>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
 
-          
-          <View
-            style={styles.rader}
-            onLayout={({ target }) => {
-              target.measure((x, y, width, height, pageX, pageY) => {
-                setRadarX(x + pageX)
-                setRadarY(y + pageY)
-                setRadarWidth(width)
-              })
-            }}
-          >
+
             <View
-              style={{
-                borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
-                width: radarWidth / 1.5,
-                height: radarWidth / 1.5,
-                borderColor: mainColor4,
-                borderWidth: 2,
-                justifyContent: 'center',
-                alignItems: 'center',
+              style={styles.rader}
+              onLayout={({ target }) => {
+                target.measure((x, y, width, height, pageX, pageY) => {
+                  setRadarX(x + pageX)
+                  setRadarY(y + pageY)
+                  setRadarWidth(width)
+                })
               }}
             >
               <View
                 style={{
                   borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
-                  width: radarWidth / 3,
-                  height: radarWidth / 3,
+                  width: radarWidth / 1.5,
+                  height: radarWidth / 1.5,
                   borderColor: mainColor4,
                   borderWidth: 2,
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}
               >
-                <RadderEffect
+                <View
                   style={{
+                    borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
+                    width: radarWidth / 3,
+                    height: radarWidth / 3,
+                    borderColor: mainColor4,
+                    borderWidth: 2,
                     justifyContent: 'center',
                     alignItems: 'center',
                   }}
-                ></RadderEffect>
+                >
+                  <RadderEffect
+                    style={{
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  ></RadderEffect>
+                </View>
               </View>
+            </View>
+
+            <View style={{ flexDirection: "row", marginTop: deviceWidth * 0.023 }}>
+              {
+                myRadius == 20 &&
+                <View style={{ top: -deviceWidth * 0.06, marginRight: deviceWidth * 0.05, transform: [{ rotate: '30deg' }] }}>
+                  <View style={{ position: "absolute", left: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
+                  <View style={{ position: "absolute", right: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
+                  <Text style={{ color: mainColor6, paddingRight: 5, paddingLeft: 5 }}>20m</Text>
+                </View>
+              }
+              {
+                myRadius != 20 &&
+                <View style={{ top: -deviceWidth * 0.06, marginRight: deviceWidth * 0.05, transform: [{ rotate: '30deg' }] }}>
+                  <Text onPress={() => setMyRadius(20)} style={{ color: mainColor5, paddingRight: 5, paddingLeft: 5 }}>20m</Text>
+                </View>
+              }
+              {
+                myRadius == 100 &&
+                <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '10deg' }] }}>
+                  <View style={{ position: "absolute", left: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
+                  <View style={{ position: "absolute", right: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
+                  <Text style={{ color: mainColor6, paddingRight: 5, paddingLeft: 5 }}>100m</Text>
+                </View>
+              }
+              {
+                myRadius != 100 &&
+                <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '10deg' }] }}>
+                  <Text onPress={() => setMyRadius(100)} style={{ color: mainColor5, paddingRight: 5, paddingLeft: 5 }}>100m</Text>
+                </View>
+              }
+              {
+                myRadius == 500 &&
+                <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '-10deg' }] }}>
+                  <View style={{ position: "absolute", left: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
+                  <View style={{ position: "absolute", right: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
+                  <Text style={{ color: mainColor6, paddingRight: 5, paddingLeft: 5 }}>500m</Text>
+                </View>
+              }
+              {
+                myRadius != 500 &&
+                <View style={{ marginRight: deviceWidth * 0.05, transform: [{ rotate: '-10deg' }] }}>
+                  <Text onPress={() => setMyRadius(500)} style={{ color: mainColor5, paddingRight: 5, paddingLeft: 5 }}>500m</Text>
+                </View>
+              }
+              {
+                myRadius == 2000 &&
+                <View style={{ top: -deviceWidth * 0.06, transform: [{ rotate: '-30deg' }] }}>
+                  <View style={{ position: "absolute", left: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
+                  <View style={{ position: "absolute", right: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
+                  <Text style={{ color: mainColor6, paddingRight: 5, paddingLeft: 5 }}>2km</Text>
+                </View>
+              }
+              {
+                myRadius != 2000 &&
+                <View style={{ top: -deviceWidth * 0.06, transform: [{ rotate: '-30deg' }] }}>
+                  <Text onPress={() => setMyRadius(2000)} style={{ color: mainColor5, paddingRight: 5, paddingLeft: 5 }}>2km</Text>
+                </View>
+              }
             </View>
           </View>
 
-          <View style={{ flexDirection: "row", marginTop: 10 }}>
-            <Text style={{ top: -20, marginRight: 20, transform: [{ rotate: '30deg' }] }}>20m</Text>
-            <Text style={{ marginRight: 20, transform: [{ rotate: '10deg' }] }}>100m</Text>
-            <Text style={{ marginRight: 20, transform: [{ rotate: '-10deg' }] }}>500m</Text>
-            <Text style={{ top: -20, transform: [{ rotate: '-30deg' }] }}>2km</Text>
-          </View>
-        </View>
+          <AddButton navigate={navigate} />
 
-        <AddButton navigate={navigate} />
-
-        {/* 중앙 내 이모티콘 */}
-        <TouchableOpacity 
-          style={{
-            left: radarX + radarWidth / 2 - deviceWidth * 0.035,
-            top: radarY + radarWidth / 2 - deviceWidth * 0.035,
-            position: 'absolute',
-            elevation: 5,
-          }}
-        >
-          <Image
+          {/* 중앙 내 이모티콘 */}
+          <TouchableOpacity
             style={{
-              height: deviceWidth * 0.07,
-              width: deviceWidth * 0.07,
-            }}
-            source={amazingEmozi}
-            resizeMode="cover"
-          />
-        </TouchableOpacity>
-
-        {users.map((user, index) => (
-          <View
-            key={index}
-            style={{
-              position: 'absolute'
+              left: radarX + radarWidth / 2 - deviceWidth * 0.035,
+              top: radarY + radarWidth / 2 - deviceWidth * 0.035,
+              position: 'absolute',
+              elevation: 5,
             }}
           >
-            {index == selectedUser && 
-              <LinearGradient
-                colors={['#AB79EF', '#FC98AB']} 
-                style={{
-                  borderRadius: 20,
-                  left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
-                  top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
-                  height: deviceWidth * 0.07,
-                  width: deviceWidth * 0.07,
-                  position: 'absolute',
-                  elevation: 6,
-                }}
-              >
-              </LinearGradient>
-            }
-            <TouchableOpacity
+            <Image
               style={{
-                left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
-                top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
-                position: 'absolute',
-                elevation: index == selectedUser ? 7 : 5,
+                height: deviceWidth * 0.07,
+                width: deviceWidth * 0.07,
               }}
-              onPress={() => {
-                selectUser(index)
-                shelterListRef.current.close()
-                mainListRef.current.open()
+              source={amazingEmozi}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
+
+          {users.map((user, index) => (
+            <View
+              key={index}
+              style={{
+                position: 'absolute'
               }}
             >
-              <Image
+              {index == selectedUser &&
+                <LinearGradient
+                  colors={['#AB79EF', '#FC98AB']}
+                  style={{
+                    borderRadius: 20,
+                    left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
+                    top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
+                    height: deviceWidth * 0.07,
+                    width: deviceWidth * 0.07,
+                    position: 'absolute',
+                    elevation: 6,
+                  }}
+                >
+                </LinearGradient>
+              }
+              <TouchableOpacity
                 style={{
-                  height: deviceWidth * 0.06,
-                  width: deviceWidth * 0.06,
+                  left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
+                  top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
+                  position: 'absolute',
+                  elevation: index == selectedUser ? 7 : 5,
                 }}
-                source={amazingEmozi}
-                resizeMode="cover"
-              />
-            </TouchableOpacity>
-          </View>
-        ))}
-      </LinearGradient >
-    </GestureRecognizer>
+                onPress={() => {
+                  selectUser(index)
+                  shelterListRef.current.close()
+                  mainListRef.current.open()
+                }}
+              >
+                <Image
+                  style={{
+                    height: deviceWidth * 0.06,
+                    width: deviceWidth * 0.06,
+                  }}
+                  source={amazingEmozi}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </LinearGradient >
+      </GestureRecognizer>
 
-    <MainList 
-      deviceWidth={deviceWidth}
-      deviceHeight={deviceHeight}
-      theme={theme}
-      navigate={navigate} 
-      users={users} 
-      selectUser={selectUser} 
-      selectedUser={selectedUser} 
-      ref={mainListRef} 
-    />
-    <ShelterList
-      deviceWidth={deviceWidth}
-      deviceHeight={deviceHeight}
-      theme={theme} 
-      navigate={navigate}
-      users={privateZoneUsers}
-      selectPrivateZoneUser={selectPrivateZoneUser} 
-      selectedPrivateZoneUser={selectedPrivateZoneUser} 
-      ref={shelterListRef} 
-    />
+      <MainList
+        deviceWidth={deviceWidth}
+        deviceHeight={deviceHeight}
+        theme={theme}
+        navigate={navigate}
+        users={users}
+        selectUser={selectUser}
+        selectedUser={selectedUser}
+        ref={mainListRef}
+      />
+      <ShelterList
+        deviceWidth={deviceWidth}
+        deviceHeight={deviceHeight}
+        theme={theme}
+        navigate={navigate}
+        users={privateZoneUsers}
+        selectPrivateZoneUser={selectPrivateZoneUser}
+        selectedPrivateZoneUser={selectedPrivateZoneUser}
+        ref={shelterListRef}
+      />
     </>
   )
 }
@@ -436,7 +495,7 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     position: "absolute",
     backgroundColor: 'white',
     borderRadius: Math.round(deviceWidth + deviceHeight
-      ) / 2,
+    ) / 2,
     top: deviceHeight
       * 0.02 - 2,
     right: deviceWidth * 0.03 - 2.5,
@@ -521,7 +580,7 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     alignItems: 'center',
     backgroundColor: 'red',
     borderRadius: Math.round(deviceWidth + deviceHeight
-      ) / 2,
+    ) / 2,
     height: deviceWidth * 0.04,
     justifyContent: 'center',
     left: deviceWidth * 0.045,
