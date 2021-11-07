@@ -12,8 +12,8 @@ const theme = 6 <= date.getHours() && date.getHours() <= 15 ? "morning" : (16 <=
 const mainColor1 = theme == "morning" ? "#A1D1E7" : (theme == "evening" ? '#EC5446' : '#0B1C26')
 const mainColor4 = theme == "morning" ? "#E7F7FF" : (theme == "evening" ? '#FCE2E0' : '#E9E9E9')
 
-const MainList = forwardRef(({ users, selectUser, selectedUser }, ref) => {
 
+const MainList = forwardRef(({ navigate, users, selectUser, selectedUser }, ref) => {
   const mainList = useRef(new Animated.Value(deviceHeight)).current
 
   useImperativeHandle(ref, () => ({
@@ -42,7 +42,7 @@ const MainList = forwardRef(({ users, selectUser, selectedUser }, ref) => {
       <View style={styles.mainList}>
         <View style={styles.mainListHeader}>
           <TouchableWithoutFeedback 
-            onPress={() => alert('거리순')}
+            onPress={() => console.warn('거리순')}
           >
             <View style={styles.mainListHeaderOption}>
               <Text style={styles.mainListHeaderOptionText}>
@@ -51,7 +51,7 @@ const MainList = forwardRef(({ users, selectUser, selectedUser }, ref) => {
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback 
-            onPress={() => alert('최신순')}
+            onPress={() => console.warn('최신순')}
           >
             <View style={styles.mainListHeaderOption}>
               <Text style={styles.mainListHeaderOptionText}>
@@ -97,10 +97,13 @@ const MainList = forwardRef(({ users, selectUser, selectedUser }, ref) => {
               </TouchableWithoutFeedback>
               {index == selectedUser && 
                 <View style={styles.userMenu}>
-                  {['상태', '사진', '질문'].map((item, index) => (
+                {['상태', '사진', '질문'].map((item, index) => {
+                  const contentName = item === '상태' ? 'status' : item === '사진' ? 'image' : 'survey'
+                  return (
                     <TouchableOpacity
                       key={index}
                       style={styles.userMenuButton}
+                      onPress={() => {navigate('User', {username: user.name, content: contentName})}}
                     >
                       <Text style={{
                         color: 'white',
@@ -109,7 +112,7 @@ const MainList = forwardRef(({ users, selectUser, selectedUser }, ref) => {
                         {item}
                       </Text>
                     </TouchableOpacity>
-                  ))}
+                  )})}
                 </View>
               }
             </View>

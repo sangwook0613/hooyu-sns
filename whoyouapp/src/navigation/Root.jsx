@@ -9,6 +9,7 @@ import NicknameTutorial from '../screen/NicknameTutorial';
 import StatusTutorial from '../screen/StatusTutorial'
 import EmojiTutorial from '../screen/EmojiTutorial'
 import CreateContent from '../screen/CreateContent';
+import UserScreen from '../screen/UserScreen';
 
 
 const Nav = createNativeStackNavigator()
@@ -42,6 +43,11 @@ const Root = () => {
         headerTitle: "설정",
       }} />
 
+      {/* 유저 페이지 */}
+      <Nav.Screen name="User" component={UserScreen}
+        options={{
+          headerShown: true,
+        }}/>
       {/* 세부 설정 */}
       {/* <Nav.Screen name="UserSetting" component={SettingScreen} options={{
         headerShown: true,
