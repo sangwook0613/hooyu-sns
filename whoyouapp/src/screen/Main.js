@@ -17,6 +17,7 @@ import images from '../assets/images'
 
 import { RadderEffect } from '../components/Main/RadderEffect'
 import MainList from '../components/Main/MainList'
+import ShelterList from '../components/Main/ShelterList'
 import AddButton from '../components/Main/AddButton'
 import axios from 'axios'
 
@@ -35,12 +36,14 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   const styles = styleSheet(deviceWidth, deviceHeight, deviceWidth * 0.7)
 
   const [location, setLocation] = useState('unknown')
-  const [radarX, setRadarX] = useState(0)
-  const [radarY, setRadarY] = useState(0)
-  const [radarWidth, setRadarWidth] = useState(0)
+  const [radarX, setRadarX] = useState(-100)
+  const [radarY, setRadarY] = useState(-100)
+  const [radarWidth, setRadarWidth] = useState(-100)
 
   const [users, setUsers] = useState([])
+  const [privateZoneUsers, setPrivateZoneUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(-1)
+  const [selectedPrivateZoneUser, setSelectedPrivateZoneUser] = useState(-1)
 
   async function requestPositionPermissions() {
     if (Platform.OS === 'ios') {
@@ -68,8 +71,10 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   }
 
   const mainListRef = useRef()
+  const shelterListRef = useRef()
 
   useEffect(() => {
+    shelterListRef.current.close()
     getLocation()
     setInterval(() => {
       getLocation()
@@ -116,7 +121,9 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       }
     })
     .then((res) => {
-      setUsers(res.data.success)
+      setUsers(res.data.success.filter(user => user.privateZone !== true))
+      setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
+      // console.warn(res.data.success[0])
     })
     .catch((err) => {
       console.warn(err)
@@ -127,14 +134,20 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     setSelectedUser(idx)
   }
 
+  const selectPrivateZoneUser = (idx) => {
+    setSelectedPrivateZoneUser(idx)
+  }
+
   return (
     <>
     <GestureRecognizer
         onSwipeUp={() => {
+          shelterListRef.current.close()
           mainListRef.current.open()
         }}
         onSwipeDown={() => {
           mainListRef.current.close()
+          shelterListRef.current.close()
         }}
         config={{
           velocityThreshold: 0.1,
@@ -153,7 +166,10 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         ? 
         <>
           <TouchableWithoutFeedback
-            onPress={() => mainListRef.current.close()}
+            onPress={() => {
+              mainListRef.current.close()
+              shelterListRef.current.close()
+            }}
           >
             <Image source={morning} style={styles.morning} resizeMode="contain" />
           </TouchableWithoutFeedback>
@@ -163,7 +179,10 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         ?
         <>
           <TouchableWithoutFeedback
-            onPress={() => mainListRef.current.close()}
+            onPress={() => {
+              mainListRef.current.close()
+              shelterListRef.current.close()
+            }}
           >
             <Image source={evening} style={styles.evening} resizeMode="contain" />
           </TouchableWithoutFeedback>
@@ -171,7 +190,10 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         :
         <>
           <TouchableWithoutFeedback
-            onPress={() => mainListRef.current.close()}
+            onPress={() => {
+              mainListRef.current.close()
+              shelterListRef.current.close()
+            }}
           >
             <Image source={night} style={styles.night} resizeMode="contain" />
           </TouchableWithoutFeedback>
@@ -200,12 +222,26 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
             <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
             <Text style={styles.radar__text__count}>10000</Text>
           </View>
-          <View style={styles.shelterArea}>
-            <Image
-              source={shelter}
-              style={styles.shelterImage}
-            ></Image>
-          </View>
+          <TouchableOpacity
+              style={styles.shelterArea}
+              disabled={myRadius === 500 || myRadius === 2000 ? false : true }
+              onPress={() => {
+                mainListRef.current.close()
+                shelterListRef.current.open()
+              }}
+            >
+            <View >
+              <Image
+                source={shelter}
+                style={[
+                  styles.shelterImage, 
+                  { 
+                    opacity: myRadius === 500 || myRadius === 2000 ? 1 : 0.2 
+                  }
+                ]}
+              ></Image>
+            </View>
+          </TouchableOpacity>
 
           
           <View
@@ -310,6 +346,7 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
               }}
               onPress={() => {
                 selectUser(index)
+                shelterListRef.current.close()
                 mainListRef.current.open()
               }}
             >
@@ -327,7 +364,26 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       </LinearGradient >
     </GestureRecognizer>
 
-    <MainList navigate={navigate} users={users} selectUser={selectUser} selectedUser={selectedUser} ref={mainListRef}/>
+    <MainList 
+      deviceWidth={deviceWidth}
+      deviceHeight={deviceHeight}
+      theme={theme}
+      navigate={navigate} 
+      users={users} 
+      selectUser={selectUser} 
+      selectedUser={selectedUser} 
+      ref={mainListRef} 
+    />
+    <ShelterList
+      deviceWidth={deviceWidth}
+      deviceHeight={deviceHeight}
+      theme={theme} 
+      navigate={navigate}
+      users={privateZoneUsers}
+      selectPrivateZoneUser={selectPrivateZoneUser} 
+      selectedPrivateZoneUser={selectedPrivateZoneUser} 
+      ref={shelterListRef} 
+    />
     </>
   )
 }
