@@ -86,7 +86,7 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
               latitude,
               longitude
             })
-            // getUsers()
+            getUsers()
           },
             error => {
               console.warn(error.code, error.message)
@@ -327,7 +327,7 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       </LinearGradient >
     </GestureRecognizer>
 
-    <MainList users={users} selectUser={selectUser} selectedUser={selectedUser} ref={mainListRef}/>
+    <MainList navigate={navigate} users={users} selectUser={selectUser} selectedUser={selectedUser} ref={mainListRef}/>
     </>
   )
 }
