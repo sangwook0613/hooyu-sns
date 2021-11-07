@@ -241,7 +241,12 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                 ]}
               ></Image>
               <View
-                style={styles.shelterCount}
+                style={[
+                  styles.shelterCount,
+                  { 
+                    opacity: myRadius === 500 || myRadius === 2000 ? 1 : 0
+                  }
+                ]}
               >
                 <Text
                   style={{
