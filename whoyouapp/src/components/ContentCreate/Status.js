@@ -104,7 +104,7 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
       data: {
         "color": color,
         "exon": status,
-        "userPK": 1
+        "userPK": userPK
       }
     })
     .then((res) => {
