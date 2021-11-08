@@ -14,6 +14,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
 import jwt_decode from "jwt-decode";
+import SplashScreen from 'react-native-splash-screen'
+
 
 const Nav = createNativeStackNavigator()
 
@@ -29,9 +31,8 @@ const Root = ({ setUserPK }) => {
         setUserPK(jwt_decode(result).pk)
         setAccessToken(result)
       }
-      setTimeout(() => {
-        setIsReady(true)
-      }, 5000)
+      setIsReady(true)
+      SplashScreen.hide()
     })
 
   },[])
