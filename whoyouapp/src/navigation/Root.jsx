@@ -17,6 +17,9 @@ import jwt_decode from "jwt-decode";
 import api from '../utils/api'
 import SplashScreen from 'react-native-splash-screen'
 
+import UserSetting from '../screen/Setting/UserSetting';
+import PrivateZoneSetting from '../screen/Setting/PrivateZoneSetting';
+import PushSetting from '../screen/Setting/PushSetting';
 
 const Nav = createNativeStackNavigator()
 
@@ -88,19 +91,19 @@ const Root = ({ setUserPK, setUserEmoji, userEmoji }) => {
           headerShown: true,
         }} />
       {/* 세부 설정 */}
-      {/* <Nav.Screen name="UserSetting" component={SettingScreen} options={{
+      <Nav.Screen name="UserSetting" component={UserSetting} options={{
         headerShown: true,
         headerTitle: "계정 설정",
       }} />
-      <Nav.Screen name="PrivateZoneSetting" component={SettingScreen} options={{
+      <Nav.Screen name="PrivateZoneSetting" component={PrivateZoneSetting} options={{
         headerShown: true,
         headerTitle: "프라이빗 존",
       }} />
-      <Nav.Screen name="PushSetting" component={SettingScreen} options={{
+      <Nav.Screen name="PushSetting" component={PushSetting} options={{
         headerShown: true,
         headerTitle: "푸시 알림",
-      }} /> */}
-
+      }} />
+      
       {/* 컨텐츠 생성 */}
       <Nav.Screen name="CreateContent" component={CreateContent} options={{ headerShown: true }} />
       {/* <Nav.Screen name="CreateStatus" component={Status} options={{ headerShown: true }} /> */}
