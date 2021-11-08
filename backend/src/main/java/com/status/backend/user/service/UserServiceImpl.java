@@ -85,11 +85,10 @@ public class UserServiceImpl implements UserService {
         if (!locationRepository.existsByUserId(user.getId())) {
             Location location = Location.builder().user(user).latitude(new BigDecimal(0)).longitude(new BigDecimal(0)).build();
             locationRepository.save(location);
+            RecordTime recordTime = RecordTime.builder().build();
+            user.setRecordTime(recordTime);
+            recordTimeRepository.save(recordTime);
         }
-
-        RecordTime recordTime = RecordTime.builder().build();
-        user.setRecordTime(recordTime);
-        recordTimeRepository.save(recordTime);
 
         //JWT 만들기 및 전달하기
         Token token = tokenService.generateToken(user.getId(), user.getName(), "USER");
