@@ -31,8 +31,7 @@ const Root = ({ setUserPK }) => {
       }
       setTimeout(() => {
         setIsReady(true)
-      }, 5000);
-      
+      }, 5000)
     })
 
   },[])
