@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image } from 'react-native';
 import Status from '../components/ContentCreate/Status';
 import Emoji from '../components/ContentCreate/Emoji';
@@ -6,18 +6,22 @@ import Picture from '../components/ContentCreate/Picture';
 import Survey from '../components/ContentCreate/Survey';
 
 const clientWidth = Dimensions.get('screen').width
-const menuArray = ['프로필 메시지', '이모지', '사진', '설문']
-const menuLocation = [0, 95, 165, 254]
+const menuArray = ['이모지', '프로필 메시지', '사진', '설문']
+const menuLocation = [0, 100, 185, 254]
 
 const CreateContent = ({ navigation, route }) => {
-  const [selectedMenu, setSelectedMenu] = useState(0)
+  const [selectedMenu, setSelectedMenu] = useState(route.params.menu)
   const menuScroll = useRef()
   const menuComponent = [
-    <Status navigation={navigation} route={route} />, 
     <Emoji navigation={navigation} route={route} />,
+    <Status navigation={navigation} route={route} />, 
     <Picture navigation={navigation} route={route} />,
     <Survey navigation={navigation} route={route} />,
   ]
+
+  useEffect(() => {
+    menuScroll.current.scrollTo({ x:menuLocation[selectedMenu] })
+  })
 
   return (
     <View style={styles.mainView}>
@@ -30,6 +34,7 @@ const CreateContent = ({ navigation, route }) => {
             horizontal={true}
             ref={menuScroll}
             showsHorizontalScrollIndicator={false}
+
           >
             <View style={styles.blankBoxStart}></View>
             {
@@ -81,7 +86,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   blankBoxStart: {
-    width: clientWidth/2-108,
+    width: clientWidth/2-85,
     marginHorizontal: 20,
   },
   blankBoxEnd: {

@@ -31,9 +31,9 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
   const [gettingLoginStatus, setGettingLoginStatus] = useState(true)
 
   useEffect(() => {
-    if (userPK != 0 && userEmoji) {
+    if (userPK !== 0 && userEmoji) {
       navigate('Main')
-    } else if (userPK != 0 && !userEmoji) {
+    } else if (userPK !== 0 && !userEmoji) {
       navigate('NicknameTutorial')
     } else {
       GoogleSignin.configure({

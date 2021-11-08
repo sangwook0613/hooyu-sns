@@ -46,6 +46,8 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   const [radarX, setRadarX] = useState(-100)
   const [radarY, setRadarY] = useState(-100)
   const [radarWidth, setRadarWidth] = useState(-100)
+  const [myInterval, setMyInterval] = useState(null)
+
 
   const [users, setUsers] = useState([])
   const [privateZoneUsers, setPrivateZoneUsers] = useState([])
@@ -83,10 +85,12 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   useEffect(() => {
     shelterListRef.current.close()
     getLocation()
-    setInterval(() => {
-      getLocation()
-    }, 10000);
-  }, [myRadius])
+    clearInterval(myInterval)
+    setMyInterval(setInterval(() => {
+        getLocation()
+      }, 10000)
+    );
+  }, [myRadius, userEmoji])
 
   const getLocation = () => {
     
