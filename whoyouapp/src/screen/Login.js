@@ -6,6 +6,8 @@ import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import jwt_decode from "jwt-decode";
 import Api from "../utils/api"
+import { connect } from 'react-redux'
+import { actionCreators } from '../store/reducers'
 import {
   SafeAreaView,
   StyleSheet,
@@ -22,22 +24,16 @@ import {
 } from '@react-native-google-signin/google-signin'
 
 
-
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
-
-const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
-
-const Login = ({ navigation: { navigate } }) => {
-  const [userpk, setUserpk] = useState(0);
+const Login = ({ navigation: { navigate }, deviceWidth, setUserPK,setUserEmoji, userPK, userEmoji }) => {
+  // const [userpk, setUserpk] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
   const [userInfo2, setUserInfo2] = useState(null);
   const [gettingLoginStatus, setGettingLoginStatus] = useState(true)
 
   useEffect(() => {
-    if (userInfo2 && userInfo2.emoji) {
+    if (userPK != 0 && userEmoji) {
       navigate('Main')
-    } else if (userInfo2 && !userInfo2.emoji) {
+    } else if (userPK != 0 && !userEmoji) {
       navigate('NicknameTutorial')
     } else {
       GoogleSignin.configure({
@@ -46,7 +42,7 @@ const Login = ({ navigation: { navigate } }) => {
       });
       isSignedIn()
     }
-  }, [userInfo2])
+  }, [userEmoji])
 
 
   // 이미 로그인 되어있는 상태인지 체크
@@ -71,7 +67,7 @@ const Login = ({ navigation: { navigate } }) => {
         // } else if (userInfo2 && !userInfo2.emoji) {
         //   navigate('NicknameTutorial')
         // }
-      }, 1000);
+      }, 1000)
     }
     setGettingLoginStatus(false)
     // navigate('Main')
@@ -94,11 +90,14 @@ const Login = ({ navigation: { navigate } }) => {
       // 여기서 백엔드한테 보내고, 응답으로 유저 정보를 받는다.
       const userInfo = await GoogleSignin.signInSilently()
       const accessToken = await AsyncStorage.getItem('access_token')
-      const userPk = jwt_decode(accessToken).pk
-      Api.getUser(userPk)
+      console.log('userpk', jwt_decode(accessToken).pk)
+      await setUserPK(jwt_decode(accessToken).pk)
+      Api.getUser(jwt_decode(accessToken).pk)
         .then((res) => {
           setUserInfo2(res.data.success)
+          setUserEmoji(res.data.success.emoji)
           console.log("순서 3")
+          console.log(res.data.success.emoji)
         })
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_REQUIRED) {
@@ -128,7 +127,9 @@ const Login = ({ navigation: { navigate } }) => {
           await AsyncStorage.setItem('refresh_token', res.headers['refresh_token'])
           // console.log("access token : ", await AsyncStorage.getItem('access_token'))
           // console.log("refresh token : ",await AsyncStorage.getItem('refresh_token'))
-          setUserpk(res.data.success.id)
+          console.log("순서 0")
+          console.log(res.data.success.id)
+          setUserPK(res.data.success.id)
           console.log("순서 1")
         }).catch((err) => {
           console.log(err)
@@ -233,4 +234,26 @@ const styles = StyleSheet.create({
   },
 })
 
-export default Login;
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    myRadius: state.user.myRadius,
+    SERVER_URL: state.user.SERVER_URL,
+    userPK: state.user.userPK,
+    userEmoji: state.user.userEmoji,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserPK: (pk) => {
+      dispatch(actionCreators.setUserPK(pk))
+    },
+    setUserEmoji: (emoji) => {
+      dispatch(actionCreators.setUserEmoji(emoji))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login)

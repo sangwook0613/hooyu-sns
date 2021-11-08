@@ -4,7 +4,7 @@ import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput } from 
 import { connect } from 'react-redux'
 
 
-const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, SERVER_URL}) => {
+const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, SERVER_URL, userPK}) => {
 
   const styles = styleSheet(deviceWidth, deviceHeight)
 
@@ -24,7 +24,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
       method: 'post',
       data: {
         userName: route.params.nickname,
-        userPK: 2
+        userPK: userPK
       }
     })
     .then(() => {
@@ -41,7 +41,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
       method: 'post',
       data: {
         userEmoji: route.params.emoji,
-        userPK: 2
+        userPK: userPK
       }
     })
     .then(() => {
@@ -59,7 +59,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
       data: {
         color: 'pink',
         exon: inputValue,
-        userPK: 2
+        userPK: userPK
       }
     })
     .then(() => {
@@ -160,6 +160,7 @@ function mapStateToProps(state) {
     deviceWidth: state.user.deviceWidth,
     deviceHeight: state.user.deviceHeight,
     SERVER_URL: state.user.SERVER_URL,
+    userPK: state.user.userPK,
   }
 }
 
