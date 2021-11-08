@@ -26,6 +26,7 @@ import com.status.backend.user.domain.*;
 import com.status.backend.user.dto.ResponseUserLocationDto;
 import com.status.backend.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.jni.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -211,7 +213,7 @@ public class UserServiceImpl implements UserService {
         //범위에 있는 ResponseUserLocationDto : List 가져오기
         List<ResponseUserLocationDto> nowList = getUserWithinRadius(user, lat, lon, radius);
 
-        if (user.isAcceptPush() && false) {
+        if (user.isAcceptPush() && fcmTokenRepository.existsByUserId(userPK)) {
             sendPush(user, nowList, pastList);
         }
 
@@ -245,20 +247,34 @@ public class UserServiceImpl implements UserService {
             }
         }
 
+        LocalDateTime nowTime = LocalDateTime.now();
+
+        FcmToken targetToken = fcmTokenRepository.findByUserId(user.getId()).orElseThrow(() -> new NoBrowserTokenException("브라우저토큰이 없습니다...."));
         //push
-        if (countOfNew != 0 || targetContent != null) {
-            FcmToken targetToken = fcmTokenRepository.findByUserId(user.getId()).orElseThrow(() -> new NoBrowserTokenException("브라우저토큰이 없습니다...."));
-            if (countOfNew != 0) {
-                String title = "반경 내에 " + countOfNew + "명의 사람이 새로 들어왔어요!";
-                String body = "클릭해서 확인해보세요";
-                fcmService.sendMessageTo(targetToken.getToken(), title, body);
-            }
-            if (targetContent != null) {
-                String title = "누군가 새 " + targetContent.getTitle() + "를 올렸어요!";
-                String body = "클릭해서 확인해보세요";
-                fcmService.sendMessageTo(targetToken.getToken(), title, body);
-            }
+
+        //장기 미 사용자 까꿍 message
+        if (nowTime.isAfter(targetToken.getPushThree()) && targetToken.getPushThree() != null) {
+            String title = "주변 사람들이 당신의 생각을 궁금해하고 있어요!";
+            String body = "클릭해서 컨텐츠를 작성해보세요";
+            fcmService.sendMessageTo(targetToken.getToken(), title, body);
+            targetToken.setPushThree(nowTime.plusDays(5));
         }
+
+        if (countOfNew != 0 && (nowTime.isAfter(targetToken.getPushOne()) || targetToken.getPushOne() == null)) {
+            String title = "반경 내에 " + countOfNew + "명의 사람이 새로 들어왔어요!";
+            String body = "클릭해서 확인해보세요";
+            fcmService.sendMessageTo(targetToken.getToken(), title, body);
+            targetToken.setPushOne(nowTime.plusHours(3));
+        }
+
+        if (targetContent != null && (nowTime.isAfter(targetToken.getPushTwo()) || targetToken.getPushTwo() == null)) {
+            String title = "누군가 새 " + targetContent.getTitle() + "를 올렸어요!";
+            String body = "클릭해서 확인해보세요";
+            fcmService.sendMessageTo(targetToken.getToken(), title, body);
+            targetToken.setPushTwo(nowTime.plusHours(3));
+        }
+
+        fcmTokenRepository.save(targetToken);
 
     }
 

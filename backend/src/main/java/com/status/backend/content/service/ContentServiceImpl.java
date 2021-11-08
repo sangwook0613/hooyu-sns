@@ -3,7 +3,10 @@ package com.status.backend.content.service;
 import com.status.backend.content.domain.*;
 import com.status.backend.content.dto.ResponseContentDto;
 import com.status.backend.content.dto.ResponseSurveyDto;
+import com.status.backend.fcm.domain.FcmToken;
+import com.status.backend.fcm.domain.FcmTokenRepository;
 import com.status.backend.global.exception.NoAuthorityUserException;
+import com.status.backend.global.exception.NoBrowserTokenException;
 import com.status.backend.global.exception.NoContentException;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.user.domain.User;
@@ -14,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +30,7 @@ public class ContentServiceImpl implements ContentService {
     private final ContentRepository contentRepository;
     private final RecordTimeRepository recordTimeRepository;
     private final SurveyContentAnswerRepository surveyContentAnswerRepository;
+    private final FcmTokenRepository fcmTokenRepository;
 
     Logger logger = LoggerFactory.getLogger(ContentServiceImpl.class);
 
@@ -48,10 +53,14 @@ public class ContentServiceImpl implements ContentService {
             recordTime = user.getRecordTime();
             recordTime.setImageAt(content.getModifiedAt());
         }
+
         recordTimeRepository.save(recordTime);
+
+        if (fcmTokenRepository.existsByUserId(userPK)) {
+            setPushThree(userPK);
+        }
         return "Success!";
     }
-
 
     @Transactional
     @Override
@@ -69,6 +78,9 @@ public class ContentServiceImpl implements ContentService {
             recordTime.setImageAt(content.getModifiedAt());
         }
         recordTimeRepository.save(recordTime);
+        if (fcmTokenRepository.existsByUserId(userPK)) {
+            setPushThree(userPK);
+        }
         return "Success!";
     }
 
@@ -99,7 +111,16 @@ public class ContentServiceImpl implements ContentService {
         }
 
         logger.debug("답안지 입력 완료 !!!!");
+        if (fcmTokenRepository.existsByUserId(userPK)) {
+            setPushThree(userPK);
+        }
         return "Success!";
+    }
+
+    private void setPushThree(Long userPK) {
+        FcmToken targetToken = fcmTokenRepository.findByUserId(userPK).get();
+        targetToken.setPushThree(LocalDateTime.now().plusDays(5));
+        fcmTokenRepository.save(targetToken);
     }
 
     @Transactional

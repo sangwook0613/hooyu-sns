@@ -1,16 +1,16 @@
 package com.status.backend.fcm.domain;
 
+import com.status.backend.global.domain.BaseTime;
 import com.status.backend.user.domain.User;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
-@Getter
+@Getter @Setter @ToString
 @NoArgsConstructor
 @Entity
-public class FcmToken {
+public class FcmToken extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +23,18 @@ public class FcmToken {
     @Column
     private String token;
 
+    @Column
+    private boolean longTime = Boolean.FALSE;
+
+    @Column
+    private LocalDateTime pushOne;
+
+    @Column
+    private LocalDateTime pushTwo;
+
+    @Column
+    private LocalDateTime pushThree;
+
     @Builder
     public FcmToken(User user, String token) {
         this.user = user;
@@ -33,4 +45,5 @@ public class FcmToken {
         this.token = token;
         return this;
     }
+
 }
