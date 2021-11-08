@@ -211,7 +211,7 @@ public class UserServiceImpl implements UserService {
         //범위에 있는 ResponseUserLocationDto : List 가져오기
         List<ResponseUserLocationDto> nowList = getUserWithinRadius(user, lat, lon, radius);
 
-        if (user.isAcceptPush()) {
+        if (user.isAcceptPush() && false) {
             sendPush(user, nowList, pastList);
         }
 
