@@ -5,6 +5,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import imageUpload from '../../assets/createcontent/uploadImage.png'
 import * as ImagePicker from 'react-native-image-picker';
 import axios from 'axios'
+import { connect } from 'react-redux'
+import { actionCreators } from '../../store/reducers'
+
 
 const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
@@ -15,11 +18,12 @@ const emojiArray = [
   ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
 ]
 
-const Picture = ({ navigation, route }) => {
+const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
   
   
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
-  const [emoji, setEmoji] = useState('amazing')
+  const [emoji, setEmoji] = useState(userEmoji)
+  const [imageFile, setImageFile] = useState('')
 
   const PictureTitle = () => {
     return (
@@ -40,18 +44,23 @@ const Picture = ({ navigation, route }) => {
     navigation.setOptions({
       headerTitle: (props) => <PictureTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
-          createPicture()
-          navigation.navigate('Main')
-          }} 
-        >
-          <Text>등록</Text>
-        </TouchableOpacity>
+        <View>
+          { imageFile ? 
+            <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
+              createPicture()
+              navigation.navigate('Main')
+            }}>
+              <Text>등록</Text>
+            </TouchableOpacity>
+            :
+            <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+          }
+
+        </View>
       )
     });
-  }, [navigation, emoji]);
+  }, [navigation, emoji, imageFile]);
 
-  const [imageFile, setImageFile] = useState('')
 
   const imageGalleryLaunch = () => {
     let options = {
@@ -62,7 +71,7 @@ const Picture = ({ navigation, route }) => {
     };
   
     ImagePicker.launchImageLibrary(options, (res) => {
-      console.log('Response = ', res);
+      // console.log('Response = ', res);
   
       if (res.didCancel) {
         console.log('User cancelled image picker');
@@ -81,12 +90,13 @@ const Picture = ({ navigation, route }) => {
   }  
 
   const createEmoji = () => {
+    setUserEmoji(emoji)
     axios({
       method: 'post',
       url: SERVER_URL + 'user/emojiSet',
       data: {
         "userEmoji": emoji,
-        "userPK": 1
+        "userPK": userPK
       }
     })
     .then((res) => {
@@ -98,13 +108,14 @@ const Picture = ({ navigation, route }) => {
   }
 
   const createPicture = () => {
+    console.log(imageFile)
     axios({
       method: 'post',
       url: SERVER_URL + 'content/create/image',
       data: {
         "color": '',
         "exon": imageFile.uri,
-        "userPK": 1
+        "userPK": userPK
       }
     })
     .then((res) => {
@@ -223,5 +234,21 @@ const styles = StyleSheet.create({
   },
 });
 
+function mapStateToProps(state) {
+  return {
+    SERVER_URL: state.user.SERVER_URL,
+    userPK: state.user.userPK,
+    userEmoji: state.user.userEmoji,
+  }
+}
 
-export default Picture;
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserEmoji: (emoji) => {
+      dispatch(actionCreators.setUserEmoji(emoji))
+    }
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Picture);
