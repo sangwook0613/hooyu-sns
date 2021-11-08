@@ -65,7 +65,7 @@ public class FcmService {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         FcmToken fcmToken;
         if(fcmTokenRepository.existsByUserId(userPK)){
-            fcmToken = fcmTokenRepository.findFcmTokenByUserId(userPK).get(0);
+            fcmToken = fcmTokenRepository.findByUserId(userPK).get();
             fcmToken.update(browserToken);
         }else{
             fcmToken = FcmToken.builder().user(user).token(browserToken).build();
