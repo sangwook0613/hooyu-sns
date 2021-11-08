@@ -46,14 +46,19 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
     navigation.setOptions({
       headerTitle: (props) => <StatusTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
-          createStatus()
-          navigation.navigate('Main')
-          console.log(color)
-          console.log(status)
-        }}>
-          <Text>등록</Text>
-        </TouchableOpacity>
+        <View>
+          { status ? 
+            <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
+              createStatus()
+              navigation.navigate('Main')
+            }}>
+              <Text>등록</Text>
+            </TouchableOpacity>
+            :
+            <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+          }
+
+        </View>
       )
     });
   }, [navigation, status, color, emoji]);
