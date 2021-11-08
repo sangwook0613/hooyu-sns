@@ -96,10 +96,9 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK,setUserEmoji, 
 
       await messaging().getToken()
         .then((res) => {
-          console.log(res)
           Api.setFCMToken(pk, res)
           .then((res) => {
-            console.log(res)
+            console.log('token set success')
           })
           .catch((err) => {
             console.log(err)
