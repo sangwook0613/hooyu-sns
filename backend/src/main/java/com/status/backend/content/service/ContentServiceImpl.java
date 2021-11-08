@@ -207,13 +207,27 @@ public class ContentServiceImpl implements ContentService {
     @Transactional
     @Override
     public String deleteContent(Long userPK, Long contentPK, Type type) throws NoContentException, NoUserException, NoAuthorityUserException {
-        if (!userRepository.existsById(userPK)) throw new NoUserException("해당하는 사용자가 없습니다.");
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         if (!contentRepository.existsById(contentPK)) throw new NoContentException("해당하는 컨탠츠는 없습니다.");
         Content content = contentRepository.findByUserIdAndIdAndType(userPK,contentPK,type).orElseThrow(() -> new NoContentException("컨탠츠 삭제 실패했습니다."));
         if(content.getUser().getId() != userPK)
             throw new NoAuthorityUserException("해당 컨텐츠 삭재할 권한이 없습니다.");
         surveyContentAnswerRepository.deleteByContentId(contentPK);
         contentRepository.deleteById(contentPK);
+
+        RecordTime recordTime = user.getRecordTime();
+        if (recordTime != null) {
+            recordTime = user.getRecordTime();
+            if(content.getType()==Type.STATUS){
+                recordTime.setStatusAt(null);
+            }else if(content.getType()==Type.IMAGE){
+                recordTime.setImageAt(null);
+            }else{
+                recordTime.setSurveyAt(null);
+            }
+        }
+        recordTimeRepository.save(recordTime);
+
         return "Success!";
     }
 
