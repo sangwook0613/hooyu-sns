@@ -25,6 +25,15 @@ export default {
         userName: inputValue  
       }
     })
-  }
+  },
 
+  setFCMToken(pk, token) {
+    return axios({
+      url: `push/${pk}`,
+      headers: {
+        'browser_token': token
+      },
+      method: 'get',
+    })
+  }
 }
