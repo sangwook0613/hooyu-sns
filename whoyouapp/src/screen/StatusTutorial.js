@@ -1,15 +1,74 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
+import { connect } from 'react-redux'
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
 
-const StatusTutorial = ({ navigation: { navigate }}) => {
+const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, SERVER_URL}) => {
+
+  const styles = styleSheet(deviceWidth, deviceHeight)
 
   const [inputValue, setInputValue] = useState('')
 
   const registerStatus = () => {
-    console.warn('회원가입 API')
+    userSetting()
+  }
+
+  const userSetting = () => {
+    setNickname()
+  }
+
+  const setNickname = () => {
+    axios({
+      url: SERVER_URL + 'user/nameSet',
+      method: 'post',
+      data: {
+        userName: route.params.nickname,
+        userPK: 2
+      }
+    })
+    .then(() => {
+      setEmoji()
+    })
+    .catch((err) => {
+      console.warn(err)
+    })
+  }
+
+  const setEmoji = () => {
+    axios({
+      url: SERVER_URL + 'user/emojiSet',
+      method: 'post',
+      data: {
+        userEmoji: route.params.emoji,
+        userPK: 2
+      }
+    })
+    .then(() => {
+      setStatus()
+    })
+    .catch((err) => {
+      console.warn(err)
+    })
+  }
+
+  const setStatus = () => {
+    axios({
+      url: SERVER_URL + 'content/create/status',
+      method: 'post',
+      data: {
+        color: 'pink',
+        exon: inputValue,
+        userPK: 2
+      }
+    })
+    .then(() => {
+      navigate('Main')
+      alert('완료')
+    })
+    .catch((err) => {
+      console.warn(err)
+    })
   }
 
   return (
@@ -66,7 +125,7 @@ const StatusTutorial = ({ navigation: { navigate }}) => {
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create({
   statusContainer: {
     alignItems: 'center',
     marginTop: deviceHeight * 0.15,
@@ -96,4 +155,12 @@ const styles = StyleSheet.create({
   }
 })
 
-export default StatusTutorial;
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    SERVER_URL: state.user.SERVER_URL,
+  }
+}
+
+export default connect(mapStateToProps)(StatusTutorial)
