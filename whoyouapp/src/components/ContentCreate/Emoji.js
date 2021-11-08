@@ -30,7 +30,7 @@ const Emoji = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji 
       headerTitle: (props) => <EmojiTitle {...props} />,
       headerRight: () => (
         <TouchableOpacity style={{ marginRight: 10 }} >
-          <Text>등록</Text>
+          <Text></Text>
         </TouchableOpacity>
       )
     });

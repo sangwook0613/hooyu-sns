@@ -23,6 +23,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [emoji, setEmoji] = useState(userEmoji)
+  const [imageFile, setImageFile] = useState('')
 
   const PictureTitle = () => {
     return (
@@ -43,18 +44,23 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
     navigation.setOptions({
       headerTitle: (props) => <PictureTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
-          createPicture()
-          navigation.navigate('Main')
-          }} 
-        >
-          <Text>등록</Text>
-        </TouchableOpacity>
+        <View>
+          { imageFile ? 
+            <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
+              createPicture()
+              navigation.navigate('Main')
+            }}>
+              <Text>등록</Text>
+            </TouchableOpacity>
+            :
+            <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+          }
+
+        </View>
       )
     });
-  }, [navigation, emoji]);
+  }, [navigation, emoji, imageFile]);
 
-  const [imageFile, setImageFile] = useState('')
 
   const imageGalleryLaunch = () => {
     let options = {
@@ -65,7 +71,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
     };
   
     ImagePicker.launchImageLibrary(options, (res) => {
-      console.log('Response = ', res);
+      // console.log('Response = ', res);
   
       if (res.didCancel) {
         console.log('User cancelled image picker');
@@ -102,6 +108,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   }
 
   const createPicture = () => {
+    console.log(imageFile)
     axios({
       method: 'post',
       url: SERVER_URL + 'content/create/image',

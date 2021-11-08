@@ -26,6 +26,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
       '', ''
     ]
   )
+  const [isSurveyValid, setIsSurveyValid] = useState(false)
   
 
   const SurveyTitle = () => {
@@ -44,6 +45,11 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
   }
 
   const onTextChange = (index, text) => {
+    if (title && options[0] && options[1]) {
+      setIsSurveyValid(true)
+    } else {
+      setIsSurveyValid(false)
+    }
     setOptions(options.map((option, index2) => {
       return index !== index2 ? option: text
     }))
@@ -59,17 +65,28 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
     navigation.setOptions({
       headerTitle: (props) => <SurveyTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
-          createSurvey()
-          navigation.navigate('Main')
-          }}
-        >
-          <Text>등록</Text>
-        </TouchableOpacity>
+        <View>
+          { isSurveyValid ? 
+            <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
+              createSurvey()
+              navigation.navigate('Main')
+            }}>
+              <Text>등록</Text>
+            </TouchableOpacity>
+            :
+            <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+          }
+
+        </View>
       )
     });
     setOptions(options)
-  }, [navigation, emoji, options]);
+    if (title && options[0] && options[1]) {
+      setIsSurveyValid(true)
+    } else {
+      setIsSurveyValid(false)
+    }
+  }, [navigation, emoji, options, title, isSurveyValid]);
 
   const createEmoji = () => {
     setUserEmoji(emoji)
