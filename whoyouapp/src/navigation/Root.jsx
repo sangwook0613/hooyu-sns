@@ -15,7 +15,7 @@ import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
 import jwt_decode from "jwt-decode";
 import api from '../utils/api'
-// import axios from 'axios'
+import SplashScreen from 'react-native-splash-screen'
 
 
 const Nav = createNativeStackNavigator()
@@ -44,9 +44,8 @@ const Root = ({ setUserPK, setUserEmoji, userEmoji }) => {
             console.log(err)
           })
       }
-
       setIsReady(true)
-
+      SplashScreen.hide()
     })
 
   }, [])

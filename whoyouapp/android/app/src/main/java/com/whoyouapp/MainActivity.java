@@ -1,6 +1,12 @@
 package com.whoyouapp;
 
 import android.os.Bundle;
+import org.devio.rn.splashscreen.SplashScreen;
+import android.os.Bundle;
+import org.devio.rn.splashscreen.SplashScreen;
+import android.os.Bundle;
+import org.devio.rn.splashscreen.SplashScreen;
+import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
@@ -22,6 +28,7 @@ import android.content.Intent;
 public class MainActivity extends ReactActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+SplashScreen.show(this, R.style.SplashScreenTheme);
     setTheme(R.style.AppTheme);
     super.onCreate(null);
     FirebaseMessaging.getInstance().getToken()
