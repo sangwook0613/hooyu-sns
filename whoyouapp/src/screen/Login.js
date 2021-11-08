@@ -24,7 +24,7 @@ import {
 } from '@react-native-google-signin/google-signin'
 
 
-const Login = ({ navigation: { navigate }, deviceWidth, setUserPK,setUserEmoji, userPK, userEmoji }) => {
+const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji, userPK, userEmoji }) => {
   // const [userpk, setUserpk] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
   const [userInfo2, setUserInfo2] = useState(null);
@@ -55,6 +55,7 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK,setUserEmoji, 
     const accessToken = await AsyncStorage.getItem('access_token')
     const refreshToken = await AsyncStorage.getItem('refresh_token')
     console.log("순서 2")
+    console.log(accessToken)
     // refresh 토큰 유효기간 체크
     if (accessToken) {
       await getCurrentUserInfo()
@@ -177,22 +178,24 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK,setUserEmoji, 
     );
   } else {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ flex: 0.6, justifyContent: "center", alignItems: "center" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#FF6A77' }}>
+        <View style={{ flex: 0.7, justifyContent: "center", alignItems: "center" }}>
           <View style={{}}>
             <Image
-              source={images.emoji.amazing}
-              style={{ width: deviceWidth * 0.3, height: deviceWidth * 0.3 }}
+              source={images.logo}
+              style={{ width: deviceWidth * 0.5, height: deviceWidth * 0.5 }}
             />
           </View>
         </View>
-        <View style={{ flex: 0.4, alignItems: "center" }}>
-          <GoogleSigninButton
-            style={{ width: 312, height: 48 }}
-            size={GoogleSigninButton.Size.Wide}
-            color={GoogleSigninButton.Color.Light}
-            onPress={signIn}
-          />
+        <View style={{ flex: 0.3, alignItems: "center" }}>
+          <View style={{ elevation: 4 }}>
+            <GoogleSigninButton
+              style={{ width: 312, height: 68 }}
+              size={GoogleSigninButton.Size.Wide}
+              color={GoogleSigninButton.Color.Light}
+              onPress={signIn}
+            />
+          </View>
         </View>
 
       </SafeAreaView>

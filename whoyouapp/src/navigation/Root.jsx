@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useNavigation } from '@react-navigation/native';
 import Main from '../screen/Main';
@@ -10,17 +10,43 @@ import StatusTutorial from '../screen/StatusTutorial'
 import EmojiTutorial from '../screen/EmojiTutorial'
 import CreateContent from '../screen/CreateContent';
 import UserScreen from '../screen/UserScreen';
-
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { connect } from 'react-redux'
+import { actionCreators } from '../store/reducers'
+import jwt_decode from "jwt-decode";
 
 const Nav = createNativeStackNavigator()
 
-const Root = () => {
+const Root = ({ setUserPK }) => {
   const navigation = useNavigation();
+
+  const [accessToken, setAccessToken] = useState(null)
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem('access_token', (err, result) => {
+      if (result) {
+        setUserPK(jwt_decode(result).pk)
+        setAccessToken(result)
+      }
+      setTimeout(() => {
+        setIsReady(true)
+      }, 5000);
+      
+    })
+
+  },[])
+  
+  if (!isReady) {
+    return (
+      <>
+      </>
+    )
+  }
 
   return (
     <Nav.Navigator
-      // initialRouteName="Main"
-      initialRouteName="Login"
+      initialRouteName={accessToken ? "Main" : "Login"}
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
@@ -72,4 +98,12 @@ const Root = () => {
   )
 }
 
-export default Root;
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserPK: (pk) => {
+      dispatch(actionCreators.setUserPK(pk))
+    }
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Root)

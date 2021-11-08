@@ -73,7 +73,7 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
   },
   register: {
     alignItems: 'center',
-    backgroundColor: '#0B1C26',
+    backgroundColor: '#FF6A77',
     borderRadius: 20,
     height: 45,
     justifyContent: 'center',
