@@ -2,18 +2,19 @@ import React, {useEffect, useRef, useState} from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import axios from 'axios'
+import { connect } from 'react-redux'
+import { actionCreators } from '../../store/reducers'
 
-const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 
 const emojiArray = [
   ['amazing', 'amazing2', 'amazing3', 'amazing4', 'amazing5', 'amazing6'], 
   ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
 ]
 
-const Emoji = ({ navigation, route }) => {
+const Emoji = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
   
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
-  const [emoji, setEmoji] = useState('amazing')
+  const [emoji, setEmoji] = useState(userEmoji)
   const [checked, setChecked] = useState(false)
 
   const EmojiTitle = () => {
@@ -41,12 +42,13 @@ const Emoji = ({ navigation, route }) => {
 
   const createEmoji = () => {
     console.log(emoji)
+    setUserEmoji(emoji)
     axios({
       method: 'post',
       url: SERVER_URL + 'user/emojiSet',
       data: {
         "userEmoji": emoji,
-        "userPK": 1
+        "userPK": userPK
       }
     })
     .then((res) => {
@@ -152,4 +154,21 @@ const styles = StyleSheet.create({
 });
 
 
-export default Emoji;
+function mapStateToProps(state) {
+  return {
+    SERVER_URL: state.user.SERVER_URL,
+    userPK: state.user.userPK,
+    userEmoji: state.user.userEmoji,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserEmoji: (emoji) => {
+      dispatch(actionCreators.setUserEmoji(emoji))
+    }
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Emoji);
