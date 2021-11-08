@@ -36,7 +36,7 @@ const AddButton = ({ navigate }) => {
       style={styles.addButtonContainer}
     >
       <TouchableWithoutFeedback
-        onPress={() => navigate('NicknameTutorial')}
+        onPress={() => navigate('CreateContent', { emoji: images.emoji.amazing, menu: 0 })}
       >
         <Animated.View style={[styles.addButtonEl, {
           left: open.interpolate({
@@ -49,7 +49,7 @@ const AddButton = ({ navigate }) => {
       </TouchableWithoutFeedback>
 
       <TouchableWithoutFeedback
-        onPress={() => navigate('CreateContent', { emoji: images.emoji.amazing })}
+        onPress={() => navigate('CreateContent', { emoji: images.emoji.amazing, menu: 1 })}
       >
         <Animated.View style={[styles.addButtonEl, {
           left: open.interpolate({
@@ -62,7 +62,7 @@ const AddButton = ({ navigate }) => {
 
       </TouchableWithoutFeedback>
       <TouchableWithoutFeedback
-        onPress={() => alert('사진')}
+        onPress={() => navigate('CreateContent', { emoji: images.emoji.amazing, menu: 2 })}
       >
         <Animated.View style={[styles.addButtonEl, {
           left: open.interpolate({
@@ -75,7 +75,7 @@ const AddButton = ({ navigate }) => {
       </TouchableWithoutFeedback>
 
       <TouchableWithoutFeedback
-        onPress={() => alert('설문')}
+        onPress={() => navigate('CreateContent', { emoji: images.emoji.amazing, menu: 3 })}
       >
         <Animated.View style={[styles.addButtonEl, {
           left: open.interpolate({
