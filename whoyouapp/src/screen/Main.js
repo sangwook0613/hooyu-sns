@@ -91,7 +91,7 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
               latitude,
               longitude
             })
-            getUsers()
+            // getUsers()
           },
             error => {
               console.warn(error.code, error.message)
