@@ -29,11 +29,12 @@ export default {
 
   setFCMToken(pk, token) {
     return axios({
-      url: `push/${pk}`,
-      headers: {
-        'browser_token': token
-      },
-      method: 'get',
+      url: `browser/in`,
+      method: 'post',
+      data: {
+        browserToken: token,
+        userPK: pk
+      }
     })
   }
 }
