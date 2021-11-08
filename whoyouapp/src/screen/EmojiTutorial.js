@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, Image, View, StyleSheet, TextInput } from 'react-native';
 import amazingEmozi from '../assets/images/amazing2.png'
+import { connect } from 'react-redux'
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
 
-const EmojiTutorial = ({ navigation: { navigate }}) => {
+const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight}) => {
+
+  const styles = styleSheet(deviceWidth, deviceHeight)
 
   const registerEmoji = () => {
-    console.warn('이모지 넘기기')
-    navigate('StatusTutorial')
+    navigate('StatusTutorial', {...route.params, emoji: 'emoji'})
   }
 
   return (
@@ -58,7 +58,7 @@ const EmojiTutorial = ({ navigation: { navigate }}) => {
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create({
   emojiContainer: {
     alignItems: 'center',
     marginTop: deviceHeight * 0.15,
@@ -89,4 +89,11 @@ const styles = StyleSheet.create({
   }
 })
 
-export default EmojiTutorial;
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+  }
+}
+
+export default connect(mapStateToProps)(EmojiTutorial)

@@ -1,9 +1,11 @@
 
 import React, { useState, useEffect } from 'react'
-import { Dimensions } from 'react-native'
-import { requestGet, requestPost } from '../utlis/request'
+import { Button, Dimensions } from 'react-native'
 import images from '../assets/images'
-
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import jwt_decode from "jwt-decode";
+import Api from "../utils/api"
 import {
   SafeAreaView,
   StyleSheet,
@@ -13,52 +15,91 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native'
-
 import {
   GoogleSignin,
   GoogleSigninButton,
   statusCodes,
 } from '@react-native-google-signin/google-signin'
 
+
+
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
 
-const Login = () => {
+const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
+
+const Login = ({ navigation: { navigate } }) => {
+  const [userpk, setUserpk] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
+  const [userInfo2, setUserInfo2] = useState(null);
   const [gettingLoginStatus, setGettingLoginStatus] = useState(true)
 
   useEffect(() => {
-    GoogleSignin.configure({
-      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
-      webClientId: '5095342969-dcob776t7ckfeu2gddkb2j4ke2cprfst.apps.googleusercontent.com',
-    });
-    isSignedIn()
-  }, [])
+    if (userInfo2 && userInfo2.emoji) {
+      navigate('Main')
+    } else if (userInfo2 && !userInfo2.emoji) {
+      navigate('NicknameTutorial')
+    } else {
+      GoogleSignin.configure({
+        scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+        webClientId: '5095342969-dcob776t7ckfeu2gddkb2j4ke2cprfst.apps.googleusercontent.com',
+      });
+      isSignedIn()
+    }
+  }, [userInfo2])
 
+
+  // 이미 로그인 되어있는 상태인지 체크
   const isSignedIn = async () => {
     // const {navigate} = this.props.navigation;
     // 여기서 백엔드한테 토큰 보내고, 응답을 받는다.
+
     const isSignedIn = await GoogleSignin.isSignedIn()
-    // nativate('Main')
-    if (isSignedIn) {
-      alert('이미 로그인 함.')
-      getCurrentUserInfo()
-      setGettingLoginStatus(false)
-      // Main으로 이동.
-      // nativate('Main')
-    } else {
-      console.log('로그인 해라')
-      setGettingLoginStatus(false)
+
+    const accessToken = await AsyncStorage.getItem('access_token')
+    const refreshToken = await AsyncStorage.getItem('refresh_token')
+    console.log("순서 2")
+    // refresh 토큰 유효기간 체크
+    if (accessToken) {
+      await getCurrentUserInfo()
+      setTimeout(() => {
+        console.log("user : ", userInfo2)
+        console.log("순서 4")
+        setGettingLoginStatus(false)
+        // if (userInfo2 && userInfo2.emoji) {
+        //   navigate('Main')
+        // } else if (userInfo2 && !userInfo2.emoji) {
+        //   navigate('NicknameTutorial')
+        // }
+      }, 1000);
     }
+    setGettingLoginStatus(false)
+    // navigate('Main')
+    // if (isSignedIn) {
+    //   alert('이미 로그인 함.')
+    //   getCurrentUserInfo()
+    //   setGettingLoginStatus(false)
+    //   // Main으로 이동.
+    //   // navigate('Main')
+    // } else {
+    //   console.log('로그인 해라')
+    //   setGettingLoginStatus(false)
+    // }
     // setGettingLoginStatus(false)
   }
 
+  // 현재 유저 정보 가져오기
   const getCurrentUserInfo = async () => {
     try {
       // 여기서 백엔드한테 보내고, 응답으로 유저 정보를 받는다.
       const userInfo = await GoogleSignin.signInSilently()
-      console.log('유저 정보 : ', userInfo)
-      setUserInfo(userInfo)
+      const accessToken = await AsyncStorage.getItem('access_token')
+      const userPk = jwt_decode(accessToken).pk
+      Api.getUser(userPk)
+        .then((res) => {
+          setUserInfo2(res.data.success)
+          console.log("순서 3")
+        })
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_REQUIRED) {
         console.log('아직 로그인 하지 않았음')
@@ -68,20 +109,32 @@ const Login = () => {
     }
   };
 
+  // 로그인. 회원가입 안되어 있을때도.
   const signIn = async () => {
     try {
-      console.log('hi')
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
       });
       const userInfo = await GoogleSignin.signIn()
-      console.log('유저 정보 :  ', userInfo)
-      setUserInfo(userInfo)
-
-
-      // await axios.get()
-      // 여기서 백엔드한테 보내고, 응답을 받는다.
-      navigate('Main')
+      // console.log('유저 정보 :  ', userInfo)
+      // setUserInfo(userInfo)
+      // validation 작업
+      // console.log(userInfo.idToken)
+      await Api.loginGoogle(userInfo.idToken)
+        .then(async (res) => {
+          // console.log("access token : ", res.headers['access_token'])
+          // console.log("refresh token : ", res.headers['refresh_token'])
+          await AsyncStorage.setItem('access_token', res.headers['access_token'])
+          await AsyncStorage.setItem('refresh_token', res.headers['refresh_token'])
+          // console.log("access token : ", await AsyncStorage.getItem('access_token'))
+          // console.log("refresh token : ",await AsyncStorage.getItem('refresh_token'))
+          setUserpk(res.data.success.id)
+          console.log("순서 1")
+        }).catch((err) => {
+          console.log(err)
+        })
+      // 최초 로그인일때. 
+      // navigate('Main')
     } catch (error) {
       console.log('Message', JSON.stringify(error))
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -96,13 +149,18 @@ const Login = () => {
         alert(error.message)
       }
     }
+    isSignedIn()
   };
 
   const signOut = async () => {
     setGettingLoginStatus(true)
+
+    // 토큰 지우기
     try {
       await GoogleSignin.revokeAccess()
       await GoogleSignin.signOut()
+      await AsyncStorage.setItem('access_token', '')
+      await AsyncStorage.setItem('refresh_token', '')
       setUserInfo(null)
     } catch (error) {
       console.error(error)
@@ -112,29 +170,30 @@ const Login = () => {
 
   if (gettingLoginStatus) {
     return (
-      <View style={styles.container}>
+      <View style={{ flex: 1, justifyContent: "center" }}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   } else {
     return (
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={{flex: 0.55, justifyContent: "center", alignItems: "center"}}>
-          <View style={{ }}>
+        <View style={{ flex: 0.6, justifyContent: "center", alignItems: "center" }}>
+          <View style={{}}>
             <Image
               source={images.emoji.amazing}
               style={{ width: deviceWidth * 0.3, height: deviceWidth * 0.3 }}
             />
           </View>
         </View>
-        <View style={{ flex: 0.45, alignItems: "center"}}>
-            <GoogleSigninButton
-              style={{ width: 312, height: 48 }}
-              size={GoogleSigninButton.Size.Wide}
-              color={GoogleSigninButton.Color.Light}
-              onPress={signIn}
-            />
+        <View style={{ flex: 0.4, alignItems: "center" }}>
+          <GoogleSigninButton
+            style={{ width: 312, height: 48 }}
+            size={GoogleSigninButton.Size.Wide}
+            color={GoogleSigninButton.Color.Light}
+            onPress={signIn}
+          />
         </View>
+
       </SafeAreaView>
     );
   }

@@ -1,16 +1,27 @@
 import React, { useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
+import Api from '../utils/api'
+import { connect } from 'react-redux'
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
 
-const NicknameTutorial = ({ navigation: { navigate }}) => {
+const NicknameTutorial = ({ navigation: { navigate }, deviceWidth, deviceHeight, SERVER_URL}) => {
+
+  const styles = styleSheet(deviceWidth, deviceHeight)
 
   const [inputValue, setInputValue] = useState('')
 
   const registerNickname = () => {
-    console.warn('중복 체크 및 다음 스텝 이동 필요')
-    navigate('EmojiTutorial')
+    Api.isDuplicatedNickname(inputValue)
+    .then((res) => {
+      if (res.data.success !== 'Success') {
+        alert('중복된 닉네임입니다.')
+      } else {
+        navigate('EmojiTutorial', {nickname: inputValue})
+      }
+    })
+    .catch((err) => {
+      console.warn(err)
+    })
   }
 
   return (
@@ -67,7 +78,7 @@ const NicknameTutorial = ({ navigation: { navigate }}) => {
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight) => StyleSheet.create({
   nicknameContainer: {
     alignItems: 'center',
     marginTop: deviceHeight * 0.15,
@@ -97,4 +108,12 @@ const styles = StyleSheet.create({
   }
 })
 
-export default NicknameTutorial;
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    SERVER_URL: state.user.SERVER_URL,
+  }
+}
+
+export default connect(mapStateToProps)(NicknameTutorial)
