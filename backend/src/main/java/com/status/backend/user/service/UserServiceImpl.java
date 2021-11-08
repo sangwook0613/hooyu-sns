@@ -7,10 +7,15 @@ import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.status.backend.content.domain.Type;
 import com.status.backend.content.dto.RequestContentTimeDto;
+import com.status.backend.fcm.domain.FcmToken;
+import com.status.backend.fcm.domain.FcmTokenRepository;
+import com.status.backend.fcm.service.FcmService;
 import com.status.backend.global.domain.Token;
 import com.status.backend.global.dto.DistDto;
 import com.status.backend.global.exception.GoogleLoginFailException;
+import com.status.backend.global.exception.NoBrowserTokenException;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.service.TokenService;
@@ -27,10 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -39,7 +41,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PrivateZoneRepository pzRepository;
     private final LocationRepository locationRepository;
+    private final FcmTokenRepository fcmTokenRepository;
+
     private final TokenService tokenService;
+    private final FcmService fcmService;
 
     private static RadarMath radarMath = new RadarMath();
     private static final String GOOGLE_CLIENT_ID = "5095342969-dcob776t7ckfeu2gddkb2j4ke2cprfst.apps.googleusercontent.com";
@@ -57,18 +62,18 @@ public class UserServiceImpl implements UserService {
         String email = null;
         try {
             GoogleIdToken idToken = verifier.verify(googleIdToken);
-            if(idToken == null) throw new GoogleLoginFailException("Google에서 인증하지 않았습니다.");
+            if (idToken == null) throw new GoogleLoginFailException("Google에서 인증하지 않았습니다.");
 
             GoogleIdToken.Payload payload = idToken.getPayload();
             email = payload.getEmail();
         } catch (GeneralSecurityException e) {
-            logger.debug("{}",e.getLocalizedMessage());
+            logger.debug("{}", e.getLocalizedMessage());
         } catch (IOException e) {
-            logger.debug("{}",e.getLocalizedMessage());
+            logger.debug("{}", e.getLocalizedMessage());
         }
 
         String convertPw = UUID.randomUUID().toString().replace("-", "");
-        logger.debug("로그인 user Name : {}",convertPw);
+        logger.debug("로그인 user Name : {}", convertPw);
 
         User user = userRepository.findByEmail(email).orElse(User.builder().name(convertPw).email(email).role(Role.USER).build());
 
@@ -92,13 +97,13 @@ public class UserServiceImpl implements UserService {
         return userResponseDto;
     }
 
-    public User getUserInfoTwo(Long userPK) throws NoUserException{
+    public User getUserInfoTwo(Long userPK) throws NoUserException {
         return userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
     }
 
     @Override
     public String duplicateCheckName(String userName) throws NoUserException {
-        if(userRepository.existsByName(userName))
+        if (userRepository.existsByName(userName))
             return "이미 존재하는 이름입니다.";
         else
             return "Success";
@@ -107,7 +112,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String changeName(Long userPK, String userName) throws NoUserException, DuplicateNameException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        if(userRepository.existsByName(userName)){
+        if (userRepository.existsByName(userName)) {
             throw new DuplicateNameException("이미 존재하는 이름입니다.");
         }
         user.setName(userName);
@@ -133,11 +138,11 @@ public class UserServiceImpl implements UserService {
         logger.debug("lat check : {}", lat);
         logger.debug("lon check : {}", lon);
         PrivateZone privateZone;
-        if(pzRepository.existsByUserId(userPK)){
+        if (pzRepository.existsByUserId(userPK)) {
             privateZone = pzRepository.findByUserId(userPK).get();
             privateZone.setLatitude(lat);
             privateZone.setLongitude(lon);
-        }else{
+        } else {
             privateZone = new PrivateZone(lat, lon);
             logger.debug("privatezone : {}", privateZone);
 
@@ -148,7 +153,7 @@ public class UserServiceImpl implements UserService {
             logger.info("user privateZone get(0) : {}", user.getPrivateZones().get(0));
             userRepository.save(user);
         }
-            pzRepository.save(privateZone);
+        pzRepository.save(privateZone);
         return "Success";
     }
 
@@ -178,23 +183,64 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public List<ResponseUserLocationDto> getUserList(Long userPK, BigDecimal lat, BigDecimal lon, int radius, List<ResponseUserLocationDto> pastList) throws NoUserException {
+    public List<ResponseUserLocationDto> getUserList(Long userPK, BigDecimal lat, BigDecimal lon, int radius, List<ResponseUserLocationDto> pastList) throws NoUserException, NoBrowserTokenException, IOException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
 
         // 유저가저와 범위와 location을 수정해준다.
-        setUserLocation(user,lat,lon);
+        setUserLocation(user, lat, lon);
 
         //범위에 있는 ResponseUserLocationDto : List 가져오기
-        List<ResponseUserLocationDto> nowList = getUserWithinRadius(user,lat,lon,radius);
+        List<ResponseUserLocationDto> nowList = getUserWithinRadius(user, lat, lon, radius);
 
-        //비교 **주의** 초기 유저의 요청은 pastList가 비어있다.
-        if(pastList == null || pastList.isEmpty()){
-            // 모든 리스트에게 push 알림 보내기.
+        if (user.isAcceptPush()) {
+            sendPush(user, nowList, pastList);
         }
-        //push
 
         //return
         return nowList;
+    }
+
+    private void sendPush(User user, List<ResponseUserLocationDto> nowList, List<ResponseUserLocationDto> pastList) throws NoBrowserTokenException, IOException {
+        int countOfNew = 0;
+        Type targetContent = null;
+
+        HashMap<String, RequestContentTimeDto> pushMap = new HashMap<>();
+
+        for (ResponseUserLocationDto tmp : pastList) {
+            pushMap.put(tmp.getName(), tmp.getContentTime());
+        }
+
+        for (int i = 0; i < nowList.size(); i++) {
+            ResponseUserLocationDto target = nowList.get(i);
+            if (!pushMap.containsKey(target.getName())) {
+                countOfNew++;
+            } else {
+                RequestContentTimeDto past = pushMap.get(target.getName());
+                if (past.getStatus().equals(target.getContentTime().getStatus())) {
+                    targetContent = Type.STATUS;
+                } else if (past.getImages().equals(target.getContentTime().getImages())) {
+                    targetContent = Type.IMAGE;
+                } else if (past.getSurvey().equals(target.getContentTime().getSurvey())) {
+                    targetContent = Type.SURVEY;
+                }
+            }
+        }
+
+        //push
+        if (countOfNew != 0 || targetContent != null) {
+            FcmToken targetToken = fcmTokenRepository.findByUserId(user.getId()).orElseThrow(() -> new NoBrowserTokenException("브라우저토큰이 없습니다...."));
+            if (countOfNew != 0) {
+                String title = "반경 내에 " + countOfNew + "명의 사람이 새로 들어왔어요!";
+                String body = "클릭해서 확인해보세요";
+                fcmService.sendMessageTo(targetToken.getToken(), title, body);
+            }
+            if (targetContent != null) {
+                String title = "누군가 새 " + targetContent.getTitle() + "를 올렸어요!";
+                String body = "클릭해서 확인해보세요";
+                fcmService.sendMessageTo(targetToken.getToken(), title, body);
+            }
+        }
+
     }
 
     @Override
@@ -202,25 +248,25 @@ public class UserServiceImpl implements UserService {
         List<ResponseUserLocationDto> responseUserLocationDtoList = new ArrayList<>();
 
         // 범위에 있는 List 가져 옴 (현재 +- 0.04 오차를 두고 있음)
-        List<Location> locationList = locationRepository.selectSQLBylatlon(lat,lon);
+        List<Location> locationList = locationRepository.selectSQLBylatlon(lat, lon);
         for (int i = 0; i < locationList.size(); i++) {
             Location target = locationList.get(i);
 
             //본인인 경우 out
-            if(target.getUser().getId() == user.getId()) continue;
+            if (target.getUser().getId() == user.getId()) continue;
 
-            DistDto checkDist = radarMath.distance(lat,lon,target.getLatitude(),target.getLongitude());
-            if(checkDist.getDist()>radius) continue;
+            DistDto checkDist = radarMath.distance(lat, lon, target.getLatitude(), target.getLongitude());
+            if (checkDist.getDist() > radius) continue;
 
             //privateZone안에 있는 여부check
             boolean userInPrivateZone = false;
             User targetUser = target.getUser();
             List<PrivateZone> privateZoneList = targetUser.getPrivateZones();
-            if(privateZoneList.size()!=0){
+            if (privateZoneList.size() != 0) {
                 PrivateZone targetPrivateZone = privateZoneList.get(0);
-                DistDto targetInPrivateZone = radarMath.distance(targetPrivateZone.getLatitude(), targetPrivateZone.getLongitude(),target.getLatitude(),target.getLongitude());
+                DistDto targetInPrivateZone = radarMath.distance(targetPrivateZone.getLatitude(), targetPrivateZone.getLongitude(), target.getLatitude(), target.getLongitude());
                 //targetUser의 위치가 privateZone 100 안쪽에 있을때 true
-                if(targetInPrivateZone.getDist()<100)
+                if (targetInPrivateZone.getDist() < 100)
                     userInPrivateZone = true;
             }
 
@@ -245,9 +291,9 @@ public class UserServiceImpl implements UserService {
     public void setUserLocation(User user, BigDecimal lat, BigDecimal lon) throws NoUserException {
 
         Location userLocation = user.getLocation();
-        if(userLocation==null){
+        if (userLocation == null) {
             userLocation = Location.builder().user(user).latitude(lat).longitude(lon).build();
-        }else{
+        } else {
             userLocation.setLatitude(lat);
             userLocation.setLongitude(lon);
         }

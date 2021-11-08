@@ -2,6 +2,7 @@ package com.status.backend.user.web;
 
 import com.status.backend.global.domain.Token;
 import com.status.backend.global.dto.SuccessResponseDto;
+import com.status.backend.global.exception.NoBrowserTokenException;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.service.ResponseGenerateService;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -125,7 +127,7 @@ public class UserController{
     }
 
     @PostMapping("/radar")
-    public ResponseEntity<SuccessResponseDto> getListUserWithinRadius(@RequestBody RequestUserLocationDto requestUserLocationDto) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> getListUserWithinRadius(@RequestBody RequestUserLocationDto requestUserLocationDto) throws NoUserException, NoBrowserTokenException, IOException {
         logger.trace("User Controller 진입 getUserWithinRadius param {}", requestUserLocationDto);
         List<ResponseUserLocationDto> list = userService.getUserList(requestUserLocationDto.getRequestRadiusDto().getUserPK(),
                 requestUserLocationDto.getRequestRadiusDto().getLat(),requestUserLocationDto.getRequestRadiusDto().getLon(),
