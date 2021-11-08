@@ -187,8 +187,10 @@ public class UserServiceImpl implements UserService {
         //범위에 있는 ResponseUserLocationDto : List 가져오기
         List<ResponseUserLocationDto> nowList = getUserWithinRadius(user,lat,lon,radius);
 
-        //비교 **주의** 초기 유저의 요청은 pastList가 null이다.
-
+        //비교 **주의** 초기 유저의 요청은 pastList가 비어있다.
+        if(pastList == null || pastList.isEmpty()){
+            // 모든 리스트에게 push 알림 보내기.
+        }
         //push
 
         //return
