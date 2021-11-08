@@ -13,6 +13,7 @@ axios.interceptors.request.use(
     const word = config.url.split("/")
     if (word[0] != "login") {
       const accessToken = await AsyncStorage.getItem('access_token')
+      // console.log(accessToken)
       const refreshToken = await AsyncStorage.getItem('refresh_token')
       const decodedAccessToken = jwt_decode(accessToken)
   
@@ -41,6 +42,7 @@ axios.interceptors.response.use(
   async function (response) {
 
     const accessToken = await AsyncStorage.getItem('access_token')
+    // console.log(accessToken)
     if (
       accessToken &&
       response.headers["access_token"] &&
