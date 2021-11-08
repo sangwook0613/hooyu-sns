@@ -21,6 +21,7 @@ import ShelterList from '../components/Main/ShelterList'
 import AddButton from '../components/Main/AddButton'
 import axios from 'axios'
 
+import api from '../utils/api'
 
 const date = new Date()
 
@@ -37,7 +38,7 @@ const mainColor6 = theme == "morning" ? "#000000" : (theme == "evening" ? '#0000
 const mainColor7 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#FFFFFF')
 
 
-function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK, setMyRadius }) {
+function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK,userEmoji, setMyRadius }) {
 
   const styles = styleSheet(deviceWidth, deviceHeight, deviceWidth * 0.7)
 
@@ -85,9 +86,10 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     setInterval(() => {
       getLocation()
     }, 10000);
-  }, [])
+  }, [myRadius])
 
-  getLocation = () => {
+  const getLocation = () => {
+    
     requestPositionPermissions()
       .then((didGetPermission) => {
         if (didGetPermission) {
@@ -111,8 +113,10 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       })
   }
 
-  getUsers = () => {
+  const getUsers = () => {
     console.log(myRadius)
+    console.log("userPK : ",userPK)
+    console.log(userEmoji)
     axios({
       method: 'post',
       url: SERVER_URL + 'user/radar',
@@ -120,8 +124,8 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         list: [
         ],
         requestRadiusDto: {
-          lat: 100.12354,
-          lon: 100.12354,
+          lat: 10,
+          lon: 10,
           radius: myRadius,
           userPK: userPK
         }
@@ -605,6 +609,7 @@ function mapStateToProps(state) {
     myRadius: state.user.myRadius,
     SERVER_URL: state.user.SERVER_URL,
     userPK: state.user.userPK,
+    userEmoji: state.user.userEmoji
   }
 }
 
