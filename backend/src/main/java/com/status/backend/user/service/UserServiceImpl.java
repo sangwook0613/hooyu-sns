@@ -7,12 +7,17 @@ import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.status.backend.content.domain.Type;
 import com.status.backend.content.domain.RecordTime;
 import com.status.backend.content.domain.RecordTimeRepository;
 import com.status.backend.content.dto.RequestContentTimeDto;
+import com.status.backend.fcm.domain.FcmToken;
+import com.status.backend.fcm.domain.FcmTokenRepository;
+import com.status.backend.fcm.service.FcmService;
 import com.status.backend.global.domain.Token;
 import com.status.backend.global.dto.DistDto;
 import com.status.backend.global.exception.GoogleLoginFailException;
+import com.status.backend.global.exception.NoBrowserTokenException;
 import com.status.backend.global.exception.NoUserException;
 import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.service.TokenService;
@@ -29,10 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Service
@@ -41,8 +43,11 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PrivateZoneRepository pzRepository;
     private final LocationRepository locationRepository;
+    private final FcmTokenRepository fcmTokenRepository;
+
     private final RecordTimeRepository recordTimeRepository;
     private final TokenService tokenService;
+    private final FcmService fcmService;
 
     private static RadarMath radarMath = new RadarMath();
     private static final String GOOGLE_CLIENT_ID = "5095342969-dcob776t7ckfeu2gddkb2j4ke2cprfst.apps.googleusercontent.com";
@@ -192,7 +197,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public List<ResponseUserLocationDto> getUserList(Long userPK, BigDecimal lat, BigDecimal lon, int radius, List<ResponseUserLocationDto> pastList) throws NoUserException {
+    public List<ResponseUserLocationDto> getUserList(Long userPK, BigDecimal lat, BigDecimal lon, int radius, List<ResponseUserLocationDto> pastList) throws NoUserException, NoBrowserTokenException, IOException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
 
         //유저의 범위를 변경하기(체크 후)
@@ -201,21 +206,61 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
         }
 
-        logger.info("뭐가문제???11111111111111111111111");
         // 유저가저와 범위와 location을 수정해준다.
         setUserLocation(user, lat, lon);
 
-        logger.info("뭐가문제???22222222222222222");
         //범위에 있는 ResponseUserLocationDto : List 가져오기
         List<ResponseUserLocationDto> nowList = getUserWithinRadius(user, lat, lon, radius);
-        logger.info("뭐가문제???333333333333333333333333");
 
-        //비교 **주의** 초기 유저의 요청은 pastList가 null이다.
-
-        //push
+        if (user.isAcceptPush()) {
+            sendPush(user, nowList, pastList);
+        }
 
         //return
         return nowList;
+    }
+
+    private void sendPush(User user, List<ResponseUserLocationDto> nowList, List<ResponseUserLocationDto> pastList) throws NoBrowserTokenException, IOException {
+        int countOfNew = 0;
+        Type targetContent = null;
+
+        HashMap<String, RequestContentTimeDto> pushMap = new HashMap<>();
+
+        for (ResponseUserLocationDto tmp : pastList) {
+            pushMap.put(tmp.getName(), tmp.getContentTime());
+        }
+
+        for (int i = 0; i < nowList.size(); i++) {
+            ResponseUserLocationDto target = nowList.get(i);
+            if (!pushMap.containsKey(target.getName())) {
+                countOfNew++;
+            } else {
+                RequestContentTimeDto past = pushMap.get(target.getName());
+                if (past.getStatus().equals(target.getContentTime().getStatus())) {
+                    targetContent = Type.STATUS;
+                } else if (past.getImages().equals(target.getContentTime().getImages())) {
+                    targetContent = Type.IMAGE;
+                } else if (past.getSurvey().equals(target.getContentTime().getSurvey())) {
+                    targetContent = Type.SURVEY;
+                }
+            }
+        }
+
+        //push
+        if (countOfNew != 0 || targetContent != null) {
+            FcmToken targetToken = fcmTokenRepository.findByUserId(user.getId()).orElseThrow(() -> new NoBrowserTokenException("브라우저토큰이 없습니다...."));
+            if (countOfNew != 0) {
+                String title = "반경 내에 " + countOfNew + "명의 사람이 새로 들어왔어요!";
+                String body = "클릭해서 확인해보세요";
+                fcmService.sendMessageTo(targetToken.getToken(), title, body);
+            }
+            if (targetContent != null) {
+                String title = "누군가 새 " + targetContent.getTitle() + "를 올렸어요!";
+                String body = "클릭해서 확인해보세요";
+                fcmService.sendMessageTo(targetToken.getToken(), title, body);
+            }
+        }
+
     }
 
     @Override
