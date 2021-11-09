@@ -7,7 +7,6 @@ import com.status.backend.global.exception.NoAuthorityUserException;
 import com.status.backend.global.exception.NoContentException;
 import com.status.backend.global.exception.NoUserException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.List;
 @Service
 public interface ContentService {
     String createStatusContent(Long userPK, String exon, String color, Type type) throws NoUserException;
-    String createImageContent(Long userPK, MultipartFile multipartFile, String exon, String color, Type type) throws NoUserException, IOException;
+    String createImageContent(Long userPK, String exon, String color, Type type) throws NoUserException, IOException;
     String createSurveyContent(Long userPK, String exon, String color, Type type, List<String> answerList) throws NoUserException;
 
     //투표
