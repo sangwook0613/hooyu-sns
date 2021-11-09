@@ -25,6 +25,29 @@ export default {
         userName: inputValue  
       }
     })
-  }
+  },
 
+  updateNickname(inputValue, pk) {
+    return axios({
+      url: `user/nameSet`,
+      method: 'post',
+      data: {
+        userName: inputValue,
+        userPK: pk,
+      }
+    })
+  },
+
+  setPushSetting(accept, radius, sync, pk) {
+    return axios({
+      url: `user/push`,
+      method: 'post',
+      data: {
+        accept: accept,
+        radius: radius,
+        sync: sync,
+        userPK: pk
+      }
+    })
+  },
 }

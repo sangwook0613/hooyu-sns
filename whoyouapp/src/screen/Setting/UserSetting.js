@@ -1,13 +1,12 @@
 import React, { useState } from 'react'
 import { Dimensions, View, Text, TouchableOpacity } from 'react-native'
+import { connect } from 'react-redux'
 import NicknameChangeModal from '../../components/modal/nicknameChangeModal'
 import LogoutModal from '../../components/modal/logoutModal'
 import UnregisterModal from '../../components/modal/unregisterModal'
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
 
-const UserSetting = () => {
+const UserSetting = ({deviceWidth, deviceHeight}) => {
   const [isNicknameChangeModalVisible, setNicknameChangeModalVisible] = useState(false)
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false)
   const [isUnregisterModalVisible, setUnregisterModalVisible] = useState(false)
@@ -72,10 +71,18 @@ const UserSetting = () => {
         }}
         onPress={() => { setUnregisterModalVisible(true) }}
       >
-        <View><Text style={{fontSize: 16, fontWeight: '700'}}>회원탈퇴</Text></View>
+        <View><Text style={{fontSize: 16, fontWeight: '700', color: 'red'}}>회원탈퇴</Text></View>
       </TouchableOpacity>
     </>
   )
 }
 
-export default UserSetting
+function mapStateToProps(state) {
+  return {
+    deviceHeight: state.user.deviceHeight,
+    deviceWidth: state.user.deviceWidth,
+    userPK: state.user.userPK,
+  }
+}
+
+export default connect(mapStateToProps)(UserSetting)
