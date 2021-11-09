@@ -12,6 +12,7 @@ import com.status.backend.global.service.ResponseGenerateService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +33,11 @@ public class ContentController{
     Logger logger = LoggerFactory.getLogger(ContentController.class);
 
     @PostMapping("/upload")
-    public ResponseEntity<SuccessResponseDto> upload(@RequestParam("upload") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<SuccessResponseDto> upload(HttpRequest request, @RequestParam("upload") MultipartFile multipartFile) throws IOException {
 
+        logger.debug("승현이와 함께하는 디버그 request getMethodValue : {}", request.getMethodValue());
+        logger.debug("승현이와 함께하는 디버그 ContentController in getURI : {}", request.getURI());
+        logger.debug("승현이와 함께하는 디버그 ContentController in Param : {}", multipartFile);
         String imageurl = s3Uploader.upload(multipartFile, "image");
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(imageurl);
