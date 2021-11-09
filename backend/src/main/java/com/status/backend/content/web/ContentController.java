@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,12 +46,13 @@ public class ContentController{
     }
 
     @PostMapping("/create/image")
-    public ResponseEntity<SuccessResponseDto> createImageContent(@RequestBody ImageDto requestContentDto) throws NoUserException, IOException {
+    public ResponseEntity<SuccessResponseDto> createImageContent(@RequestParam("image") MultipartFile multipartFile , @RequestBody RequestContentDto requestContentDto) throws NoUserException, IOException {
         logger.trace("ContentController 진입  createContent param {}", requestContentDto);
 
         String message = contentService.createImageContent(
                 requestContentDto.getUserPK(),
-                requestContentDto.getMultipartFile(),
+                multipartFile,
+                requestContentDto.getExon(),
                 requestContentDto.getColor(),
                 Type.IMAGE
         );
