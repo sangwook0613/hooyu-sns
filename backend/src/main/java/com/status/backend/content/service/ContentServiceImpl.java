@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -33,7 +32,6 @@ public class ContentServiceImpl implements ContentService {
     private final SurveyContentAnswerRepository surveyContentAnswerRepository;
     private final FcmTokenRepository fcmTokenRepository;
 
-    private final S3UploaderService s3Uploader;
 
     Logger logger = LoggerFactory.getLogger(ContentServiceImpl.class);
 
@@ -67,9 +65,8 @@ public class ContentServiceImpl implements ContentService {
 
     @Transactional
     @Override
-    public String createImageContent(Long userPK, MultipartFile multipartFile, String exon, String color, Type type) throws NoUserException, IOException {
+    public String createImageContent(Long userPK, String exon, String color, Type type) throws NoUserException, IOException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        exon = s3Uploader.upload(multipartFile, "image");
         Content content = Content.builder().user(user).exon(exon).color(color).type(type).build();
         contentRepository.save(content);
         RecordTime recordTime = user.getRecordTime();

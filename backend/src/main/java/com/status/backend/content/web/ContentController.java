@@ -3,6 +3,7 @@ package com.status.backend.content.web;
 import com.status.backend.content.domain.Type;
 import com.status.backend.content.dto.*;
 import com.status.backend.content.service.ContentServiceImpl;
+import com.status.backend.content.service.S3UploaderService;
 import com.status.backend.global.dto.SuccessResponseDto;
 import com.status.backend.global.exception.NoAuthorityUserException;
 import com.status.backend.global.exception.NoContentException;
@@ -26,8 +27,19 @@ public class ContentController{
 
     private final ContentServiceImpl contentService;
     private final ResponseGenerateService responseGenerateService;
+    private final S3UploaderService s3Uploader;
 
     Logger logger = LoggerFactory.getLogger(ContentController.class);
+
+    @PostMapping("/upload")
+    public ResponseEntity<SuccessResponseDto> upload(@RequestParam("upload") MultipartFile multipartFile) throws IOException {
+
+        String imageurl = s3Uploader.upload(multipartFile, "image");
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(imageurl);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
 
     @PostMapping("/create/status")
     public ResponseEntity<SuccessResponseDto> createStatusContent(@RequestBody RequestContentDto requestContentDto) throws NoUserException {
@@ -46,12 +58,11 @@ public class ContentController{
     }
 
     @PostMapping("/create/image")
-    public ResponseEntity<SuccessResponseDto> createImageContent(@RequestParam("image") MultipartFile multipartFile , @RequestBody RequestContentDto requestContentDto) throws NoUserException, IOException {
+    public ResponseEntity<SuccessResponseDto> createImageContent(@RequestBody RequestContentDto requestContentDto) throws NoUserException, IOException {
         logger.trace("ContentController 진입  createContent param {}", requestContentDto);
 
         String message = contentService.createImageContent(
                 requestContentDto.getUserPK(),
-                multipartFile,
                 requestContentDto.getExon(),
                 requestContentDto.getColor(),
                 Type.IMAGE
