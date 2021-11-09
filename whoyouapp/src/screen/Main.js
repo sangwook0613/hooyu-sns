@@ -54,10 +54,33 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 
   const mainListRef = useRef()
   const shelterListRef = useRef()
+  const appState = useRef(AppState.currentState)
 
-  useEffect(() => {
-    console.log('dd')
-    requestPermission()
+  useEffect(async () => {
+    console.log('이펙트')
+    await requestPermission()
+    const subscription = AppState.addEventListener('change', nextAppState => {
+        if (
+          appState.current.match(/inactive|background/) &&
+          nextAppState === 'active'
+        ) {
+          console.log('⚽️⚽️App has come to the foreground!');
+          instantGetLocation()
+          activeGetLocation()
+        }
+        if (
+          appState.current.match(/inactive|active/) &&
+          nextAppState === 'background'
+        ) {
+          console.log('⚽️⚽️App has come to the background!');
+          instantGetLocation()
+          backgroundGetLocation()
+        }
+        appState.current = nextAppState;
+      })
+    return () => {
+      subscription.remove()
+    }
   }, [])
 
   useEffect(() => {
@@ -67,20 +90,11 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   const LOCATION_TASK_NAME = 'location-task'
 
   const requestPermission = async () => {
-    const foregroundStatus = await Location.requestForegroundPermissionsAsync()
-    const backgroundStatus = await Location.requestBackgroundPermissionsAsync()
+    const front = await Location.requestForegroundPermissionsAsync()
+    const back = await Location.requestBackgroundPermissionsAsync()
     instantGetLocation()
-    if (foregroundStatus.granted && backgroundStatus.granted) {
-      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.high,
-        distanceInterval: 0,
-        timeInterval: 10000,
-        foregroundService: {
-          notificationTitle: 'Hooyu',
-          notificationBody : '당신의 반경을 탐색하는중...',
-          notificationColor: '#FF6A77'
-        }
-      })
+    if (front.granted && back.granted) {
+      activeGetLocation()
     } else {
       Alert.alert(
         '서비스 이용 알림', 
@@ -101,7 +115,6 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     }
     if (data) {
       const { locations } = data
-      console.log(AppState.currentState)
       getUsers(locations[0].coords.latitude, locations[0].coords.longitude)
     }
   })
@@ -111,7 +124,36 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     getUsers(data.coords.latitude, data.coords.longitude)
   }
 
+  const activeGetLocation = async () => {
+    await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
+    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+      accuracy: Location.Accuracy.high,
+      distanceInterval: 0,
+      timeInterval: 10000,
+      foregroundService: {
+        notificationTitle: 'Hooyu',
+        notificationBody : '당신의 반경을 탐색하는중...',
+        notificationColor: '#FF6A77'
+      }
+    })
+  }
+
+  const backgroundGetLocation = async () => {
+    await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
+    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+      accuracy: Location.Accuracy.high,
+      distanceInterval: 0,
+      timeInterval: 20000,
+      foregroundService: {
+        notificationTitle: 'Hooyu',
+        notificationBody : '당신의 반경을 탐색하는중...',
+        notificationColor: '#FF6A77'
+      }
+    })
+  }
+
   const getUsers = (latitude, longitude) => {
+    console.log('실행됨')
     axios({
       method: 'post',
       url: SERVER_URL + 'user/radar',
@@ -129,31 +171,7 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       .then((res) => {
         setUsers(res.data.success.filter(user => user.privateZone !== true))
         setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
-        if (AppState.currentState === 'background') {
-          Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
-          Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-            accuracy: Location.Accuracy.high,
-            distanceInterval: 0,
-            timeInterval: 600000,
-            foregroundService: {
-              notificationTitle: 'Hooyu',
-              notificationBody : '당신의 반경을 탐색하는중...',
-              notificationColor: '#FF6A77'
-            }
-          })
-        } else {
-          Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
-          Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-            accuracy: Location.Accuracy.high,
-            distanceInterval: 0,
-            timeInterval: 10000,
-            foregroundService: {
-              notificationTitle: 'Hooyu',
-              notificationBody : '당신의 반경을 탐색하는중...',
-              notificationColor: '#FF6A77'
-            }
-          })
-        }
+        console.log('get users : ', AppState.currentState)
       })
       .catch((err) => {
         console.warn(err)
