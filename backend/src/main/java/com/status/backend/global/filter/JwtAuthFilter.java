@@ -20,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -49,7 +50,8 @@ public class JwtAuthFilter extends GenericFilterBean {
                 logger.trace("저장된 re와 보낸 re가 일치 합니다.");
 
                 Token newToken = tokenService.generateToken(user.getId(), user.getName(), "USER");
-                ((HttpServletRequest)response).setAttribute("access_token",newToken.getAccess_token());
+
+                ((HttpServletResponse)response).addHeader("access_token",newToken.getAccess_token());
             } else {
                 logger.trace("저장된 re와 보낸 re가 불일치 합니다.");
                 logger.trace("저장된 re {}",user.getRefreshToken());
