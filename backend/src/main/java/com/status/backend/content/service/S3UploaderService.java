@@ -28,14 +28,15 @@ public class S3UploaderService {
     public String bucket;  // S3 버킷 이름
 
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
+        logger.debug("upload 들어옴 : {}", multipartFile);
         File uploadFile = convert(multipartFile)  // 파일 변환할 수 없으면 에러
                 .orElseThrow(() -> new IllegalArgumentException("error: MultipartFile -> File convert fail"));
-
         return upload(uploadFile, dirName);
     }
 
     // S3로 파일 업로드하기
     private String upload(File uploadFile, String dirName) {
+        logger.debug("upload 2단계 : {}",uploadFile);
         String fileName = dirName + "/" + UUID.randomUUID() + uploadFile.getName();   // S3에 저장된 파일 이름
         String uploadImageUrl = putS3(uploadFile, fileName); // s3로 업로드
         removeNewFile(uploadFile);
