@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public interface ContentService {
     String createStatusContent(Long userPK, String exon, String color, Type type) throws NoUserException;
-    String createImageContent(Long userPK, MultipartFile multipartFile, String color, Type type) throws NoUserException, IOException;
+    String createImageContent(Long userPK, MultipartFile multipartFile, String exon, String color, Type type) throws NoUserException, IOException;
     String createSurveyContent(Long userPK, String exon, String color, Type type, List<String> answerList) throws NoUserException;
 
     //투표
