@@ -7,7 +7,7 @@ import * as ImagePicker from 'react-native-image-picker';
 import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
-
+import * as RNFS from 'react-native-fs';
 
 const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
@@ -20,10 +20,11 @@ const emojiArray = [
 
 const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
   
-  
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [emoji, setEmoji] = useState(userEmoji)
   const [imageFile, setImageFile] = useState('')
+  const [sendForm, setSendForm] = useState('')
+
 
   const PictureTitle = () => {
     return (
@@ -59,7 +60,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         </View>
       )
     });
-  }, [navigation, emoji, imageFile]);
+  }, [navigation, emoji, imageFile, sendForm]);
 
 
   const imageGalleryLaunch = () => {
@@ -68,11 +69,10 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         skipBackup: true,
         path: 'images',
       },
+      mediaType: 'photo'
     };
   
     ImagePicker.launchImageLibrary(options, (res) => {
-      // console.log('Response = ', res);
-  
       if (res.didCancel) {
         console.log('User cancelled image picker');
       } else if (res.error) {
@@ -81,10 +81,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         console.log('User tapped custom button: ', res.customButton);
         alert(res.customButton);
       } else {
-        const source = { uri: res.assets[0].uri };
-        // console.log('response', JSON.stringify(res));
-        console.log(res.assets[0].uri)
-        setImageFile(source)
+        setImageFile(res.assets[0])
       }
     });
   }  
@@ -108,22 +105,37 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   }
 
   const createPicture = () => {
-    console.log(imageFile)
+    const formData = new FormData();
+
+    formData.append('upload', {
+      uri: imageFile.uri,
+      type: imageFile.type,
+      name: imageFile.fileName
+    })
+
     axios({
       method: 'post',
-      url: SERVER_URL + 'content/create/image',
-      data: {
-        "color": '',
-        "exon": imageFile.uri,
-        "userPK": userPK
-      }
+      url: 'content/upload',
+      data: formData
     })
     .then((res) => {
-      console.log(res.data.success)
+      savePicture(res.data.success)
       createEmoji()
     })
     .catch((err) => {
       console.log(err)
+    })
+  }
+
+  const savePicture = (uri) => {
+    axios({
+      method: 'post',
+      url: SERVER_URL + 'content/create/image',
+      data: {
+        userPK: userPK,
+        color: '',
+        exon: uri,
+      }
     })
   }
 
@@ -137,7 +149,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
               <View style={{ elevation: 15}}>
                 <Image
                   style={{ width: clientWidth-80, height: clientWidth-80 }}
-                  source={imageFile}
+                  source={{ uri: imageFile.uri }}
                 />
               </View>
               <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', marginTop: 50}} onPress={() => imageGalleryLaunch()}>
