@@ -170,6 +170,16 @@ public class UserServiceImpl implements UserService {
         return "Success";
     }
 
+    public String setAllPush(Long userPK, Boolean accept, Boolean sync, int radius) throws Exception {
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        if(accept == null || sync == null || radius<0) throw new Exception("환경설정 실패");
+        user.setAcceptPush(accept);
+        user.setAcceptSync(sync);
+        user.setAcceptRadius(radius);
+        userRepository.save(user);
+        return "Success";
+    }
+
     @Override
     public String setPushAlarmReceive(Long userPK, Boolean accept) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
