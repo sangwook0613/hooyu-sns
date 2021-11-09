@@ -3,7 +3,7 @@ server:
 
 spring:
   profiles:
-    include: oauth
+    include: oauth, aws
 
   datasource:
 ##  ?autoReconnect=true&useUnicode=true&characterEncoding=utf8mb4&serverTimezone=KST
