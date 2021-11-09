@@ -11,6 +11,7 @@ axios.defaults.headers.post["Content-Type"] = "application/json"
 axios.interceptors.request.use(
   async function (config) {
     const word = config.url.split("/")
+    
     if (word[0] != "login") {
       const accessToken = await AsyncStorage.getItem('access_token')
       // console.log(accessToken)
@@ -25,10 +26,11 @@ axios.interceptors.request.use(
         // console.log('testest')
         config.headers["access_token"] = accessToken
       }
-      
+      if (word[0] == 'content' && word[1] == 'upload') {
+        config.headers["Content-Type"] = 'multipart/form-data'
+      }
     }
     // console.log("에베베",config.url)
-    
     return config
   },
   function (error) {
