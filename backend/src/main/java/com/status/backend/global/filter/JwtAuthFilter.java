@@ -36,8 +36,10 @@ public class JwtAuthFilter extends GenericFilterBean {
         String access_token = ((HttpServletRequest)request).getHeader("access_token");
         String refresh_token = ((HttpServletRequest)request).getHeader("refresh_token");
         logger.trace("this is access_token !!!!!!! {}", access_token);
+        logger.debug("this is refresh !!!!!!! {}", refresh_token);
 
         if(refresh_token != null && tokenService.verifyToken(refresh_token)){
+            logger.debug("토큰 두개 모두 보냄 즉, 갱신 코트 :: {}", refresh_token);
             Long id = tokenService.getId(refresh_token);
 
             User user = userRepository.findById(id).orElseThrow(()-> new NoUserException("토큰의 사용자가 없습니다."));
@@ -58,6 +60,7 @@ public class JwtAuthFilter extends GenericFilterBean {
             Authentication auth = getAuthentication(user);
             SecurityContextHolder.getContext().setAuthentication(auth);
         } else if (access_token != null && tokenService.verifyToken(access_token)) {
+            logger.debug("토큰 한개 보냄 정상 상황:: {}", refresh_token);
             Long pk = tokenService.getId(access_token);
 
             User user = userRepository.findById(pk).get();
