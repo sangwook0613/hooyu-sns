@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -44,12 +45,12 @@ public class ContentController{
     }
 
     @PostMapping("/create/image")
-    public ResponseEntity<SuccessResponseDto> createImageContent(@RequestBody RequestContentDto requestContentDto) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> createImageContent(@RequestBody ImageDto requestContentDto) throws NoUserException, IOException {
         logger.trace("ContentController 진입  createContent param {}", requestContentDto);
 
         String message = contentService.createImageContent(
                 requestContentDto.getUserPK(),
-                requestContentDto.getExon(),
+                requestContentDto.getMultipartFile(),
                 requestContentDto.getColor(),
                 Type.IMAGE
         );
