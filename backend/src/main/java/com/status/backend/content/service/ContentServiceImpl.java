@@ -67,9 +67,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Transactional
     @Override
-    public String createImageContent(Long userPK, MultipartFile multipartFile, String color, Type type) throws NoUserException, IOException {
+    public String createImageContent(Long userPK, MultipartFile multipartFile, String exon, String color, Type type) throws NoUserException, IOException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        String exon = s3Uploader.upload(multipartFile, "image");
+        exon = s3Uploader.upload(multipartFile, "image");
         Content content = Content.builder().user(user).exon(exon).color(color).type(type).build();
         contentRepository.save(content);
         RecordTime recordTime = user.getRecordTime();
