@@ -27,4 +27,4 @@ spring:
 logging:
   level:
     root: Info
-    com.status.backend : Info
+    com.status.backend : debug
