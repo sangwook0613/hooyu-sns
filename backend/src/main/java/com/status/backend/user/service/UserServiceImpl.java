@@ -3,30 +3,28 @@ package com.status.backend.user.service;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.status.backend.content.domain.Type;
 import com.status.backend.content.domain.RecordTime;
 import com.status.backend.content.domain.RecordTimeRepository;
+import com.status.backend.content.domain.Type;
 import com.status.backend.content.dto.RequestContentTimeDto;
 import com.status.backend.fcm.domain.FcmToken;
 import com.status.backend.fcm.domain.FcmTokenRepository;
 import com.status.backend.fcm.service.FcmService;
 import com.status.backend.global.domain.Token;
 import com.status.backend.global.dto.DistDto;
+import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.exception.GoogleLoginFailException;
 import com.status.backend.global.exception.NoBrowserTokenException;
 import com.status.backend.global.exception.NoUserException;
-import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.service.TokenService;
 import com.status.backend.global.util.RadarMath;
 import com.status.backend.user.domain.*;
 import com.status.backend.user.dto.ResponseUserLocationDto;
 import com.status.backend.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.jni.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -175,7 +173,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String setPushAlarmReceive(Long userPK, Boolean accept) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        user.setAcceptPush(!user.isAcceptPush());
+        user.setAcceptPush(accept);
         userRepository.save(user);
         return "Success";
     }
@@ -183,7 +181,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String setPushAlarmSync(Long userPK, Boolean sync) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        user.setAcceptSync(!user.isAcceptSync());
+        user.setAcceptSync(sync);
         userRepository.save(user);
         return "Success";
     }
