@@ -251,7 +251,7 @@ public class UserServiceImpl implements UserService {
         logger.debug("LocalDataTime : {}",nowTime);
         FcmToken targetToken = fcmTokenRepository.findByUserId(user.getId()).orElseThrow(() -> new NoBrowserTokenException("브라우저토큰이 없습니다...."));
         logger.debug("FCMToekn : {}",targetToken);
-        logger.debug("LocalDataTime check : {}",nowTime.isAfter(null));
+//        logger.debug("LocalDataTime check : {}",nowTime.isAfter(null));
         //push
 
         //장기 미 사용자 까꿍 message
