@@ -47,17 +47,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/h2-console/**","/error","/favicon.ico").permitAll()
-                .antMatchers("/auth/**","/oauth2/**, api/v1/login/**").permitAll()
-                .antMatchers("/api/v1/user/**", "/api/v1/content/**", "/api/v1/push/**","/api/v1/emotion/**").hasRole(Role.USER.name())
+                .antMatchers("/auth/**","/oauth2/**", "/api/v1/login/**").permitAll()
+                .antMatchers("/api/v1/user/**", "/api/v1/content/**", "/api/v1/browser/**","/api/v1/emotion/**").hasRole(Role.USER.name())
 //                .antMatchers("/api/v1/**").permitAll()
 
-                .antMatchers("/api/guest/**","/api/user/**","/push/**").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
                 .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
+//                .logoutUrl("/logout")
+//                .logoutSuccessUrl("/")
                 .logoutSuccessHandler(customLogoutSuccessHandler)
 
                 .and()
