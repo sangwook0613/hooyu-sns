@@ -1,10 +1,9 @@
 package com.status.backend.user.web;
 
-import com.status.backend.global.domain.Token;
 import com.status.backend.global.dto.SuccessResponseDto;
+import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.exception.NoBrowserTokenException;
 import com.status.backend.global.exception.NoUserException;
-import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.service.ResponseGenerateService;
 import com.status.backend.user.domain.User;
 import com.status.backend.user.dto.*;
@@ -12,9 +11,7 @@ import com.status.backend.user.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -94,37 +91,46 @@ public class UserController{
     }
 
 
-    @PostMapping("/push/accept")
-    public ResponseEntity<SuccessResponseDto> setPushAlarmReceive(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
+    @PostMapping("/push")
+    public ResponseEntity<SuccessResponseDto> setPushAlarmReceive(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws Exception {
         logger.trace("User Controller 진입 SetPushAlarmReceive param {}", pushAlarmDto);
-        String message = userService.setPushAlarmReceive(pushAlarmDto.getUserPK(),pushAlarmDto.getAccept());
+        String message = userService.setAllPush(pushAlarmDto.getUserPK(),pushAlarmDto.getAccept(),pushAlarmDto.getSync(),pushAlarmDto.getRadius());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
-
-
-    @PostMapping("/push/sync")
-    public ResponseEntity<SuccessResponseDto> setPushAlarmSync(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
-        logger.trace("User Controller 진입 SetPushAlarmSync param {}", pushAlarmDto);
-        String message = userService.setPushAlarmSync(pushAlarmDto.getUserPK(),pushAlarmDto.getSync());
-
-        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
-
-        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
-    }
-
-
-    @PostMapping("/push/radius")
-    public ResponseEntity<SuccessResponseDto> setPushAlarmRadius(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
-        logger.trace("User Controller 진입 SetPushAlarmRadius param {}", pushAlarmDto);
-        String message = userService.setPushAlarmRadius(pushAlarmDto.getUserPK(),pushAlarmDto.getRadius());
-
-        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
-
-        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
-    }
+//    @PostMapping("/push/accept")
+//    public ResponseEntity<SuccessResponseDto> setPushAlarmReceive(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
+//        logger.trace("User Controller 진입 SetPushAlarmReceive param {}", pushAlarmDto);
+//        String message = userService.setPushAlarmReceive(pushAlarmDto.getUserPK(),pushAlarmDto.getAccept());
+//
+//        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+//
+//        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+//    }
+//
+//
+//    @PostMapping("/push/sync")
+//    public ResponseEntity<SuccessResponseDto> setPushAlarmSync(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
+//        logger.trace("User Controller 진입 SetPushAlarmSync param {}", pushAlarmDto);
+//        String message = userService.setPushAlarmSync(pushAlarmDto.getUserPK(),pushAlarmDto.getSync());
+//
+//        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+//
+//        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+//    }
+//
+//
+//    @PostMapping("/push/radius")
+//    public ResponseEntity<SuccessResponseDto> setPushAlarmRadius(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
+//        logger.trace("User Controller 진입 SetPushAlarmRadius param {}", pushAlarmDto);
+//        String message = userService.setPushAlarmRadius(pushAlarmDto.getUserPK(),pushAlarmDto.getRadius());
+//
+//        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+//
+//        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+//    }
 
     @PostMapping("/radar")
     public ResponseEntity<SuccessResponseDto> getListUserWithinRadius(@RequestBody RequestUserLocationDto requestUserLocationDto) throws NoUserException, NoBrowserTokenException, IOException {

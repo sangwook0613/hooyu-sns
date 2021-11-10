@@ -2,6 +2,9 @@ import React, {useRef, useState, useEffect} from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import axios from 'axios'
+import { connect } from 'react-redux'
+import { actionCreators } from '../../store/reducers'
+
 
 const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
@@ -14,8 +17,8 @@ const emojiArray = [
 ]
 
 
-const Status = ({ navigation, route }) => {
-  const [emoji, setEmoji] = useState('amazing')
+const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
+  const [emoji, setEmoji] = useState(userEmoji)
   const [isEmojiSelect, setIsEmojiSelect] = useState(0)
   const [color, setColor] = useState('#FFD0D0')
   const [colorScrollX, setColorScrollX] = useState(0)
@@ -43,14 +46,19 @@ const Status = ({ navigation, route }) => {
     navigation.setOptions({
       headerTitle: (props) => <StatusTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
-          createStatus()
-          navigation.navigate('Main')
-          console.log(color)
-          console.log(status)
-        }}>
-          <Text>등록</Text>
-        </TouchableOpacity>
+        <View>
+          { status ? 
+            <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
+              createStatus()
+              navigation.navigate('Main')
+            }}>
+              <Text>등록</Text>
+            </TouchableOpacity>
+            :
+            <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+          }
+
+        </View>
       )
     });
   }, [navigation, status, color, emoji]);
@@ -77,12 +85,13 @@ const Status = ({ navigation, route }) => {
   
 
   const createEmoji = () => {
+    setUserEmoji(emoji)
     axios({
       method: 'post',
       url: SERVER_URL + 'user/emojiSet',
       data: {
         "userEmoji": emoji,
-        "userPK": 1
+        "userPK": userPK
       }
     })
     .then((res) => {
@@ -100,7 +109,7 @@ const Status = ({ navigation, route }) => {
       data: {
         "color": color,
         "exon": status,
-        "userPK": 1
+        "userPK": userPK
       }
     })
     .then((res) => {
@@ -270,5 +279,21 @@ const styles = StyleSheet.create({
   },
 });
 
+function mapStateToProps(state) {
+  return {
+    SERVER_URL: state.user.SERVER_URL,
+    userPK: state.user.userPK,
+    userEmoji: state.user.userEmoji,
+  }
+}
 
-export default Status;
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserEmoji: (emoji) => {
+      dispatch(actionCreators.setUserEmoji(emoji))
+    }
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Status);

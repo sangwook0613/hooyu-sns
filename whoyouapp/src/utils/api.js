@@ -50,4 +50,15 @@ export default {
       }
     })
   },
+
+  setFCMToken(pk, token) {
+    return axios({
+      url: `browser/in`,
+      method: 'post',
+      data: {
+        browserToken: token,
+        userPK: pk
+      }
+    })
+  }
 }

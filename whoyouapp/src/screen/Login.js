@@ -8,6 +8,7 @@ import jwt_decode from "jwt-decode";
 import Api from "../utils/api"
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
+import messaging from '@react-native-firebase/messaging';
 import {
   SafeAreaView,
   StyleSheet,
@@ -31,9 +32,9 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
   const [gettingLoginStatus, setGettingLoginStatus] = useState(true)
 
   useEffect(() => {
-    if (userPK != 0 && userEmoji) {
+    if (userPK !== 0 && userEmoji) {
       navigate('Main')
-    } else if (userPK != 0 && !userEmoji) {
+    } else if (userPK !== 0 && !userEmoji) {
       navigate('NicknameTutorial')
     } else {
       GoogleSignin.configure({
@@ -92,6 +93,20 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
       const userInfo = await GoogleSignin.signInSilently()
       const accessToken = await AsyncStorage.getItem('access_token')
       console.log('userpk', jwt_decode(accessToken).pk)
+      const pk = jwt_decode(accessToken).pk
+
+      await messaging().getToken()
+        .then((res) => {
+          Api.setFCMToken(pk, res)
+          .then((res) => {
+            console.log('token set success')
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+        })
+
+
       await setUserPK(jwt_decode(accessToken).pk)
       Api.getUser(jwt_decode(accessToken).pk)
         .then((res) => {
