@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Alert, AppState, BackHandler } from 'react-native'
+import { Alert, AppState, BackHandler, LogBox } from 'react-native'
 import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Animated } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { connect } from 'react-redux'
@@ -41,6 +41,8 @@ const mainColor7 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED56
 
 const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK,userEmoji, setMyRadius }) => {
 
+  LogBox.ignoreAllLogs()
+
   const styles = styleSheet(deviceWidth, deviceHeight, deviceWidth * 0.7)
 
   const [radarX, setRadarX] = useState(-100)
@@ -61,6 +63,12 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   const BACKGROUND_LOCATION_TASK = 'background-location-task'
 
   useEffect(() => {
+    api.setUserAlived(userPK)
+      .then(() => {
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     const initialPermission = async () => {
       await requestPermission()
       AppState.addEventListener('change', handleAppStateChange)
@@ -69,14 +77,12 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     return () => {
       console.log('메인에서 끊기')
       AppState.removeEventListener('change', handleAppStateChange)
-      console.log('d')
-      api.setPushAlarmReceive(0, 500, 0, userPK)
-      .then((res) => {
-        console.log(res)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+      api.setUserKilled(userPK)
+        .then(() => {
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     }
   }, [])
 
@@ -93,14 +99,12 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       appState.current.match(/inactive|background/) &&
       nextAppState === 'active'
     ) {
-      console.log('⚽️⚽️App has come to the foreground!');
       instantGetLocation('active')
     }
     if (
       appState.current.match(/inactive|active/) &&
       nextAppState === 'background'
     ) {
-      console.log('⚽️⚽️App has come to the background!');
       instantGetLocation('background')
     }
     appState.current = nextAppState;
@@ -174,10 +178,9 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     const isTaskStarted = await Location.hasStartedLocationUpdatesAsync(BACKGROUND_LOCATION_TASK)
     if (isTaskStarted) {
       await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK)
-      console.log('백그라운드 끊기')
     }
     await Location.startLocationUpdatesAsync(FOREGROUND_LOCATION_TASK, {
-      accuracy: Location.Accuracy.high,
+      accuracy: Location.Accuracy.High,
       distanceInterval: 0,
       timeInterval: 10000,
       foregroundService: {
@@ -192,10 +195,9 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     const isTaskStarted = await Location.hasStartedLocationUpdatesAsync(FOREGROUND_LOCATION_TASK)
     if (isTaskStarted) {
       await Location.stopLocationUpdatesAsync(FOREGROUND_LOCATION_TASK)
-      console.log('포그라운드 끊기')
     }
     await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
-      accuracy: Location.Accuracy.high,
+      accuracy: Location.Accuracy.High,
       distanceInterval: 0,
       timeInterval: 30000,
       foregroundService: {
