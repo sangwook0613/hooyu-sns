@@ -4,11 +4,12 @@ import LinearGradient from 'react-native-linear-gradient';
 import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
+import * as emojiImages from '../../assets/images'
 
 
 const emojiArray = [
-  ['amazing', 'amazing2', 'amazing3', 'amazing4', 'amazing5', 'amazing6'], 
-  ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
+  ['smile', 'amazing', 'sad', 'crying', 'sense', 'angry'], 
+  ['pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep']
 ]
 
 const Emoji = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
@@ -68,7 +69,7 @@ const Emoji = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji 
         >
           <Image
             style={{ width: 50, height: 50 }}
-            source={route.params.emoji}
+            source={emojiImages.default.emoji[userEmoji]}
           />
         </TouchableOpacity>
       </View>
@@ -86,7 +87,7 @@ const Emoji = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji 
                   }}
                   >
                   <Image 
-                    source={route.params.emoji}
+                    source={emojiImages.default.emoji[emotion]}
                     style={{width: '100%', height: '100%'}}
                     />
                 </TouchableOpacity>
