@@ -45,7 +45,6 @@ public class JwtAuthFilter extends GenericFilterBean {
 
             User user = userRepository.findById(id).orElseThrow(()-> new NoUserException("토큰의 사용자가 없습니다."));
             logger.debug("user Info : {}",user);
-            userAlived(user);
 
             if(user.getRefreshToken().equals(refresh_token)){
                 logger.trace("저장된 re와 보낸 re가 일치 합니다.");
@@ -68,18 +67,12 @@ public class JwtAuthFilter extends GenericFilterBean {
 
             User user = userRepository.findById(pk).get();
             logger.debug("user Info : {}",user);
-            userAlived(user);
 
             Authentication auth = getAuthentication(user);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         chain.doFilter(request, response);
-    }
-
-    private void userAlived(User user) {
-        user.setAlive(true);
-        userRepository.save(user);
     }
 
     public Authentication getAuthentication(User member) {
