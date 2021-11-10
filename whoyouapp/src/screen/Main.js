@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Alert, AppState, BackHandler } from 'react-native'
+import { Alert, AppState, BackHandler, LogBox } from 'react-native'
 import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Animated } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { connect } from 'react-redux'
@@ -41,7 +41,9 @@ const mainColor6 = theme == "morning" ? "#000000" : (theme == "evening" ? '#0000
 const mainColor7 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#FFFFFF')
 
 
-function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK,userEmoji, setMyRadius }) {
+const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK,userEmoji, setMyRadius }) => {
+
+  LogBox.ignoreAllLogs()
 
   const styles = styleSheet(deviceWidth, deviceHeight, deviceWidth * 0.7)
 
@@ -56,33 +58,65 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 
   const mainListRef = useRef()
   const shelterListRef = useRef()
+  const appState = useRef(AppState.currentState)
+  const isInitialMount = useRef(true)
+
+  const FOREGROUND_LOCATION_TASK = 'foreground-location-task'
+  const BACKGROUND_LOCATION_TASK = 'background-location-task'
 
   useEffect(() => {
-    console.log('dd')
-    requestPermission()
+    api.setUserAlived(userPK)
+      .then(() => {
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    const initialPermission = async () => {
+      await requestPermission()
+      AppState.addEventListener('change', handleAppStateChange)
+    }
+    initialPermission ()
+    return () => {
+      console.log('메인에서 끊기')
+      AppState.removeEventListener('change', handleAppStateChange)
+      api.setUserKilled(userPK)
+        .then(() => {
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
   }, [])
 
   useEffect(() => {
-    instantGetLocation()
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+    } else {
+      instantGetLocation('active')
+    }
   }, [myRadius, userEmoji])
 
-  const LOCATION_TASK_NAME = 'location-task'
+  const handleAppStateChange = (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === 'active'
+    ) {
+      instantGetLocation('active')
+    }
+    if (
+      appState.current.match(/inactive|active/) &&
+      nextAppState === 'background'
+    ) {
+      instantGetLocation('background')
+    }
+    appState.current = nextAppState;
+  }
 
   const requestPermission = async () => {
-    const foregroundStatus = await Location.requestForegroundPermissionsAsync()
-    const backgroundStatus = await Location.requestBackgroundPermissionsAsync()
-    instantGetLocation()
-    if (foregroundStatus.granted && backgroundStatus.granted) {
-      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.high,
-        distanceInterval: 0,
-        timeInterval: 10000,
-        foregroundService: {
-          notificationTitle: 'Hooyu',
-          notificationBody : '당신의 반경을 탐색하는중...',
-          notificationColor: '#FF6A77'
-        }
-      })
+    const front = await Location.requestForegroundPermissionsAsync()
+    const back = await Location.requestBackgroundPermissionsAsync()
+    if (front.granted && back.granted) {
+      instantGetLocation('active')
     } else {
       Alert.alert(
         '서비스 이용 알림', 
@@ -96,24 +130,88 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     }
   }
 
-  TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
+  TaskManager.defineTask(FOREGROUND_LOCATION_TASK, ({ data, error }) => {
     if (error) {
-      console.log(error)
+      console.log(error.message)
       return
     }
     if (data) {
       const { locations } = data
-      console.log(AppState.currentState)
       getUsers(locations[0].coords.latitude, locations[0].coords.longitude)
     }
   })
 
-  const instantGetLocation = async () => {
-    const data = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.high})
-    getUsers(data.coords.latitude, data.coords.longitude)
+  TaskManager.defineTask(BACKGROUND_LOCATION_TASK, ({ data, error }) => {
+    if (error) {
+      console.log(error.message)
+      return
+    }
+    if (data) {
+      const { locations } = data
+      getUsers(locations[0].coords.latitude, locations[0].coords.longitude)
+    }
+  })
+
+  const instantGetLocation = async (status) => {
+    const front = await Location.getForegroundPermissionsAsync()
+    const back = await Location.getBackgroundPermissionsAsync()
+    if (front.granted && back.granted) {
+      const data = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.high})
+      getUsers(data.coords.latitude, data.coords.longitude)
+      if (status == 'active') {
+        activeGetLocation()
+      } else {
+        backgroundGetLocation()
+      }
+    } else {
+      Alert.alert(
+        '서비스 이용 알림', 
+        '필수 권한을 허용해야 서비스 정상 이용이 가능합니다. 설정에서 설정해주세요.',
+        [
+          {
+            text: "확인",
+            onPress: () => BackHandler.exitApp()
+          }
+        ])
+    }
+  }
+
+  const activeGetLocation = async () => {
+    const isTaskStarted = await Location.hasStartedLocationUpdatesAsync(BACKGROUND_LOCATION_TASK)
+    if (isTaskStarted) {
+      await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK)
+    }
+    await Location.startLocationUpdatesAsync(FOREGROUND_LOCATION_TASK, {
+      accuracy: Location.Accuracy.High,
+      distanceInterval: 0,
+      timeInterval: 10000,
+      foregroundService: {
+        notificationTitle: 'Hooyu',
+        notificationBody : '당신의 반경을 탐색하는중...',
+        notificationColor: '#FF6A77'
+      }
+    })
+  }
+
+  const backgroundGetLocation = async () => {
+    const isTaskStarted = await Location.hasStartedLocationUpdatesAsync(FOREGROUND_LOCATION_TASK)
+    if (isTaskStarted) {
+      await Location.stopLocationUpdatesAsync(FOREGROUND_LOCATION_TASK)
+    }
+    await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
+      accuracy: Location.Accuracy.High,
+      distanceInterval: 0,
+      timeInterval: 30000,
+      foregroundService: {
+        notificationTitle: 'Hooyu',
+        notificationBody : '당신의 반경을 탐색하는중...',
+        notificationColor: '#FF6A77'
+      }
+    })
   }
 
   const getUsers = (latitude, longitude) => {
+    console.log('실행됨')
     axios({
       method: 'post',
       url: SERVER_URL + 'user/radar',
@@ -129,33 +227,11 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       }
     })
       .then((res) => {
-        setUsers(res.data.success.filter(user => user.privateZone !== true))
-        setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
-        if (AppState.currentState === 'background') {
-          Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
-          Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-            accuracy: Location.Accuracy.high,
-            distanceInterval: 0,
-            timeInterval: 600000,
-            foregroundService: {
-              notificationTitle: 'Hooyu',
-              notificationBody : '당신의 반경을 탐색하는중...',
-              notificationColor: '#FF6A77'
-            }
-          })
-        } else {
-          Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
-          Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-            accuracy: Location.Accuracy.high,
-            distanceInterval: 0,
-            timeInterval: 10000,
-            foregroundService: {
-              notificationTitle: 'Hooyu',
-              notificationBody : '당신의 반경을 탐색하는중...',
-              notificationColor: '#FF6A77'
-            }
-          })
+        if (appState.current === 'active') {
+          setUsers(res.data.success.filter(user => user.privateZone !== true))
+          setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
         }
+        console.warn('get users : ', AppState.currentState)
       })
       .catch((err) => {
         console.warn(err)

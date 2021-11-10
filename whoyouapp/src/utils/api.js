@@ -60,5 +60,32 @@ export default {
         userPK: pk
       }
     })
-  }
+  },
+
+  setPushAlarmReceive(accept, radius, sync, pk) {
+    return axios({
+      method: 'post',
+      url: 'user/push',
+      data: {
+        accept: accept,
+        radius: radius,
+        sync: sync,
+        userPK: pk
+      }
+    })
+  },
+
+  setUserAlived(pk) {
+    return axios({
+      method: 'put',
+      url: `user/wakeup?userPK=${pk}`
+    })
+  },
+
+  setUserKilled(pk) {
+    return axios({
+      method: 'put',
+      url: `user/killed?userPK=${pk}`
+    })
+  },
 }
