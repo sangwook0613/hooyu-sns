@@ -11,6 +11,9 @@ const defaultState = {
   SERVER_URL: 'https://k5a101.p.ssafy.io/api/v1/',
   userPK: 0,
   userEmoji: 'none',
+  acceptPush: null,
+  acceptRadius: null,
+  acceptSync: null,
 }
 
 // Actions 정의
@@ -19,6 +22,8 @@ const logout = createAction("LOGOUT")
 const setRadius = createAction("SETRADIUS")
 const setUserPK = createAction("SETUSERPK")
 const setUserEmoji = createAction("SETUSEREMOJI")
+const setPushSetting = createAction("SETPUSHSETTING")
+
 
 // Reducer 정의
 const UserReducer = createReducer(defaultState, {
@@ -37,14 +42,21 @@ const UserReducer = createReducer(defaultState, {
   [setRadius]: (state, action) => ({
     ...state,
     myRadius: action.payload
-  })
+  }),
+  [setPushSetting]: (state, action) => ({
+    ...state,
+    acceptPush: action.payload.acceptPush,
+    acceptRadius: action.payload.acceptRadius,
+    acceptSync: action.payload.acceptSync
+  }),
 });
 
 export const actionCreators = {
   setUserPK,
   setUserEmoji,
   logout,
-  setRadius
+  setRadius,
+  setPushSetting,
 }
 
 export default combineReducers({

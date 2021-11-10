@@ -1,18 +1,48 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, Dimensions, Switch } from 'react-native'
 import PushButtonGroup from './PushButtonGroup'
+import Api from '../../utils/api'
+import { connect } from 'react-redux'
+import { actionCreators } from '../../store/reducers'
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
 
-const PushSetting = () => {
-  const [isPushEnabled, setIsPushEnabled] = useState(false)
-  const [isPushSyncEnabled, setIsPushSyncEnabled] = useState(false)
+const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptPush, acceptRadius, acceptSync}) => {
+  const [isPushEnabled, setIsPushEnabled] = useState(acceptPush)
+  const [isPushSyncEnabled, setIsPushSyncEnabled] = useState(acceptSync)
+  const [pushRadius, setPushRadius] = useState(acceptRadius)
+  const [first, setFirst] = useState(0)
+  
+  const updateAcceptPush = () => {
+    console.log('----Push------', isPushEnabled, pushRadius, isPushSyncEnabled, '---------------')
+    Api.setPushSetting(isPushEnabled, pushRadius, isPushSyncEnabled, userPK)
+      .then((res) => {
+        console.log('AcceptPush', res.data.success)
+        setPushSetting(isPushEnabled, pushRadius, isPushSyncEnabled)
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
+
+  useEffect(() => {
+    if (first !== 0) {
+      if (!isPushEnabled) {
+        setIsPushSyncEnabled(false)
+      }
+      console.log(isPushEnabled, pushRadius, isPushSyncEnabled)
+      updateAcceptPush()
+    }
+    setFirst(1)
+  }, [ isPushEnabled, isPushSyncEnabled, pushRadius ])
+
   const pushToggleSwitch = () => {
     setIsPushEnabled(!isPushEnabled)
     setIsPushSyncEnabled(false)
   }
-  const pushSyncToggleSwitch = () => setIsPushSyncEnabled(!isPushSyncEnabled)
+
+  const pushSyncToggleSwitch = () => {
+    setIsPushSyncEnabled(!isPushSyncEnabled)
+  }
 
 
   return (
@@ -40,6 +70,35 @@ const PushSetting = () => {
           value={isPushEnabled}
         />
       </View>
+      
+      <View
+        style={{
+          width: deviceWidth,
+          height: 60,
+          backgroundColor: 'white',
+          paddingLeft: 20,
+          paddingRight: 20,
+          justifyContent: 'center',
+          backgroundColor: `${isPushEnabled && !isPushSyncEnabled ? 'white' : "#E5E5E5"}`,
+        }}
+      >
+        <Text style={{ color: `${isPushEnabled && !isPushSyncEnabled ? 'black' : "#767577"}`, fontSize: 16, fontWeight: '700' }}>푸시 알람 반경</Text>
+      </View>
+      <View
+        style={{
+          width: deviceWidth,
+          height: 60,
+          backgroundColor: 'white',
+          paddingLeft: 20,
+          paddingRight: 20,
+          justifyContent: 'center',
+          borderBottomWidth: 1,
+          borderBottomColor: '#E5E5E5',
+          backgroundColor: `${isPushEnabled && !isPushSyncEnabled ? 'white' : "#E5E5E5"}`,
+        }}
+      >
+        <PushButtonGroup setPushRadius={setPushRadius} currentRadius={acceptRadius} isPushEnabled={isPushEnabled && !isPushSyncEnabled }/>
+      </View>
       <View
         pointerEvents={isPushEnabled ? "auto" : "none"} 
         style={{
@@ -64,36 +123,28 @@ const PushSetting = () => {
           value={isPushSyncEnabled}
         />
       </View>
-      <View
-        style={{
-          width: deviceWidth,
-          height: 60,
-          backgroundColor: 'white',
-          paddingLeft: 20,
-          paddingRight: 20,
-          justifyContent: 'center',
-          backgroundColor: `${isPushSyncEnabled ? 'white' : "#E5E5E5"}`,
-        }}
-      >
-        <Text style={{ color: `${isPushSyncEnabled ? 'black' : "#767577"}`, fontSize: 16, fontWeight: '700' }}>푸시 알람 반경</Text>
-      </View>
-      <View
-        style={{
-          width: deviceWidth,
-          height: 60,
-          backgroundColor: 'white',
-          paddingLeft: 20,
-          paddingRight: 20,
-          justifyContent: 'center',
-          borderBottomWidth: 1,
-          borderBottomColor: '#E5E5E5',
-          backgroundColor: `${isPushSyncEnabled ? 'white' : "#E5E5E5"}`,
-        }}
-      >
-        <PushButtonGroup isPushSyncEnabled={isPushSyncEnabled}/>
-      </View>
     </>
   )
 }
 
-export default PushSetting
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    userPK: state.user.userPK,
+    myRadius: state.user.myRadius,
+    acceptPush: state.user.acceptPush,
+    acceptRadius: state.user.acceptRadius,
+    acceptSync: state.user.acceptSync,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setPushSetting: (acceptPush, acceptRadius, acceptSync) => {
+      dispatch(actionCreators.setPushSetting({acceptPush, acceptRadius, acceptSync}))
+    },
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PushSetting)
