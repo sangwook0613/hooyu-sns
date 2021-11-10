@@ -39,7 +39,7 @@ const mainColor6 = theme == "morning" ? "#000000" : (theme == "evening" ? '#0000
 const mainColor7 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#FFFFFF')
 
 
-function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK,userEmoji, setMyRadius }) {
+const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK,userEmoji, setMyRadius }) => {
 
   const styles = styleSheet(deviceWidth, deviceHeight, deviceWidth * 0.7)
 
@@ -55,46 +55,62 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   const mainListRef = useRef()
   const shelterListRef = useRef()
   const appState = useRef(AppState.currentState)
+  const isInitialMount = useRef(true)
 
-  useEffect(async () => {
-    console.log('이펙트')
-    await requestPermission()
-    const subscription = AppState.addEventListener('change', nextAppState => {
-        if (
-          appState.current.match(/inactive|background/) &&
-          nextAppState === 'active'
-        ) {
-          console.log('⚽️⚽️App has come to the foreground!');
-          instantGetLocation()
-          activeGetLocation()
-        }
-        if (
-          appState.current.match(/inactive|active/) &&
-          nextAppState === 'background'
-        ) {
-          console.log('⚽️⚽️App has come to the background!');
-          instantGetLocation()
-          backgroundGetLocation()
-        }
-        appState.current = nextAppState;
-      })
+  const FOREGROUND_LOCATION_TASK = 'foreground-location-task'
+  const BACKGROUND_LOCATION_TASK = 'background-location-task'
+
+  useEffect(() => {
+    const initialPermission = async () => {
+      await requestPermission()
+      AppState.addEventListener('change', handleAppStateChange)
+    }
+    initialPermission ()
     return () => {
-      subscription.remove()
+      console.log('메인에서 끊기')
+      AppState.removeEventListener('change', handleAppStateChange)
+      console.log('d')
+      api.setPushAlarmReceive(0, 500, 0, userPK)
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     }
   }, [])
 
   useEffect(() => {
-    instantGetLocation()
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+    } else {
+      instantGetLocation('active')
+    }
   }, [myRadius, userEmoji])
 
-  const LOCATION_TASK_NAME = 'location-task'
+  const handleAppStateChange = (nextAppState) => {
+    if (
+      appState.current.match(/inactive|background/) &&
+      nextAppState === 'active'
+    ) {
+      console.log('⚽️⚽️App has come to the foreground!');
+      instantGetLocation('active')
+    }
+    if (
+      appState.current.match(/inactive|active/) &&
+      nextAppState === 'background'
+    ) {
+      console.log('⚽️⚽️App has come to the background!');
+      instantGetLocation('background')
+    }
+    appState.current = nextAppState;
+  }
 
   const requestPermission = async () => {
     const front = await Location.requestForegroundPermissionsAsync()
     const back = await Location.requestBackgroundPermissionsAsync()
-    instantGetLocation()
     if (front.granted && back.granted) {
-      activeGetLocation()
+      instantGetLocation('active')
     } else {
       Alert.alert(
         '서비스 이용 알림', 
@@ -108,9 +124,9 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     }
   }
 
-  TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
+  TaskManager.defineTask(FOREGROUND_LOCATION_TASK, ({ data, error }) => {
     if (error) {
-      console.log(error)
+      console.log(error.message)
       return
     }
     if (data) {
@@ -119,14 +135,48 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     }
   })
 
-  const instantGetLocation = async () => {
-    const data = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.high})
-    getUsers(data.coords.latitude, data.coords.longitude)
+  TaskManager.defineTask(BACKGROUND_LOCATION_TASK, ({ data, error }) => {
+    if (error) {
+      console.log(error.message)
+      return
+    }
+    if (data) {
+      const { locations } = data
+      getUsers(locations[0].coords.latitude, locations[0].coords.longitude)
+    }
+  })
+
+  const instantGetLocation = async (status) => {
+    const front = await Location.getForegroundPermissionsAsync()
+    const back = await Location.getBackgroundPermissionsAsync()
+    if (front.granted && back.granted) {
+      const data = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.high})
+      getUsers(data.coords.latitude, data.coords.longitude)
+      if (status == 'active') {
+        activeGetLocation()
+      } else {
+        backgroundGetLocation()
+      }
+    } else {
+      Alert.alert(
+        '서비스 이용 알림', 
+        '필수 권한을 허용해야 서비스 정상 이용이 가능합니다. 설정에서 설정해주세요.',
+        [
+          {
+            text: "확인",
+            onPress: () => BackHandler.exitApp()
+          }
+        ])
+    }
   }
 
   const activeGetLocation = async () => {
-    await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
-    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+    const isTaskStarted = await Location.hasStartedLocationUpdatesAsync(BACKGROUND_LOCATION_TASK)
+    if (isTaskStarted) {
+      await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK)
+      console.log('백그라운드 끊기')
+    }
+    await Location.startLocationUpdatesAsync(FOREGROUND_LOCATION_TASK, {
       accuracy: Location.Accuracy.high,
       distanceInterval: 0,
       timeInterval: 10000,
@@ -139,11 +189,15 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   }
 
   const backgroundGetLocation = async () => {
-    await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
-    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+    const isTaskStarted = await Location.hasStartedLocationUpdatesAsync(FOREGROUND_LOCATION_TASK)
+    if (isTaskStarted) {
+      await Location.stopLocationUpdatesAsync(FOREGROUND_LOCATION_TASK)
+      console.log('포그라운드 끊기')
+    }
+    await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
       accuracy: Location.Accuracy.high,
       distanceInterval: 0,
-      timeInterval: 20000,
+      timeInterval: 30000,
       foregroundService: {
         notificationTitle: 'Hooyu',
         notificationBody : '당신의 반경을 탐색하는중...',
@@ -169,9 +223,11 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       }
     })
       .then((res) => {
-        setUsers(res.data.success.filter(user => user.privateZone !== true))
-        setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
-        console.log('get users : ', AppState.currentState)
+        if (appState.current === 'active') {
+          setUsers(res.data.success.filter(user => user.privateZone !== true))
+          setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
+        }
+        console.warn('get users : ', AppState.currentState)
       })
       .catch((err) => {
         console.warn(err)
