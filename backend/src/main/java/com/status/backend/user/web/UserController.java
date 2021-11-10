@@ -155,7 +155,7 @@ public class UserController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/wakeup")
+    @PutMapping("/wakeup")
     public ResponseEntity<SuccessResponseDto> setAlive(@RequestParam Long userPK) throws NoUserException {
         logger.trace("User Controller 진입 getListUserWithinRadius param {}", userPK);
         String message = userService.aliveApp(userPK);
