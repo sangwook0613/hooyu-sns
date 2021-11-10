@@ -200,7 +200,6 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
                     onPress={() => {
                       setIsEmojiSelect(false)
                       setEmoji(emojiArray[index][index2])
-                      console.warn(index, index2)
                     }}
                     >
                     <Image 

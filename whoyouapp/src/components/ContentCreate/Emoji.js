@@ -83,7 +83,6 @@ const Emoji = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji 
                     setIsEmojiSelect(false)
                     setEmoji(emojiArray[index][index2])
                     setChecked(true)
-                    console.warn(index, index2)
                   }}
                   >
                   <Image 
