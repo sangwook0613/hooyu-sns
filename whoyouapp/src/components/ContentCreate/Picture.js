@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image, Button } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet, PermissionsAndroid, Dimensions, Image } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import imageUpload from '../../assets/createcontent/uploadImage.png'
@@ -7,11 +7,8 @@ import * as ImagePicker from 'react-native-image-picker';
 import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
-import * as RNFS from 'react-native-fs';
 
-const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
-const clientHeight = Dimensions.get('screen').height
 
 const emojiArray = [
   ['amazing', 'amazing2', 'amazing3', 'amazing4', 'amazing5', 'amazing6'], 
@@ -85,6 +82,27 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
       }
     });
   }  
+
+  const requestGalleryPermission = async () => {
+    if (Platform.OS === 'ios') {
+      alert('안드로이드에서만 지원됩니다.')
+    }
+
+    if (Platform.OS === 'android') {
+      const galleryGranted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+      )
+      if (
+        galleryGranted === PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        imageGalleryLaunch()
+      } else {
+        alert('갤러리 접근 권한을 얻지 못했습니다.')
+        // return false
+      }
+    }
+
+  }
 
   const createEmoji = () => {
     setUserEmoji(emoji)
@@ -171,7 +189,10 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
               </TouchableOpacity>
             </View>
             : 
-            <TouchableOpacity onPress={() => imageGalleryLaunch()}>
+            <TouchableOpacity onPress={() => {
+              requestGalleryPermission()
+            }}
+            >
               <Image
                 style={{ width: 150, height: 150, marginLeft: 25 }}
                 source={imageUpload}
