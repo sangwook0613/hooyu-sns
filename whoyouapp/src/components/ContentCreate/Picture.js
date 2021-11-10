@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image, Button } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet, PermissionsAndroid, Dimensions, Image } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import imageUpload from '../../assets/createcontent/uploadImage.png'
@@ -8,10 +8,7 @@ import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
 
-
-const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
-const clientHeight = Dimensions.get('screen').height
 
 const emojiArray = [
   ['amazing', 'amazing2', 'amazing3', 'amazing4', 'amazing5', 'amazing6'], 
@@ -20,10 +17,11 @@ const emojiArray = [
 
 const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
   
-  
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [emoji, setEmoji] = useState(userEmoji)
   const [imageFile, setImageFile] = useState('')
+  const [sendForm, setSendForm] = useState('')
+
 
   const PictureTitle = () => {
     return (
@@ -59,7 +57,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         </View>
       )
     });
-  }, [navigation, emoji, imageFile]);
+  }, [navigation, emoji, imageFile, sendForm]);
 
 
   const imageGalleryLaunch = () => {
@@ -68,11 +66,10 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         skipBackup: true,
         path: 'images',
       },
+      mediaType: 'photo'
     };
   
     ImagePicker.launchImageLibrary(options, (res) => {
-      // console.log('Response = ', res);
-  
       if (res.didCancel) {
         console.log('User cancelled image picker');
       } else if (res.error) {
@@ -81,13 +78,31 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         console.log('User tapped custom button: ', res.customButton);
         alert(res.customButton);
       } else {
-        const source = { uri: res.assets[0].uri };
-        // console.log('response', JSON.stringify(res));
-        console.log(res.assets[0].uri)
-        setImageFile(source)
+        setImageFile(res.assets[0])
       }
     });
   }  
+
+  const requestGalleryPermission = async () => {
+    if (Platform.OS === 'ios') {
+      alert('안드로이드에서만 지원됩니다.')
+    }
+
+    if (Platform.OS === 'android') {
+      const galleryGranted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+      )
+      if (
+        galleryGranted === PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        imageGalleryLaunch()
+      } else {
+        alert('갤러리 접근 권한을 얻지 못했습니다.')
+        // return false
+      }
+    }
+
+  }
 
   const createEmoji = () => {
     setUserEmoji(emoji)
@@ -108,22 +123,37 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   }
 
   const createPicture = () => {
-    console.log(imageFile)
+    const formData = new FormData();
+
+    formData.append('upload', {
+      uri: imageFile.uri,
+      type: imageFile.type,
+      name: imageFile.fileName
+    })
+
     axios({
       method: 'post',
-      url: SERVER_URL + 'content/create/image',
-      data: {
-        "color": '',
-        "exon": imageFile.uri,
-        "userPK": userPK
-      }
+      url: 'content/upload',
+      data: formData
     })
     .then((res) => {
-      console.log(res.data.success)
+      savePicture(res.data.success)
       createEmoji()
     })
     .catch((err) => {
       console.log(err)
+    })
+  }
+
+  const savePicture = (uri) => {
+    axios({
+      method: 'post',
+      url: SERVER_URL + 'content/create/image',
+      data: {
+        userPK: userPK,
+        color: '',
+        exon: uri,
+      }
     })
   }
 
@@ -137,7 +167,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
               <View style={{ elevation: 15}}>
                 <Image
                   style={{ width: clientWidth-80, height: clientWidth-80 }}
-                  source={imageFile}
+                  source={{ uri: imageFile.uri }}
                 />
               </View>
               <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', marginTop: 50}} onPress={() => imageGalleryLaunch()}>
@@ -159,7 +189,10 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
               </TouchableOpacity>
             </View>
             : 
-            <TouchableOpacity onPress={() => imageGalleryLaunch()}>
+            <TouchableOpacity onPress={() => {
+              requestGalleryPermission()
+            }}
+            >
               <Image
                 style={{ width: 150, height: 150, marginLeft: 25 }}
                 source={imageUpload}
