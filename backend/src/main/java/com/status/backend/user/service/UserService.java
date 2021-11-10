@@ -18,6 +18,7 @@ public interface UserService {
 
     Token googleLogin(String googleIdToken) throws Exception;
     String killApp(Long userPK) throws NoUserException;
+    String aliveApp(Long userPK) throws NoUserException;
 
     UserResponseDto getUserInfo(Long userPK) throws NoUserException;
 

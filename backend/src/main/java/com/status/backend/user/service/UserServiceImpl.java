@@ -104,15 +104,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public String killApp(Long userPK) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        user.setAlive(!user.isAlive());
+        logger.debug("alive 변환 !!!!!! {} ", user.isAlive());
+        user.setAlive(Boolean.FALSE);
         user.setKilled(LocalDateTime.now());
         userRepository.save(user);
+        logger.debug("alive 변환 !!!!!! {} ", user.isAlive());
         return "Success";
     }
 
-    public String checkKill(Long userPK){
-       boolean flag = userRepository.existsByIdAndAliveTrue(userPK);
-        return "Success : "+Boolean.valueOf(flag);
+    @Override
+    public String aliveApp(Long userPK) throws NoUserException {
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        user.setAlive(Boolean.TRUE);
+        userRepository.save(user);
+        return "Success";
     }
 
     @Override
@@ -186,7 +191,7 @@ public class UserServiceImpl implements UserService {
 
     public String setAllPush(Long userPK, Boolean accept, Boolean sync, int radius) throws Exception {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        if(accept == null || sync == null || radius<0) throw new Exception("환경설정 실패");
+        if (accept == null || sync == null || radius < 0) throw new Exception("환경설정 실패");
         user.setAcceptPush(accept);
         user.setAcceptSync(sync);
         user.setAcceptRadius(radius);
@@ -270,14 +275,14 @@ public class UserServiceImpl implements UserService {
         }
 
         LocalDateTime nowTime = LocalDateTime.now();
-        logger.debug("LocalDataTime : {}",nowTime);
+        logger.debug("LocalDataTime : {}", nowTime);
         FcmToken targetToken = fcmTokenRepository.findByUserId(user.getId()).orElseThrow(() -> new NoBrowserTokenException("브라우저토큰이 없습니다...."));
-        logger.debug("FCMToekn : {}",targetToken);
+        logger.debug("FCMToekn : {}", targetToken);
 //        logger.debug("LocalDataTime check : {}",nowTime.isAfter(null));
         //push
 
         //장기 미 사용자 까꿍 message
-        logger.debug("nowTime null Exception check : {}",nowTime.isAfter(LocalDateTime.now()));
+        logger.debug("nowTime null Exception check : {}", nowTime.isAfter(LocalDateTime.now()));
         if (targetToken.getPushThree() != null && nowTime.isAfter(targetToken.getPushThree())) {
             String title = "주변 사람들이 당신의 생각을 궁금해하고 있어요!";
             String body = "클릭해서 컨텐츠를 작성해보세요";
@@ -311,9 +316,10 @@ public class UserServiceImpl implements UserService {
         List<Location> locationList = locationRepository.selectSQLBylatlon(lat, lon);
         for (int i = 0; i < locationList.size(); i++) {
             Location target = locationList.get(i);
+            User targetUser = target.getUser();
 
             // 앱을 끈 사람은 out
-            if(userRepository.existsByIdAndAliveTrue(target.getUser().getId())) continue;
+            if(!targetUser.isAlive()) continue;
 
             //본인인 경우 out
             if (target.getUser().getId() == user.getId()) continue;
@@ -323,7 +329,6 @@ public class UserServiceImpl implements UserService {
 
             //privateZone안에 있는 여부check
             boolean userInPrivateZone = false;
-            User targetUser = target.getUser();
             List<PrivateZone> privateZoneList = targetUser.getPrivateZones();
             if (privateZoneList.size() != 0) {
                 PrivateZone targetPrivateZone = privateZoneList.get(0);

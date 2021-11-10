@@ -155,10 +155,10 @@ public class UserController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/killedTest")
-    public ResponseEntity<SuccessResponseDto> checkKilled(@RequestParam Long userPK) throws NoUserException {
+    @GetMapping("/wakeup")
+    public ResponseEntity<SuccessResponseDto> setAlive(@RequestParam Long userPK) throws NoUserException {
         logger.trace("User Controller 진입 getListUserWithinRadius param {}", userPK);
-        String message = userService.checkKill(userPK);
+        String message = userService.aliveApp(userPK);
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
