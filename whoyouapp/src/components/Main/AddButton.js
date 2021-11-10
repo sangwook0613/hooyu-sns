@@ -44,7 +44,7 @@ const AddButton = ({ navigate }) => {
             outputRange: [deviceWidth * 0.44, deviceWidth * 0.1, deviceWidth * 0.28]
           }),
         }]}>
-          <Entypo name="text-document" size={20} color="#f02a4b" />
+          <AntDesign name="smileo" size={20} color="#f02a4b" />
         </Animated.View>
       </TouchableWithoutFeedback>
 
@@ -57,7 +57,7 @@ const AddButton = ({ navigate }) => {
             outputRange: [deviceWidth * 0.44, deviceWidth * 0.1, deviceWidth * 0.44]
           }),
         }]}>
-          <AntDesign name="smileo" size={20} color="#f02a4b" />
+          <Entypo name="text-document" size={20} color="#f02a4b" />
         </Animated.View>
 
       </TouchableWithoutFeedback>

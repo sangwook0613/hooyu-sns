@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
+import * as emojiImages from '../../assets/images'
 
 
 const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
@@ -12,8 +13,8 @@ const clientHeight = Dimensions.get('screen').height
 
 const colorArray = ['#FFD0D0', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']
 const emojiArray = [
-  ['amazing', 'amazing2', 'amazing3', 'amazing4', 'amazing5', 'amazing6'], 
-  ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
+  ['smile', 'amazing', 'sad', 'crying', 'sense', 'angry'], 
+  ['pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep']
 ]
 
 
@@ -34,7 +35,7 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
         >
           <Image
             style={{ width: 40, height: 40 }}
-            source={route.params.emoji}
+            source={emojiImages.default.emoji[emoji]}
           />
         </TouchableOpacity>
         <Text style={{ marginLeft: 10, color: '#aaa'}}>이모지 선택</Text>
@@ -203,7 +204,7 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
                     }}
                     >
                     <Image 
-                      source={route.params.emoji}
+                      source={emojiImages.default.emoji[emotion]}
                       style={{width: '100%', height: '100%'}}
                       />
                   </TouchableOpacity>
