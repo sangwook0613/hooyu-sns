@@ -49,5 +49,19 @@ export default {
         userPK: pk
       }
     })
-  }
+  },
+
+  setUserAlived(pk) {
+    return axios({
+      method: 'put',
+      url: `user/wakeup?userPK=${pk}`
+    })
+  },
+
+  setUserKilled(pk) {
+    return axios({
+      method: 'put',
+      url: `user/killed?userPK=${pk}`
+    })
+  },
 }
