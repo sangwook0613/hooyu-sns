@@ -102,6 +102,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String killApp(Long userPK) throws NoUserException {
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        user.setAlive(!user.isAlive());
+        user.setKilled(LocalDateTime.now());
+        userRepository.save(user);
+        return "Success";
+    }
+
+    public String checkKill(Long userPK){
+       boolean flag = userRepository.existsByIdAndAliveTrue(userPK);
+        return "Success : "+Boolean.valueOf(flag);
+    }
+
+    @Override
     public UserResponseDto getUserInfo(Long userPK) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         UserResponseDto userResponseDto = new UserResponseDto(user);
@@ -209,7 +223,7 @@ public class UserServiceImpl implements UserService {
     public List<ResponseUserLocationDto> getUserList(Long userPK, BigDecimal lat, BigDecimal lon, int radius, List<ResponseUserLocationDto> pastList) throws NoUserException, NoBrowserTokenException, IOException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
 
-        //유저의 범위를 변경하기(체크 후)
+        //유저의 Push message 범위를 변경하기(체크 후)
         if (user.isAcceptSync()) {
             user.setAcceptRadius(radius);
             userRepository.save(user);
@@ -297,6 +311,9 @@ public class UserServiceImpl implements UserService {
         List<Location> locationList = locationRepository.selectSQLBylatlon(lat, lon);
         for (int i = 0; i < locationList.size(); i++) {
             Location target = locationList.get(i);
+
+            // 앱을 끈 사람은 out
+            if(userRepository.existsByIdAndAliveTrue(target.getUser().getId())) continue;
 
             //본인인 경우 out
             if (target.getUser().getId() == user.getId()) continue;
