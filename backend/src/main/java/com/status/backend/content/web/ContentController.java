@@ -3,6 +3,7 @@ package com.status.backend.content.web;
 import com.status.backend.content.domain.Type;
 import com.status.backend.content.dto.*;
 import com.status.backend.content.service.ContentServiceImpl;
+import com.status.backend.content.service.S3UploaderService;
 import com.status.backend.global.dto.SuccessResponseDto;
 import com.status.backend.global.exception.NoAuthorityUserException;
 import com.status.backend.global.exception.NoContentException;
@@ -14,7 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -24,8 +27,22 @@ public class ContentController{
 
     private final ContentServiceImpl contentService;
     private final ResponseGenerateService responseGenerateService;
+    private final S3UploaderService s3Uploader;
 
     Logger logger = LoggerFactory.getLogger(ContentController.class);
+
+    @PostMapping("/upload")
+    public ResponseEntity<SuccessResponseDto> upload(@RequestParam("upload") MultipartFile multipartFile) throws IOException {
+
+//        logger.debug("승현이와 함께하는 디버그 request getMethodValue : {}", request.getMethodValue());
+//        logger.debug("승현이와 함께하는 디버그 ContentController in getURI : {}", request.getURI());
+        logger.debug("승현이와 함께하는 디버그 ContentController in Param : {}", multipartFile);
+        String imageurl = s3Uploader.upload(multipartFile, "image");
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(imageurl);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
 
     @PostMapping("/create/status")
     public ResponseEntity<SuccessResponseDto> createStatusContent(@RequestBody RequestContentDto requestContentDto) throws NoUserException {
@@ -44,7 +61,7 @@ public class ContentController{
     }
 
     @PostMapping("/create/image")
-    public ResponseEntity<SuccessResponseDto> createImageContent(@RequestBody RequestContentDto requestContentDto) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> createImageContent(@RequestBody RequestContentDto requestContentDto) throws NoUserException, IOException {
         logger.trace("ContentController 진입  createContent param {}", requestContentDto);
 
         String message = contentService.createImageContent(

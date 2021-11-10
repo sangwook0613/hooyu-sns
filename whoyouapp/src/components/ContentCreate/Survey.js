@@ -4,6 +4,8 @@ import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import axios from 'axios'
+import { connect } from 'react-redux'
+import { actionCreators } from '../../store/reducers'
 
 
 const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
@@ -15,8 +17,8 @@ const emojiArray = [
   ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
 ]
 
-const Survey = ({ navigation, route }) => {
-  const [emoji, setEmoji] = useState('amazing')
+const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
+  const [emoji, setEmoji] = useState(userEmoji)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [title, setTitle] = useState('')
   const [options, setOptions] = useState(
@@ -24,6 +26,7 @@ const Survey = ({ navigation, route }) => {
       '', ''
     ]
   )
+  const [isSurveyValid, setIsSurveyValid] = useState(false)
   
 
   const SurveyTitle = () => {
@@ -42,6 +45,11 @@ const Survey = ({ navigation, route }) => {
   }
 
   const onTextChange = (index, text) => {
+    if (title && options[0] && options[1]) {
+      setIsSurveyValid(true)
+    } else {
+      setIsSurveyValid(false)
+    }
     setOptions(options.map((option, index2) => {
       return index !== index2 ? option: text
     }))
@@ -53,34 +61,45 @@ const Survey = ({ navigation, route }) => {
     setOptions(tmpOptions)
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => <SurveyTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
-          createSurvey()
-          navigation.navigate('Main')
-          }}
-        >
-          <Text>등록</Text>
-        </TouchableOpacity>
+        <View>
+          { isSurveyValid ? 
+            <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
+              createSurvey()
+              navigation.navigate('Main')
+            }}>
+              <Text>등록</Text>
+            </TouchableOpacity>
+            :
+            <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+          }
+
+        </View>
       )
     });
     setOptions(options)
-  }, [navigation, emoji, options]);
+    if (title && options[0] && options[1]) {
+      setIsSurveyValid(true)
+    } else {
+      setIsSurveyValid(false)
+    }
+  }, [navigation, emoji, options, title, isSurveyValid]);
 
   const createEmoji = () => {
+    setUserEmoji(emoji)
     axios({
       method: 'post',
       url: SERVER_URL + 'user/emojiSet',
       data: {
         "userEmoji": emoji,
-        "userPK": 1
+        "userPK": userPK
       }
     })
     .then((res) => {
-      console.log(res.data.success)
-      createEmoji()
+      console.log("emoji set sucess")
     })
     .catch((err) => {
       console.log(err)
@@ -97,12 +116,12 @@ const Survey = ({ navigation, route }) => {
         "requestContentDto": {
           "color": '',
           "exon": title,
-          "userPK": 1
+          "userPK": userPK
         }
       }
     })
     .then((res) => {
-      console.log(res.data.success)
+      console.log("survey set sucess")
       createEmoji()
     })
     .catch((err) => {
@@ -264,4 +283,21 @@ const styles = StyleSheet.create({
 });
 
 
-export default Survey;
+function mapStateToProps(state) {
+  return {
+    SERVER_URL: state.user.SERVER_URL,
+    userPK: state.user.userPK,
+    userEmoji: state.user.userEmoji,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserEmoji: (emoji) => {
+      dispatch(actionCreators.setUserEmoji(emoji))
+    }
+  }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Survey);

@@ -3,30 +3,28 @@ package com.status.backend.user.service;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.http.LowLevelHttpRequest;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.status.backend.content.domain.Type;
 import com.status.backend.content.domain.RecordTime;
 import com.status.backend.content.domain.RecordTimeRepository;
+import com.status.backend.content.domain.Type;
 import com.status.backend.content.dto.RequestContentTimeDto;
 import com.status.backend.fcm.domain.FcmToken;
 import com.status.backend.fcm.domain.FcmTokenRepository;
 import com.status.backend.fcm.service.FcmService;
 import com.status.backend.global.domain.Token;
 import com.status.backend.global.dto.DistDto;
+import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.exception.GoogleLoginFailException;
 import com.status.backend.global.exception.NoBrowserTokenException;
 import com.status.backend.global.exception.NoUserException;
-import com.status.backend.global.exception.DuplicateNameException;
 import com.status.backend.global.service.TokenService;
 import com.status.backend.global.util.RadarMath;
 import com.status.backend.user.domain.*;
 import com.status.backend.user.dto.ResponseUserLocationDto;
 import com.status.backend.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.jni.Local;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -172,10 +170,20 @@ public class UserServiceImpl implements UserService {
         return "Success";
     }
 
+    public String setAllPush(Long userPK, Boolean accept, Boolean sync, int radius) throws Exception {
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        if(accept == null || sync == null || radius<0) throw new Exception("환경설정 실패");
+        user.setAcceptPush(accept);
+        user.setAcceptSync(sync);
+        user.setAcceptRadius(radius);
+        userRepository.save(user);
+        return "Success";
+    }
+
     @Override
     public String setPushAlarmReceive(Long userPK, Boolean accept) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        user.setAcceptPush(!user.isAcceptPush());
+        user.setAcceptPush(accept);
         userRepository.save(user);
         return "Success";
     }
@@ -183,7 +191,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String setPushAlarmSync(Long userPK, Boolean sync) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        user.setAcceptSync(!user.isAcceptSync());
+        user.setAcceptSync(sync);
         userRepository.save(user);
         return "Success";
     }
@@ -248,26 +256,29 @@ public class UserServiceImpl implements UserService {
         }
 
         LocalDateTime nowTime = LocalDateTime.now();
-
+        logger.debug("LocalDataTime : {}",nowTime);
         FcmToken targetToken = fcmTokenRepository.findByUserId(user.getId()).orElseThrow(() -> new NoBrowserTokenException("브라우저토큰이 없습니다...."));
+        logger.debug("FCMToekn : {}",targetToken);
+//        logger.debug("LocalDataTime check : {}",nowTime.isAfter(null));
         //push
 
         //장기 미 사용자 까꿍 message
-        if (nowTime.isAfter(targetToken.getPushThree()) && targetToken.getPushThree() != null) {
+        logger.debug("nowTime null Exception check : {}",nowTime.isAfter(LocalDateTime.now()));
+        if (targetToken.getPushThree() != null && nowTime.isAfter(targetToken.getPushThree())) {
             String title = "주변 사람들이 당신의 생각을 궁금해하고 있어요!";
             String body = "클릭해서 컨텐츠를 작성해보세요";
             fcmService.sendMessageTo(targetToken.getToken(), title, body);
             targetToken.setPushThree(nowTime.plusDays(5));
         }
 
-        if (countOfNew != 0 && (nowTime.isAfter(targetToken.getPushOne()) || targetToken.getPushOne() == null)) {
+        if (countOfNew != 0 && (targetToken.getPushOne() == null || nowTime.isAfter(targetToken.getPushOne()))) {
             String title = "반경 내에 " + countOfNew + "명의 사람이 새로 들어왔어요!";
             String body = "클릭해서 확인해보세요";
             fcmService.sendMessageTo(targetToken.getToken(), title, body);
             targetToken.setPushOne(nowTime.plusHours(3));
         }
 
-        if (targetContent != null && (nowTime.isAfter(targetToken.getPushTwo()) || targetToken.getPushTwo() == null)) {
+        if (targetContent != null && (targetToken.getPushTwo() == null || nowTime.isAfter(targetToken.getPushTwo()))) {
             String title = "누군가 새 " + targetContent.getTitle() + "를 올렸어요!";
             String body = "클릭해서 확인해보세요";
             fcmService.sendMessageTo(targetToken.getToken(), title, body);

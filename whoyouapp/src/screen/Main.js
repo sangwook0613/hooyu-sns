@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Dimensions, PermissionsAndroid, Platform } from 'react-native'
+import { Alert, AppState, BackHandler } from 'react-native'
 import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Animated } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { connect } from 'react-redux'
@@ -7,7 +7,6 @@ import { actionCreators } from '../store/reducers'
 
 import shelter from '../assets/images/shelter.png'
 import wowImoticon from '../assets/images/wowimoticon.png'
-import Geolocation from 'react-native-geolocation-service'
 import amazingEmozi from '../assets/images/amazing2.png'
 import morning from '../assets/images/morning.png'
 import evening from '../assets/images/evening.png'
@@ -20,6 +19,8 @@ import MainList from '../components/Main/MainList'
 import ShelterList from '../components/Main/ShelterList'
 import AddButton from '../components/Main/AddButton'
 import axios from 'axios'
+import * as TaskManager from 'expo-task-manager'
+import * as Location from 'expo-location'
 
 import api from '../utils/api'
 
@@ -42,7 +43,6 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 
   const styles = styleSheet(deviceWidth, deviceHeight, deviceWidth * 0.7)
 
-  const [location, setLocation] = useState('unknown')
   const [radarX, setRadarX] = useState(-100)
   const [radarY, setRadarY] = useState(-100)
   const [radarWidth, setRadarWidth] = useState(-100)
@@ -52,71 +52,66 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   const [selectedUser, setSelectedUser] = useState(-1)
   const [selectedPrivateZoneUser, setSelectedPrivateZoneUser] = useState(-1)
 
-  async function requestPositionPermissions() {
-    if (Platform.OS === 'ios') {
-      Geolocation.requestAuthorization();
-      Geolocation.setRNConfiguration({
-        skipPermissionRequests: false,
-        authorizationLevel: 'whenInUse',
-      });
-    }
-
-    if (Platform.OS === 'android') {
-      const locationGranted = await PermissionsAndroid.requestMultiple([
-        PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      ]);
-      if (
-        locationGranted['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED &&
-        locationGranted['android.permission.ACCESS_COARSE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED
-      ) {
-        return true
-      } else {
-        return false
-      }
-    }
-  }
-
   const mainListRef = useRef()
   const shelterListRef = useRef()
 
   useEffect(() => {
-    shelterListRef.current.close()
-    getLocation()
-    setInterval(() => {
-      getLocation()
-    }, 10000);
-  }, [myRadius])
+    console.log('dd')
+    requestPermission()
+  }, [])
 
-  const getLocation = () => {
-    
-    requestPositionPermissions()
-      .then((didGetPermission) => {
-        if (didGetPermission) {
-          Geolocation.getCurrentPosition(position => {
-            const { latitude, longitude } = position.coords
-            setLocation({
-              latitude,
-              longitude
-            })
-            // getUsers()
-          },
-            error => {
-              console.warn(error.code, error.message)
-            })
-        } else {
-          alert('no location permission')
+  useEffect(() => {
+    instantGetLocation()
+  }, [myRadius, userEmoji])
+
+  const LOCATION_TASK_NAME = 'location-task'
+
+  const requestPermission = async () => {
+    const foregroundStatus = await Location.requestForegroundPermissionsAsync()
+    const backgroundStatus = await Location.requestBackgroundPermissionsAsync()
+    instantGetLocation()
+    if (foregroundStatus.granted && backgroundStatus.granted) {
+      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.high,
+        distanceInterval: 0,
+        timeInterval: 10000,
+        foregroundService: {
+          notificationTitle: 'Hooyu',
+          notificationBody : '당신의 반경을 탐색하는중...',
+          notificationColor: '#FF6A77'
         }
       })
-      .catch((err) => {
-        console.warn(err)
-      })
+    } else {
+      Alert.alert(
+        '서비스 이용 알림', 
+        '필수 권한을 허용해야 서비스 정상 이용이 가능합니다. 설정에서 설정해주세요.',
+        [
+          {
+            text: "확인",
+            onPress: () => BackHandler.exitApp()
+          }
+        ])
+    }
   }
 
-  const getUsers = () => {
-    console.log(myRadius)
-    console.log("userPK : ",userPK)
-    console.log(userEmoji)
+  TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
+    if (error) {
+      console.log(error)
+      return
+    }
+    if (data) {
+      const { locations } = data
+      console.log(AppState.currentState)
+      getUsers(locations[0].coords.latitude, locations[0].coords.longitude)
+    }
+  })
+
+  const instantGetLocation = async () => {
+    const data = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.high})
+    getUsers(data.coords.latitude, data.coords.longitude)
+  }
+
+  const getUsers = (latitude, longitude) => {
     axios({
       method: 'post',
       url: SERVER_URL + 'user/radar',
@@ -124,8 +119,8 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         list: [
         ],
         requestRadiusDto: {
-          lat: 10,
-          lon: 10,
+          lat: latitude,
+          lon: longitude,
           radius: myRadius,
           userPK: userPK
         }
@@ -134,7 +129,31 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       .then((res) => {
         setUsers(res.data.success.filter(user => user.privateZone !== true))
         setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
-        // console.warn(res.data.success[0])
+        if (AppState.currentState === 'background') {
+          Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
+          Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+            accuracy: Location.Accuracy.high,
+            distanceInterval: 0,
+            timeInterval: 600000,
+            foregroundService: {
+              notificationTitle: 'Hooyu',
+              notificationBody : '당신의 반경을 탐색하는중...',
+              notificationColor: '#FF6A77'
+            }
+          })
+        } else {
+          Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME)
+          Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+            accuracy: Location.Accuracy.high,
+            distanceInterval: 0,
+            timeInterval: 10000,
+            foregroundService: {
+              notificationTitle: 'Hooyu',
+              notificationBody : '당신의 반경을 탐색하는중...',
+              notificationColor: '#FF6A77'
+            }
+          })
+        }
       })
       .catch((err) => {
         console.warn(err)
