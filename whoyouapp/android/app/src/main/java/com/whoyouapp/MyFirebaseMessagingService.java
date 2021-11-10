@@ -52,7 +52,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
       String channelId = getString(R.string.default_notification_channel_id);
       Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
       
-      Bitmap orgImage = BitmapFactory.decodeResource(getResources(), R.drawable.whoyou_image);
+      Bitmap orgImage = BitmapFactory.decodeResource(getResources(), R.drawable.appicon);
 
       NotificationCompat.Builder notificationBuilder =
               new NotificationCompat.Builder(this, channelId)

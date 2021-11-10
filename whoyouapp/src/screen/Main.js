@@ -21,6 +21,8 @@ import AddButton from '../components/Main/AddButton'
 import axios from 'axios'
 import * as TaskManager from 'expo-task-manager'
 import * as Location from 'expo-location'
+import * as emojiImages from '../assets/images'
+
 
 import api from '../utils/api'
 
@@ -232,11 +234,11 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
           }
 
           <View style={styles.profileButton}>
-            <TouchableOpacity onPress={() => navigate("Profile", { nickname: 'HELLO', emoji: images.emoji.amazing })}>
+            <TouchableOpacity onPress={() => navigate("Profile", { nickname: 'HELLO', emoji: emojiImages.default.emoji[userEmoji] })}>
               <View>
                 <View style={styles.profileBackground}></View>
                 <Image
-                  source={wowImoticon}
+                  source={emojiImages.default.emoji[userEmoji]}
                   style={styles.profileImoticon}
                 />
                 <View style={styles.profileMeArea}>
@@ -410,7 +412,7 @@ function Main({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                 height: deviceWidth * 0.07,
                 width: deviceWidth * 0.07,
               }}
-              source={amazingEmozi}
+              source={emojiImages.default.emoji[userEmoji]}
               resizeMode="cover"
             />
           </TouchableOpacity>
