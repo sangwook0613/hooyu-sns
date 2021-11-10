@@ -144,4 +144,24 @@ public class UserController{
 
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
+
+    @PutMapping("/killed")
+    public ResponseEntity<SuccessResponseDto> setKilled(@RequestParam Long userPK) throws NoUserException {
+        logger.trace("User Controller 진입 getListUserWithinRadius param {}", userPK);
+        String message = userService.killApp(userPK);
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/killedTest")
+    public ResponseEntity<SuccessResponseDto> checkKilled(@RequestParam Long userPK) throws NoUserException {
+        logger.trace("User Controller 진입 getListUserWithinRadius param {}", userPK);
+        String message = userService.checkKill(userPK);
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
 }

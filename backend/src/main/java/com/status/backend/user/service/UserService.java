@@ -17,6 +17,7 @@ import java.util.List;
 public interface UserService {
 
     Token googleLogin(String googleIdToken) throws Exception;
+    String killApp(Long userPK) throws NoUserException;
 
     UserResponseDto getUserInfo(Long userPK) throws NoUserException;
 

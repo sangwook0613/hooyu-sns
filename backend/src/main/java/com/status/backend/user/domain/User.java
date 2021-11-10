@@ -7,6 +7,7 @@ import com.status.backend.global.domain.BaseTime;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,12 @@ public class User extends BaseTime {
 
     @Column
     private boolean acceptSync = Boolean.TRUE;
+
+    @Column
+    private boolean alive = Boolean.TRUE;
+
+    @Column
+    private LocalDateTime killed;
 
     @Column(nullable = true)
     private int acceptRadius;
@@ -83,11 +90,6 @@ public class User extends BaseTime {
 
     public User updateRefreshToken(String refreshToken){
         this.refreshToken = refreshToken;
-        return this;
-    }
-
-    public User updateRadius(int acceptRadius){
-        this.acceptRadius = acceptRadius;
         return this;
     }
 
