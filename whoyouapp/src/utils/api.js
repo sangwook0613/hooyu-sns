@@ -36,5 +36,18 @@ export default {
         userPK: pk
       }
     })
+  },
+
+  setPushAlarmReceive(accept, radius, sync, pk) {
+    return axios({
+      method: 'post',
+      url: 'user/push',
+      data: {
+        accept: accept,
+        radius: radius,
+        sync: sync,
+        userPK: pk
+      }
+    })
   }
 }
