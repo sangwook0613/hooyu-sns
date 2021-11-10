@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react'
+import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 
-const PushButtonGroup = ({ isPushSyncEnabled }) => {
+const PushButtonGroup = ({ setPushRadius, currentRadius, isPushEnabled }) => {
+  const [selection, setSelection] = useState(currentRadius)
 
-  const [selection, setSelection] = useState(1);
+  useEffect(() => {
+    setPushRadius(selection)
+  }, [selection])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -12,32 +15,32 @@ const PushButtonGroup = ({ isPushSyncEnabled }) => {
           style={[
             styles.btn,
             { borderBottomLeftRadius: 20, borderTopLeftRadius: 20, },
-            selection === 1 ? { backgroundColor: `${isPushSyncEnabled ? "#F38181" : "#c9c9c9"}` } : null
+            selection === 20 ? { backgroundColor: `${isPushEnabled ? "#FF6A77" : "#c9c9c9"}` } : null
           ]}
-          onPress={() => setSelection(1)}
+          onPress={() => setSelection(20)}
         >
-          <Text style={[styles.btnText, selection === 1 ? { color: "white" } : { color: "#E5E5E5" }]}>20m</Text>
+          <Text style={[styles.btnText, selection === 20 ? { color: "white" } : { color: "#E5E5E5" }]}>20m</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.btn, selection === 2 ? { backgroundColor: `${ isPushSyncEnabled ? "#F38181" : "#c9c9c9"}`} : null]} onPress={() => setSelection(2)}>
-          <Text style={[styles.btnText, selection === 2 ? { color: "white" } : { color: "#E5E5E5" }]}>100m</Text>
+        <TouchableOpacity style={[styles.btn, selection === 100 ? { backgroundColor: `${ isPushEnabled ? "#FF6A77" : "#c9c9c9"}`} : null]} onPress={() => setSelection(100)}>
+          <Text style={[styles.btnText, selection === 100 ? { color: "white" } : { color: "#E5E5E5" }]}>100m</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.btn, selection === 3 ? { backgroundColor: `${ isPushSyncEnabled ? "#F38181" : "#c9c9c9"}`} : null]} onPress={() => setSelection(3)}>
-          <Text style={[styles.btnText, selection === 3 ? { color: "white" } : { color: "#E5E5E5" }]}>500m</Text>
+        <TouchableOpacity style={[styles.btn, selection === 500 ? { backgroundColor: `${ isPushEnabled ? "#FF6A77" : "#c9c9c9"}`} : null]} onPress={() => setSelection(500)}>
+          <Text style={[styles.btnText, selection === 500 ? { color: "white" } : { color: "#E5E5E5" }]}>500m</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
             styles.btn,
             { borderBottomRightRadius: 20, borderTopRightRadius: 20, },
-            selection === 4 ? { backgroundColor: `${isPushSyncEnabled ? "#F38181" : "#c9c9c9"}` } : null
+            selection === 2000 ? { backgroundColor: `${isPushEnabled ? "#FF6A77" : "#c9c9c9"}` } : null
           ]}
-          onPress={() => setSelection(4)}
+          onPress={() => setSelection(2000)}
         >
-          <Text style={[styles.btnText, selection === 4 ? { color: "white" } : { color: "#E5E5E5" }]}>2km</Text>
+          <Text style={[styles.btnText, selection === 2000 ? { color: "white" } : { color: "#E5E5E5" }]}>2km</Text>
         </TouchableOpacity>
       </View>
         
     </SafeAreaView >
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -61,6 +64,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 14,
   }
-});
+})
 
-export default PushButtonGroup;
+export default PushButtonGroup

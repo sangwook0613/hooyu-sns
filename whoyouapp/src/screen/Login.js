@@ -25,7 +25,7 @@ import {
 } from '@react-native-google-signin/google-signin'
 
 
-const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji, userPK, userEmoji }) => {
+const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji, setPushSetting, userPK, userEmoji }) => {
   // const [userpk, setUserpk] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
   const [userInfo2, setUserInfo2] = useState(null);
@@ -112,6 +112,7 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
         .then((res) => {
           setUserInfo2(res.data.success)
           setUserEmoji(res.data.success.emoji)
+          setPushSetting(res.data.success.acceptPush, res.data.success.acceptRadius, res.data.success.acceptSync)
           console.log("순서 3")
           console.log(res.data.success.emoji)
         })
@@ -270,7 +271,10 @@ function mapDispatchToProps(dispatch) {
     },
     setUserEmoji: (emoji) => {
       dispatch(actionCreators.setUserEmoji(emoji))
-    }
+    },
+    setPushSetting: (acceptPush, acceptRadius, acceptSync) => {
+      dispatch(actionCreators.setPushSetting({acceptPush, acceptRadius, acceptSync}))
+    },
   }
 }
 
