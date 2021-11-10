@@ -14,7 +14,7 @@ import java.util.List;
 
 //@SQLDelete(sql = "UPDATE user set deleted = true where id = ?")
 //@Where(clause = "deleted = false")
-@Getter @Setter @ToString
+@Getter @Setter
 @NoArgsConstructor
 @Entity
 public class User extends BaseTime {
