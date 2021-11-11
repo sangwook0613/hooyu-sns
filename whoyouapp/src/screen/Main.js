@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Alert, AppState, BackHandler, LogBox } from 'react-native'
+import { Alert, AppState, BackHandler, Dimensions, LogBox } from 'react-native'
 import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Animated } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
 
 import shelter from '../assets/images/shelter.png'
-import wowImoticon from '../assets/images/wowimoticon.png'
-import amazingEmozi from '../assets/images/amazing2.png'
 import morning from '../assets/images/morning.png'
 import evening from '../assets/images/evening.png'
 import night from '../assets/images/night.png'
@@ -39,6 +37,73 @@ const mainColor5 = theme == "morning" ? "#B2B2B2" : (theme == "evening" ? '#FFFF
 const mainColor6 = theme == "morning" ? "#000000" : (theme == "evening" ? '#000000' : '#FFFFFF')
 // 선택 된 반경 옆 표시색
 const mainColor7 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#FFFFFF')
+
+const testUsers = [
+  {
+    "contentTime": {
+      "images": "2021-11-12T00:50:41.862085",
+      "recent": "2021-11-12T01:11:20.115517",
+      "status": "2021-11-12T01:19:20.115517",
+      "survey": null,
+    },
+    "distDto": {
+      "dist": 1024.26937672832003,
+      "xdist": 1521.99639309943186,
+      "ydist": 101.848937014469676,
+    },
+    "emoji": "angry",
+    "name": "asdad",
+    "privateZone": false,
+  },
+  {
+    "contentTime": {
+      "images": "2021-11-12T00:50:41.862085",
+      "recent": "2021-11-12T01:12:20.115517",
+      "status": "2021-11-12T01:19:20.115517",
+      "survey": null,
+    },
+    "distDto": {
+      "dist": 924.26937672832003,
+      "xdist": 1321.99639309943186,
+      "ydist": 81.848937014469676,
+    },
+    "emoji": "angry",
+    "name": "asdad",
+    "privateZone": false,
+  },
+  {
+    "contentTime": {
+      "images": "2021-11-12T00:50:41.862085",
+      "recent": "2021-11-12T01:13:20.115517",
+      "status": "2021-11-12T01:19:20.115517",
+      "survey": null,
+    },
+    "distDto": {
+      "dist": 824.26937672832003,
+      "xdist": 1061.99639309943186,
+      "ydist": 51.848937014469676,
+    },
+    "emoji": "angry",
+    "name": "asdad",
+    "privateZone": false,
+  },
+  {
+    "contentTime": {
+      "images": "2021-11-12T00:50:41.862085",
+      "recent": "2021-11-12T01:17:20.115517",
+      "status": "2021-11-12T01:19:20.115517",
+      "survey": null,
+    },
+    "distDto": {
+      "dist": 724.26937672832003,
+      "xdist": 851.99639309943186,
+      "ydist": 41.848937014469676,
+    },
+    "emoji": "angry",
+    "name": "asdad",
+    "privateZone": false,
+  }
+]
 
 
 const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK,userEmoji, setMyRadius }) => {
@@ -228,7 +293,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     })
       .then((res) => {
         if (appState.current === 'active') {
-          setUsers(res.data.success.filter(user => user.privateZone !== true))
+          setUsers([...testUsers, ...res.data.success.filter(user => user.privateZone !== true)])
           setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
         }
         console.warn('get users : ', AppState.currentState)
@@ -259,7 +324,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         }}
         config={{
           velocityThreshold: 0.1,
-          directionalOffsetThreshold: 50,
+          directionalOffsetThreshold: 80,
         }}
         style={{
           height: deviceHeight,
@@ -472,7 +537,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
             </View>
           </View>
 
-          <AddButton navigate={navigate} />
+          <AddButton navigate={navigate} theme={theme} />
 
           {/* 중앙 내 이모티콘 */}
           <TouchableOpacity
@@ -535,7 +600,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                     height: deviceWidth * 0.06,
                     width: deviceWidth * 0.06,
                   }}
-                  source={amazingEmozi}
+                  source={images.emoji[user.emoji]}
                   resizeMode="cover"
                 />
               </TouchableOpacity>
@@ -556,6 +621,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         users={users}
         selectUser={selectUser}
         selectedUser={selectedUser}
+        setUsers={setUsers}
         ref={mainListRef}
       />
       <ShelterList
@@ -575,23 +641,25 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create({
   evening: {
     left: deviceWidth * 0.025,
+    height: deviceWidth / 530 * 943,
     position: "absolute",
-    top: -deviceHeight * 0.2,
+    top: (deviceHeight - (deviceWidth / 530 * 943)) / 2,
     width: deviceWidth * 0.95
   },
   linearGradient: {
     flex: 1,
   },
   morning: {
-    left: deviceWidth * 0.025,
     position: "absolute",
-    top: -deviceHeight * 0.2,
-    width: deviceWidth * 0.95
+    height: deviceWidth / 530 * 942,
+    top: (deviceHeight - (deviceWidth / 530 * 942)) / 2,
+    width: deviceWidth
   },
   night: {
     left: deviceWidth * 0.025,
+    height: deviceWidth / 530 * 943,
     position: "absolute",
-    top: -deviceHeight * 0.2,
+    top: (deviceHeight - (deviceWidth / 530 * 943)) / 2,
     width: deviceWidth * 0.95
   },
   profileButton: {
@@ -620,7 +688,7 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     backgroundColor: 'white',
     borderRadius: Math.round(deviceWidth + deviceHeight
     ) / 2,
-    borderColor: "black",
+    borderColor: "#B4B4B4",
     borderWidth: 1.5,
     position: "absolute",
     top: deviceHeight
@@ -632,6 +700,7 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     alignItems: "center"
   },
   profileMeText: {
+    color: "#B4B4B4",
     fontSize: 10,
     marginBottom: 2
   },
