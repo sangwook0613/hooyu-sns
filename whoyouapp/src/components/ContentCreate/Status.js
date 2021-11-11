@@ -12,7 +12,7 @@ const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
 
-const colorArray = ['#FFD0D0', '#CDD1FF', '#E8AFFE', '#CECECE', '#DEBACC', '#F9A996', '#FBF997  ']
+const colorArray = ['#FFD0D0', '#CDD1FF', '#E8AFFE', '#CECECE', '#DEBACC', '#F9A996', '#FBF997']
 const emojiArray = [
   ['smile', 'amazing', 'sad', 'crying', 'sense', 'angry'], 
   ['pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep']
