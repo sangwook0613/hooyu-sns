@@ -163,7 +163,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    // borderWidth: 2
   },
   myEmoji: {
     width: 80, 
