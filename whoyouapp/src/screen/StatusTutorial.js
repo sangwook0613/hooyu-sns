@@ -64,7 +64,6 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
     })
     .then(() => {
       navigate('Main')
-      alert('완료')
     })
     .catch((err) => {
       console.warn(err)
