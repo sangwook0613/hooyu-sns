@@ -24,7 +24,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
     }
   }))
 
-  const mainColor1 = theme == "morning" ? "#A1D1E7" : (theme == "evening" ? '#EC5446' : '#0B1C26')
+  const mainColor1 = theme == "morning" ? "#57B4DF" : (theme == "evening" ? '#EC5446' : '#0B1C26')
   const mainColor4 = theme == "morning" ? "#E7F7FF" : (theme == "evening" ? '#FCE2E0' : '#E9E9E9')
 
   const styles = styleSheet(deviceWidth, deviceHeight, mainColor1, mainColor4)
@@ -92,22 +92,41 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
               </TouchableWithoutFeedback>
               {index == selectedUser && 
                 <View style={styles.userMenu}>
-                {['상태', '사진', '질문'].map((item, index) => {
-                  const contentName = item === '상태' ? 'status' : item === '사진' ? 'image' : 'survey'
-                  return (
-                    <TouchableOpacity
-                      key={index}
+                  <TouchableOpacity
                       style={styles.userMenuButton}
-                      onPress={() => {navigate('User', {username: user.name, content: contentName})}}
+                      onPress={() => {navigate('User', {username: user.name, content: 'status'})}}
                     >
                       <Text style={{
                         color: 'white',
                         fontWeight: 'bold',
                       }}>
-                        {item}
+                        상태
                       </Text>
                     </TouchableOpacity>
-                  )})}
+                    <TouchableOpacity
+                      style={[styles.userMenuButton, {opacity: user.contentTime.images === null ? 0.6 : 1}]}
+                      onPress={() => {navigate('User', {username: user.name, content: 'image'})}}
+                      disabled={user.contentTime.images === null ? true : false}
+                    >
+                      <Text style={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }}>
+                        사진
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.userMenuButton, {opacity: user.contentTime.survey === null ? 0.6 : 1}]}
+                      onPress={() => {navigate('User', {username: user.name, content: 'survey'})}}
+                      disabled={user.contentTime.survey === null ? true : false}
+                    >
+                      <Text style={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }}>
+                        질문
+                      </Text>
+                    </TouchableOpacity>
                 </View>
               }
             </View>

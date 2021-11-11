@@ -44,7 +44,13 @@ const AddButton = ({ navigate }) => {
             outputRange: [deviceWidth * 0.44, deviceWidth * 0.1, deviceWidth * 0.28]
           }),
         }]}>
-          <AntDesign name="smileo" size={20} color="#f02a4b" />
+          <Image 
+          style={{
+            height: deviceWidth * 0.07,
+            width: deviceWidth * 0.07,
+          }}
+          source={images.menu.emoji}
+          resizeMode='contain' />
         </Animated.View>
       </TouchableWithoutFeedback>
 
@@ -57,7 +63,13 @@ const AddButton = ({ navigate }) => {
             outputRange: [deviceWidth * 0.44, deviceWidth * 0.1, deviceWidth * 0.44]
           }),
         }]}>
-          <Entypo name="text-document" size={20} color="#f02a4b" />
+          <Image 
+          style={{
+            height: deviceWidth * 0.08,
+            width: deviceWidth * 0.08,
+          }}
+          source={images.menu.status}
+          resizeMode='contain' />
         </Animated.View>
 
       </TouchableWithoutFeedback>
@@ -70,7 +82,13 @@ const AddButton = ({ navigate }) => {
             outputRange: [deviceWidth * 0.44, deviceWidth * 0.1, deviceWidth * 0.6]
           }),
         }]}>
-          <Entypo name="image" size={20} color="#f02a4b" />
+          <Image 
+          style={{
+            height: deviceWidth * 0.07,
+            width: deviceWidth * 0.07,
+          }}
+          source={images.menu.image}
+          resizeMode='contain' />
         </Animated.View>
       </TouchableWithoutFeedback>
 
@@ -83,7 +101,13 @@ const AddButton = ({ navigate }) => {
             outputRange: [deviceWidth * 0.44, deviceWidth * 0.1, deviceWidth * 0.76]
           }),
         }]}>
-          <FontAwesome5 name="vote-yea" size={20} color="#f02a4b" />
+          <Image 
+          style={{
+            height: deviceWidth * 0.075,
+            width: deviceWidth * 0.075,
+          }}
+          source={images.menu.question}
+          resizeMode='contain' />
         </Animated.View>
       </TouchableWithoutFeedback>
 

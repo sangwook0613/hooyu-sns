@@ -327,8 +327,8 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 
           <View style={styles.raderArea}>
             <View style={styles.radar__text}>
-              <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
-              <Text style={styles.radar__text__count}>10000</Text>
+              <Text style={styles.radar__text__title}>내 반경 안의 유저</Text>
+              <Text style={styles.radar__text__count}>{users.length}</Text>
             </View>
             <TouchableOpacity
               style={styles.shelterArea}
@@ -494,6 +494,8 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
           </TouchableOpacity>
 
           {users.map((user, index) => (
+            user.distDto.dist <= myRadius
+            ?
             <View
               key={index}
               style={{
@@ -537,6 +539,10 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                   resizeMode="cover"
                 />
               </TouchableOpacity>
+            </View>
+            :
+            <View
+              key={index}>
             </View>
           ))}
         </LinearGradient >
