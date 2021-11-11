@@ -9,10 +9,12 @@ spring:
 
   datasource:
 ##  ?autoReconnect=true&useUnicode=true&characterEncoding=utf8mb4&serverTimezone=KST
-    url: jdbc:mariadb://k5a101.p.ssafy.io:3306/whoyou
+#    url: jdbc:mariadb://k5a101.p.ssafy.io:3306/whoyou
+    url: jdbc:mariadb://k5a101.p.ssafy.io:3308/whoyou
     driver-class-name: org.mariadb.jdbc.Driver
     username: root
-    password: a101dawit!
+    password: mariadb
+  #    password: a101dawit!
 
   jpa:
     open-in-view: false
