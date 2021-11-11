@@ -1,13 +1,18 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
 import { Animated, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback, ScrollView } from 'react-native'
-import amazingEmozi from '../../assets/images/amazing2.png'
+import LinearGradient from 'react-native-linear-gradient'
+import images from '../../assets/images'
 
 
 const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users, selectPrivateZoneUser, selectedPrivateZoneUser }, ref) => {
   const shelterList = useRef(new Animated.Value(deviceHeight)).current
 
+  const [now, setNow] = useState(new Date().toString())
+
   useImperativeHandle(ref, () => ({
     open: () => {
+      const now = new Date()
+      setNow(now.toString())
       Animated.timing(shelterList, {
         toValue: deviceHeight * 0.6,
         duration: 400,
@@ -28,6 +33,25 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, us
   const mainColor4 = theme == "morning" ? "#E7F7FF" : (theme == "evening" ? '#FCE2E0' : '#E9E9E9')
 
   const styles = styleSheet(deviceWidth, deviceHeight, mainColor1, mainColor4)
+
+  const humanize = (date) => {
+    if (date === null) {
+      return "게시물 없음"
+    }
+    let r = Date.parse(now) - Date.parse(date) + 32400000
+    if (parseInt(r) > 2678400000) {
+      r = "1달 이전 게시"
+    } else if (parseInt(r) > 86400000) {
+      r = parseInt(parseInt(r) / 86400000).toString() + "일 전 게시"
+    } else if (parseInt(r) >= 3600000) {
+      r = parseInt(parseInt(r) / 3600000).toString() + "시간 전 게시";
+    } else if (parseInt(r) >= 60000) {
+      r = parseInt(parseInt(r) / 60000).toString() + "분 전 게시";
+    } else {
+      r = "방금 전 게시";
+    }
+    return r;
+  }
   
   return (
     <Animated.View
@@ -65,7 +89,7 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, us
                   }}>
                     <Image
                       style={styles.shelterListEmoji}
-                      source={amazingEmozi}
+                      source={images.emoji[user.emoji]}
                       resizeMode="contain"
                     />
                     <Text style={styles.userText}>
@@ -73,47 +97,77 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, us
                     </Text>
                   </View>
                     <Text style={styles.userText}>
-                      1시간 전 게시
+                      {humanize(user.contentTime.recent)}
                     </Text>
                 </View>
               </TouchableWithoutFeedback>
               {index == selectedPrivateZoneUser && 
                 <View style={styles.userMenu}>
-                  <TouchableOpacity
-                    style={styles.userMenuButton}
-                    onPress={() => {navigate('User', {username: user.name, content: 'status'})}}
+                  <LinearGradient 
+                    colors={['#AB79EF', '#FC98AB']}
+                    style={{
+                      alignItems: 'center',
+                      borderRadius: 9.5,
+                      justifyContent: 'center',
+                      padding: isNewContent(user.contentTime.status) ? 2.5 : 0,
+                    }}
                   >
-                    <Text style={{
-                      color: 'white',
-                      fontWeight: 'bold',
-                    }}>
-                      상태
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.userMenuButton, {opacity: user.contentTime.images === null ? 0.6 : 1}]}
-                    onPress={() => {navigate('User', {username: user.name, content: 'image'})}}
-                    disabled={user.contentTime.images === null ? true : false}
+                    <TouchableOpacity
+                      style={styles.userMenuButton}
+                      onPress={() => {navigate('User', {username: user.name, content: 'status'})}}
+                    >
+                      <Text style={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }}>
+                        상태
+                      </Text>
+                    </TouchableOpacity>
+                  </LinearGradient>
+                  <LinearGradient 
+                    colors={['#AB79EF', '#FC98AB']}
+                    style={{
+                      alignItems: 'center',
+                      borderRadius: 9.5,
+                      justifyContent: 'center',
+                      padding: isNewContent(user.contentTime.images) ? 2.5 : 0,
+                    }}
                   >
-                    <Text style={{
-                      color: 'white',
-                      fontWeight: 'bold',
-                    }}>
-                      사진
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.userMenuButton, {opacity: user.contentTime.survey === null ? 0.6 : 1}]}
-                    onPress={() => {navigate('User', {username: user.name, content: 'survey'})}}
-                    disabled={user.contentTime.survey === null ? true : false}
+                    <TouchableOpacity
+                      style={[styles.userMenuButton, {backgroundColor: user.contentTime.images === null ? '#B4B4B4' : mainColor1}]}
+                      onPress={() => {navigate('User', {username: user.name, content: 'image'})}}
+                      disabled={user.contentTime.images === null ? true : false}
+                    >
+                      <Text style={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }}>
+                        사진
+                      </Text>
+                    </TouchableOpacity>
+                  </LinearGradient>
+                  <LinearGradient 
+                    colors={['#AB79EF', '#FC98AB']}
+                    style={{
+                      alignItems: 'center',
+                      borderRadius: 9.5,
+                      justifyContent: 'center',
+                      padding: isNewContent(user.contentTime.survey) ? 2.5 : 0,
+                    }}
                   >
-                    <Text style={{
-                      color: 'white',
-                      fontWeight: 'bold',
-                    }}>
-                      질문
-                    </Text>
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.userMenuButton, {backgroundColor: user.contentTime.survey === null ? '#B4B4B4' : mainColor1}]}
+                      onPress={() => {navigate('User', {username: user.name, content: 'survey'})}}
+                      disabled={user.contentTime.survey === null ? true : false}
+                    >
+                      <Text style={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }}>
+                        질문
+                      </Text>
+                    </TouchableOpacity>
+                  </LinearGradient>
                 </View>
               }
             </View>
@@ -128,7 +182,7 @@ const styleSheet = (deviceWidth, deviceHeight, mainColor1, mainColor4) => StyleS
   shelterList: {
     position: 'absolute',
     width: '100%',
-    height: deviceHeight * 0.365,
+    height: deviceHeight * 0.4,
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
