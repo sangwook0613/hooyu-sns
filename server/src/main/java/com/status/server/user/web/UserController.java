@@ -31,7 +31,7 @@ public class UserController{
 
     @GetMapping("/setup/{userPK}")
     public ResponseEntity<SuccessResponseDto> getUserInfo(@PathVariable Long userPK) throws NoUserException {
-        logger.info("User Controller 진입 getUserInfo param {}", userPK);
+        logger.debug("User Controller 진입 getUserInfo param {}", userPK);
         UserResponseDto userResponseDto = userService.getUserInfo(userPK);
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(userResponseDto);
@@ -41,7 +41,7 @@ public class UserController{
 
     @GetMapping("/test/{userPK}")
     public ResponseEntity<SuccessResponseDto> getUserInfoTwo(@PathVariable Long userPK) throws NoUserException {
-        logger.info("User Controller 진입 getUserInfo param {}", userPK);
+        logger.debug("User Controller 진입 getUserInfo param {}", userPK);
         User user = userService.getUserInfoTwo(userPK);
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(user);
