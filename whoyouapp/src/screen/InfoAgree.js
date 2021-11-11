@@ -2,9 +2,11 @@ import React from 'react';
 import { Text, View, TouchableOpacity, Button } from 'react-native'
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import { connect } from 'react-redux'
+import { useNavigation } from '@react-navigation/native'
+
 const InfoAgree = ({ navigation: { navigate }, deviceWidth }) => {
 
-
+  const navigation = useNavigation()
 
   return (
     <>
@@ -65,7 +67,7 @@ const InfoAgree = ({ navigation: { navigate }, deviceWidth }) => {
 
 
       <View style={{ flex: 0.1, width: '100%' }}>
-        <TouchableOpacity style={{ height: '100%', backgroundColor: '#FF6A77', justifyContent: 'center', alignItems: 'center' }} onPress={()=>navigate('Main')}>
+        <TouchableOpacity style={{ height: '100%', backgroundColor: '#FF6A77', justifyContent: 'center', alignItems: 'center' }} onPress={()=>navigation.reset({routes: [{name: 'Main'}]})}>
           <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>다음으로</Text>
         </TouchableOpacity>
       </View>
