@@ -37,7 +37,7 @@ public class JwtAuthFilter extends GenericFilterBean {
         String access_token = ((HttpServletRequest)request).getHeader("access_token");
         String refresh_token = ((HttpServletRequest)request).getHeader("refresh_token");
         logger.trace("this is access_token !!!!!!! {}", access_token);
-        logger.debug("this is refresh !!!!!!! {}", refresh_token);
+        logger.trace("this is refresh !!!!!!! {}", refresh_token);
 
         if(refresh_token != null && tokenService.verifyToken(refresh_token)){
             logger.debug("토큰 두개 모두 보냄 즉, 갱신 코트 :: {}", refresh_token);
