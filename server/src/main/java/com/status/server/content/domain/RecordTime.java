@@ -2,10 +2,7 @@ package com.status.server.content.domain;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,12 +16,18 @@ public class RecordTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private LocalDateTime recentAt;
+    @Column
     private LocalDateTime statusAt;
+    @Column
     private LocalDateTime imageAt;
+    @Column
     private LocalDateTime surveyAt;
 
     @Builder
-    public RecordTime(LocalDateTime statusAt, LocalDateTime imageAt, LocalDateTime surveyAt){
+    public RecordTime(LocalDateTime recentAt, LocalDateTime statusAt, LocalDateTime imageAt, LocalDateTime surveyAt){
+        this.recentAt = recentAt;
         this.statusAt = statusAt;
         this.imageAt = imageAt;
         this.surveyAt = surveyAt;

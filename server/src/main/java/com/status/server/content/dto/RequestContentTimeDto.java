@@ -14,11 +14,13 @@ import java.time.LocalDateTime;
 @ToString
 public class RequestContentTimeDto {
 
+    private LocalDateTime recent;
     private LocalDateTime status;
     private LocalDateTime images;
     private LocalDateTime survey;
 
     public RequestContentTimeDto(RecordTime entity) {
+        this.recent = entity.getRecentAt();
         this.status = entity.getStatusAt();
         this.images = entity.getImageAt();
         this.survey = entity.getSurveyAt();

@@ -47,12 +47,13 @@ public class ContentServiceImpl implements ContentService {
 
         RecordTime recordTime = user.getRecordTime();
         if (recordTime == null) {
-            recordTime = RecordTime.builder().imageAt(content.getCreatedAt()).build();
+            recordTime = RecordTime.builder().statusAt(content.getCreatedAt()).recentAt(content.getCreatedAt()).build();
             user.setRecordTime(recordTime);
             userRepository.save(user);
         } else {
             recordTime = user.getRecordTime();
-            recordTime.setImageAt(content.getModifiedAt());
+            recordTime.setStatusAt(content.getModifiedAt());
+            recordTime.setRecentAt(content.getModifiedAt());
         }
 
         recordTimeRepository.save(recordTime);
@@ -71,12 +72,13 @@ public class ContentServiceImpl implements ContentService {
         contentRepository.save(content);
         RecordTime recordTime = user.getRecordTime();
         if (recordTime == null) {
-            recordTime = RecordTime.builder().imageAt(content.getCreatedAt()).build();
+            recordTime = RecordTime.builder().imageAt(content.getCreatedAt()).recentAt(content.getCreatedAt()).build();
             user.setRecordTime(recordTime);
             userRepository.save(user);
         } else {
             recordTime = user.getRecordTime();
             recordTime.setImageAt(content.getModifiedAt());
+            recordTime.setRecentAt(content.getModifiedAt());
         }
         recordTimeRepository.save(recordTime);
         if (fcmTokenRepository.existsByUserId(userPK)) {
@@ -95,13 +97,14 @@ public class ContentServiceImpl implements ContentService {
         logger.debug("설문 생성 완료!!!!!!!!!!!! : {}", content);
         RecordTime recordTime = user.getRecordTime();
         if (recordTime == null) {
-            recordTime = RecordTime.builder().imageAt(content.getCreatedAt()).build();
+            recordTime = RecordTime.builder().imageAt(content.getCreatedAt()).recentAt(content.getCreatedAt()).build();
             user.setRecordTime(recordTime);
             logger.debug("사용자 최신 컨탠츠 최초 생성 완료!!!! : {}", user);
             userRepository.save(user);
         } else {
             recordTime = user.getRecordTime();
             recordTime.setSurveyAt(content.getModifiedAt());
+            recordTime.setRecentAt(content.getModifiedAt());
             logger.debug("확인 하자 투표 종이 : {}", recordTime);
         }
         recordTimeRepository.save(recordTime);
