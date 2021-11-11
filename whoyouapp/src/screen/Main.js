@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Alert, AppState, BackHandler, LogBox } from 'react-native'
+import { Alert, AppState, BackHandler, Dimensions, LogBox } from 'react-native'
 import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Animated } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { connect } from 'react-redux'
@@ -259,7 +259,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         }}
         config={{
           velocityThreshold: 0.1,
-          directionalOffsetThreshold: 50,
+          directionalOffsetThreshold: 80,
         }}
         style={{
           height: deviceHeight,
@@ -472,7 +472,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
             </View>
           </View>
 
-          <AddButton navigate={navigate} />
+          <AddButton navigate={navigate} theme={theme} />
 
           {/* 중앙 내 이모티콘 */}
           <TouchableOpacity
@@ -535,7 +535,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                     height: deviceWidth * 0.06,
                     width: deviceWidth * 0.06,
                   }}
-                  source={amazingEmozi}
+                  source={images.emoji[user.emoji]}
                   resizeMode="cover"
                 />
               </TouchableOpacity>
@@ -575,23 +575,25 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create({
   evening: {
     left: deviceWidth * 0.025,
+    height: deviceWidth / 530 * 943,
     position: "absolute",
-    top: -deviceHeight * 0.2,
+    top: (deviceHeight - (deviceWidth / 530 * 943)) / 2,
     width: deviceWidth * 0.95
   },
   linearGradient: {
     flex: 1,
   },
   morning: {
-    left: deviceWidth * 0.025,
     position: "absolute",
-    top: -deviceHeight * 0.2,
-    width: deviceWidth * 0.95
+    height: deviceWidth / 530 * 942,
+    top: (deviceHeight - (deviceWidth / 530 * 942)) / 2,
+    width: deviceWidth
   },
   night: {
     left: deviceWidth * 0.025,
+    height: deviceWidth / 530 * 943,
     position: "absolute",
-    top: -deviceHeight * 0.2,
+    top: (deviceHeight - (deviceWidth / 530 * 943)) / 2,
     width: deviceWidth * 0.95
   },
   profileButton: {

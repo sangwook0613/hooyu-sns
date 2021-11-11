@@ -128,7 +128,7 @@ const styleSheet = (deviceWidth, deviceHeight, mainColor1, mainColor4) => StyleS
   shelterList: {
     position: 'absolute',
     width: '100%',
-    height: deviceHeight * 0.365,
+    height: deviceHeight * 0.4,
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
