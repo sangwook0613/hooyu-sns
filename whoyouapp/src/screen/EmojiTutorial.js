@@ -19,10 +19,13 @@ const emojiMoveTop = [0, -radius, -radius*Math.sqrt(3)/2, -radius*1/2, 0, radius
 const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, setUserEmoji}) => {
 
   const styles = styleSheet(deviceWidth, deviceHeight)
-
+  
   const open = useRef(new Animated.Value(0)).current
   const [emoji, setEmoji] = useState('smile')
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
+
+  const floatValue = useRef(new Animated.Value(0)).current;
+
 
   const range = (n) => {
     let arr = [];
@@ -43,8 +46,31 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
     setIsEmojiSelect(!isEmojiSelect)
   }
 
+  const floatUp = () => {
+    Animated.timing(floatValue, {
+      toValue: 1,
+      duration: 1500,
+      useNativeDriver: false
+    }).start();
+  };
+
+  const floatDown = () => {
+    Animated.timing(floatValue, {
+      toValue: 0,
+      duration: 1500,
+      useNativeDriver: false
+    }).start();
+  };
+
   useEffect(() => {
-    
+    floatUp()
+    floatValue.addListener(({value}) => {
+      if (value == 1) {
+        floatDown()
+      } else if (value == 0) {
+        floatUp()
+      }
+    })
   }, [emoji]);
 
 
@@ -88,6 +114,7 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
                 onPress={() => {
                   setIsEmojiSelect(false)
                   toggleMenu()
+                  floatUp()
                   setEmoji(emojiArray[index])
                 }}
               >
@@ -99,7 +126,7 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
             </Animated.View>
           ))
         }
-        
+
         {
           isEmojiSelect ?
           <TouchableOpacity
@@ -107,6 +134,7 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
           onPress={() => {
             setIsEmojiSelect(false)
             toggleMenu()
+            floatUp()
           }}
           >
             <AntDesign name="close" size={30} color="#b4b4b4" />
@@ -119,10 +147,17 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
           }}
           style={styles.myEmoji}
           >
-            <Image
-              source={emojiImages.default.emoji[emoji]}
-              style={{ width: 80, height: 80 }}
-              />
+            <Animated.View style={['', {
+              top: floatValue.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: [-3, 2, -3]
+              })
+            }]}>
+              <Image
+                source={emojiImages.default.emoji[emoji]}
+                style={{ width: 80, height: 80 }}
+                />
+            </Animated.View>
           </TouchableOpacity>
         }
         </View>
