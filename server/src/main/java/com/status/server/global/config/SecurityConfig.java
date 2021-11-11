@@ -49,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/h2-console/**","/error","/favicon.ico").permitAll()
                 .antMatchers("/auth/**","/oauth2/**", "/api/v1/login/**").permitAll()
                 .antMatchers("/api/v1/user/**", "/api/v1/content/**", "/api/v1/browser/**","/api/v1/emotion/**").hasRole(Role.USER.name())
-                .antMatchers("/api/k8s/test").permitAll()
+                .antMatchers("/api/k8s/test", "/actuator/**").permitAll()
 
                 .anyRequest().authenticated()
 
