@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class K8sTestController {
     @GetMapping("/api/test")
     public String DemoRestApi() {
-        return "Hi, I'm demo application";
+        return "Hi, I'm demo application\n";
     }
 }
