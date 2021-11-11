@@ -47,7 +47,7 @@ const UserScreen = ({ navigation, route }) => {
     setTimeout(() => {
       const node = scrollRef.current
       node.scrollTo({ y: moveTo[checkList][route.params.content], animated: true })
-    }, 10)
+    }, 400)
     console.log(checkList, route.params.content, route.params.username)
   }
 

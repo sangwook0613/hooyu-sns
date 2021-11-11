@@ -41,7 +41,7 @@ const mainColor6 = theme == "morning" ? "#000000" : (theme == "evening" ? '#0000
 const mainColor7 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#FFFFFF')
 
 
-const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK,userEmoji, setMyRadius }) => {
+const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK, userEmoji, userName, setMyRadius }) => {
 
   LogBox.ignoreAllLogs()
 
@@ -310,7 +310,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
           }
 
           <View style={styles.profileButton}>
-            <TouchableOpacity onPress={() => navigate("Profile", { nickname: 'HELLO', emoji: emojiImages.default.emoji[userEmoji] })}>
+            <TouchableOpacity onPress={() => navigate("Profile")}>
               <View>
                 <View style={styles.profileBackground}></View>
                 <Image
@@ -706,7 +706,8 @@ function mapStateToProps(state) {
     myRadius: state.user.myRadius,
     SERVER_URL: state.user.SERVER_URL,
     userPK: state.user.userPK,
-    userEmoji: state.user.userEmoji
+    userEmoji: state.user.userEmoji,
+    userName: state.user.userName
   }
 }
 

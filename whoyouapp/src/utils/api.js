@@ -88,4 +88,44 @@ export default {
       url: `user/killed?userPK=${pk}`
     })
   },
+
+  getUserStatus(userName) {
+    return axios({
+      method: 'get',
+      url: `content/status/${userName}`,
+    })
+  },
+
+  getUserImage(userName) {
+    return axios({
+      method: 'get',
+      url: `content/image/${userName}`,
+    })
+  },
+
+  getUserSurvey(userName) {
+    return axios({
+      method: 'get',
+      url: `content/survey/${userName}`,
+    })
+  },
+
+  getContentEmotion(contentPK) {
+    return axios({
+      method: 'get',
+      url: `emotion/${contentPK}`,
+    })
+  },
+
+  setContentEmotion(emoji, contentPK, userPK) {
+    return axios({
+      method: 'post',
+      url: 'emotion/empathize',
+      data: {
+        contentEmoji: emoji,
+        contentPk: contentPK,
+        userPK: userPK,
+      }
+    })
+  },
 }
