@@ -9,6 +9,7 @@ import Api from "../utils/api"
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
 import messaging from '@react-native-firebase/messaging';
+import * as Location from 'expo-location'
 import {
   SafeAreaView,
   StyleSheet,
@@ -31,9 +32,17 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
   const [userInfo2, setUserInfo2] = useState(null);
   const [gettingLoginStatus, setGettingLoginStatus] = useState(true)
 
-  useEffect(() => {
+  useEffect( async () => {
+    const front = await Location.getForegroundPermissionsAsync()
+    const back = await Location.getBackgroundPermissionsAsync()
+
     if (userPK !== 0 && userEmoji) {
-      navigate('Main')
+      if (!front.granted && !back.granted) {
+        navigate('InfoAgree')
+      }
+      else {
+        navigate('Main')
+      }
     } else if (userPK !== 0 && !userEmoji) {
       navigate('NicknameTutorial')
     } else {

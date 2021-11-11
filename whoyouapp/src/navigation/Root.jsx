@@ -8,6 +8,7 @@ import SettingScreen from '../screen/SettingScreen';
 import NicknameTutorial from '../screen/NicknameTutorial';
 import StatusTutorial from '../screen/StatusTutorial'
 import EmojiTutorial from '../screen/EmojiTutorial'
+import InfoAgree from '../screen/InfoAgree';
 import CreateContent from '../screen/CreateContent';
 import UserScreen from '../screen/UserScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -21,6 +22,9 @@ import UserSetting from '../screen/Setting/UserSetting';
 import PrivateZoneSetting from '../screen/Setting/PrivateZoneSetting';
 import PushSetting from '../screen/Setting/PushSetting';
 
+import * as Location from 'expo-location'
+
+
 const Nav = createNativeStackNavigator()
 
 const Root = ({ setUserPK, setUserEmoji, userEmoji }) => {
@@ -30,29 +34,38 @@ const Root = ({ setUserPK, setUserEmoji, userEmoji }) => {
   const [isReady, setIsReady] = useState(false)
   const [emoji, setEmoji] = useState(null)
 
-  useEffect(() => {
+  const [front, setFront] = useState(false)
+  const [back, setBack] = useState(false)
+
+  useEffect(async () => {
+
+    const front1 = await Location.getForegroundPermissionsAsync()
+    const back1 = await Location.getBackgroundPermissionsAsync()
+    setFront(front1.granted)
+    setBack(back1.granted)
     AsyncStorage.getItem('access_token', async (err, result) => {
       if (result) {
         console.log('result :', result)
         console.log('pk :', jwt_decode(result).pk)
         setUserPK(jwt_decode(result).pk)
         setAccessToken(result)
-
+        
         await api.getUser(jwt_decode(result).pk)
-          .then((res) => {
-            console.log(res.data.success.emoji)
-            setUserEmoji(res.data.success.emoji)
-            setEmoji(res.data.success.emoji)
-          }).catch((err) => {
-            console.log(err)
-          })
+        .then((res) => {
+          console.log(res.data.success.emoji)
+          setUserEmoji(res.data.success.emoji)
+          setEmoji(res.data.success.emoji)
+          console.log(emoji)
+        }).catch((err) => {
+          console.log(err)
+        })
       }
       setIsReady(true)
       SplashScreen.hide()
     })
-
+    
   }, [])
-
+  
   if (!isReady) {
     return (
       <>
@@ -62,7 +75,7 @@ const Root = ({ setUserPK, setUserEmoji, userEmoji }) => {
 
   return (
     <Nav.Navigator
-      initialRouteName={(accessToken && emoji) ? "Main" : ((accessToken) ? "NicknameTutorial" : "Login")}
+      initialRouteName={(accessToken && emoji && front && back) ? "Main" : (accessToken && emoji ? "InfoAgree" : ((accessToken) ? "NicknameTutorial" : "Login"))}
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
@@ -75,6 +88,7 @@ const Root = ({ setUserPK, setUserEmoji, userEmoji }) => {
       <Nav.Screen name="NicknameTutorial" component={NicknameTutorial} />
       <Nav.Screen name="StatusTutorial" component={StatusTutorial} />
       <Nav.Screen name="EmojiTutorial" component={EmojiTutorial} />
+      <Nav.Screen name="InfoAgree" component={InfoAgree} />
       <Nav.Screen name="Main" component={Main} />
       <Nav.Screen name="Profile" component={ProfileScreen}
         options={{
@@ -103,7 +117,7 @@ const Root = ({ setUserPK, setUserEmoji, userEmoji }) => {
         headerShown: true,
         headerTitle: "푸시 알림",
       }} />
-      
+
       {/* 컨텐츠 생성 */}
       <Nav.Screen name="CreateContent" component={CreateContent} options={{ headerShown: true }} />
       {/* <Nav.Screen name="CreateStatus" component={Status} options={{ headerShown: true }} /> */}
