@@ -25,6 +25,8 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
   const [emoji, setEmoji] = useState(userEmoji)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
 
+  const floatValue = useRef(new Animated.Value(0)).current;
+
   const range = (n) => {
     let arr = [];
     for (let i = 0; i < n; i++) {
@@ -43,6 +45,22 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
 
     setIsEmojiSelect(!isEmojiSelect)
   }
+
+  const floatUp = () => {
+    Animated.timing(floatValue, {
+      toValue: 1,
+      duration: 1500,
+      useNativeDriver: false
+    }).start();
+  };
+
+  const floatDown = () => {
+    Animated.timing(floatValue, {
+      toValue: 0,
+      duration: 1500,
+      useNativeDriver: false
+    }).start();
+  };
 
 
   const EmojiTitle = () => {
@@ -67,6 +85,14 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
         </TouchableOpacity>
       )
     });
+    floatUp()
+    floatValue.addListener(({value}) => {
+      if (value == 1) {
+        floatDown()
+      } else if (value == 0) {
+        floatUp()
+      }
+    })
   }, [navigation, emoji]);
 
   const createEmoji = () => {
@@ -109,6 +135,7 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
                 onPress={() => {
                   setIsEmojiSelect(false)
                   toggleMenu()
+                  floatUp()
                   setEmoji(emojiArray[index])
                 }}
               >
@@ -127,6 +154,7 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
           style={styles.disableEmojiSelect}
           onPress={() => {
             setIsEmojiSelect(false)
+            floatUp()
             toggleMenu()
           }}
           >
@@ -140,10 +168,17 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
           }}
           style={styles.myEmoji}
           >
-            <Image
-              source={emojiImages.default.emoji[emoji]}
-              style={{ width: 80, height: 80 }}
-              />
+            <Animated.View style={['', {
+              top: floatValue.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: [-3, 2, -3]
+              })
+            }]}>
+              <Image
+                source={emojiImages.default.emoji[emoji]}
+                style={{ width: 80, height: 80 }}
+                />
+            </Animated.View>
           </TouchableOpacity>
         }
       </View>
