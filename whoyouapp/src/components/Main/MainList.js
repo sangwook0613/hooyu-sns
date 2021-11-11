@@ -1,13 +1,30 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
 import { Animated, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback, ScrollView } from 'react-native'
-import amazingEmozi from '../../assets/images/amazing2.png'
+import LinearGradient from 'react-native-linear-gradient'
+import images from '../../assets/images'
 
 
-const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users, selectUser, selectedUser }, ref) => {
+const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users, selectUser, selectedUser, setUsers }, ref) => {
   const mainList = useRef(new Animated.Value(deviceHeight)).current
+
+  const [now, setNow] = useState(new Date().toString())
+  const [sortMode, setSortMode] = useState('distance')
+
+  const isInitialMount = useRef(true)
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+    } else {
+      const node = scrollRef.current
+      node.scrollTo({ y: (deviceWidth * 0.07 + 22) *  selectedUser, animated: true})
+    }
+  }, [selectedUser])
 
   useImperativeHandle(ref, () => ({
     open: () => {
+      const now = new Date()
+      setNow(now.toString())
       Animated.timing(mainList, {
         toValue: deviceHeight * 0.6,
         duration: 400,
@@ -28,6 +45,57 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
   const mainColor4 = theme == "morning" ? "#E7F7FF" : (theme == "evening" ? '#FCE2E0' : '#E9E9E9')
 
   const styles = styleSheet(deviceWidth, deviceHeight, mainColor1, mainColor4)
+
+  const humanize = (date) => {
+    if (date === null) {
+      return "게시물 없음"
+    }
+    let r = Date.parse(now) - Date.parse(date) + 32400000
+    if (parseInt(r) > 2678400000) {
+      r = "1달 이전 게시"
+    } else if (parseInt(r) > 86400000) {
+      r = parseInt(parseInt(r) / 86400000).toString() + "일 전 게시"
+    } else if (parseInt(r) >= 3600000) {
+      r = parseInt(parseInt(r) / 3600000).toString() + "시간 전 게시";
+    } else if (parseInt(r) >= 60000) {
+      r = parseInt(parseInt(r) / 60000).toString() + "분 전 게시";
+    } else {
+      r = "방금 전 게시";
+    }
+    return r;
+  }
+
+  const isNewContent = (date) => {
+    if (date != null) {
+      let r = Date.parse(now) - Date.parse(date) + 32400000
+      if (parseInt(r) <= 86400000) {
+        return true
+      }
+    } 
+    return false
+  }
+
+  const sortByDistance = () => {
+    const newUsers = [...users]
+    newUsers.sort(function(a, b) {
+      return a.distDto.dist - b.distDto.dist
+    })
+    setUsers(newUsers)
+    setSortMode('distance')
+    selectUser(-1)
+  }
+
+  const sortByTime = () => {
+    const newUsers = [...users]
+    newUsers.sort(function(a, b) {
+      return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
+    })
+    setUsers(newUsers)
+    setSortMode('time')
+    selectUser(-1)
+  }
+
+  const scrollRef = useRef()
   
   return (
     <Animated.View
@@ -37,28 +105,29 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
       <View style={styles.mainList}>
         <View style={styles.mainListHeader}>
           <TouchableWithoutFeedback 
-            onPress={() => console.warn('거리순')}
+            onPress={() => sortByDistance()}
           >
             <View style={styles.mainListHeaderOption}>
-              <Text style={styles.mainListHeaderOptionText}>
+              <Text style={[styles.mainListHeaderOptionText, {color: sortMode === 'distance' ? 'black': '#B4B4B4'}]}>
                 거리순
               </Text>
             </View>
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback 
-            onPress={() => console.warn('최신순')}
+            onPress={() => sortByTime()}
           >
             <View style={styles.mainListHeaderOption}>
-              <Text style={styles.mainListHeaderOptionText}>
+              <Text style={[styles.mainListHeaderOptionText, {color: sortMode === 'time' ? 'black': '#B4B4B4'}]}>
                 최신순
               </Text>
             </View>
           </TouchableWithoutFeedback>
         </View>
         <ScrollView
-          contentOffset={{
-            y: (deviceWidth * 0.07 + 22) *  selectedUser
-          }}
+          ref={scrollRef}
+          // contentOffset={{
+          //   y: (deviceWidth * 0.07 + 22) *  selectedUser
+          // }}
         >
           {users.map((user, index) => (
             <View
@@ -78,7 +147,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
                   }}>
                     <Image
                       style={styles.mainListEmoji}
-                      source={amazingEmozi}
+                      source={images.emoji[user.emoji]}
                       resizeMode="contain"
                     />
                     <Text style={styles.userText}>
@@ -86,13 +155,22 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
                     </Text>
                   </View>
                     <Text style={styles.userText}>
-                      1시간 전 게시
+                      {humanize(user.contentTime.recent)}
                     </Text>
                 </View>
               </TouchableWithoutFeedback>
               {index == selectedUser && 
                 <View style={styles.userMenu}>
-                  <TouchableOpacity
+                  <LinearGradient 
+                    colors={['#AB79EF', '#FC98AB']}
+                    style={{
+                      alignItems: 'center',
+                      borderRadius: 9.5,
+                      justifyContent: 'center',
+                      padding: isNewContent(user.contentTime.status) ? 2.5 : 0,
+                    }}
+                  >
+                    <TouchableOpacity
                       style={styles.userMenuButton}
                       onPress={() => {navigate('User', {username: user.name, content: 'status'})}}
                     >
@@ -103,8 +181,18 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
                         상태
                       </Text>
                     </TouchableOpacity>
+                  </LinearGradient>
+                  <LinearGradient 
+                    colors={['#AB79EF', '#FC98AB']}
+                    style={{
+                      alignItems: 'center',
+                      borderRadius: 9.5,
+                      justifyContent: 'center',
+                      padding: isNewContent(user.contentTime.images) ? 2.5 : 0,
+                    }}
+                  >
                     <TouchableOpacity
-                      style={[styles.userMenuButton, {opacity: user.contentTime.images === null ? 0.6 : 1}]}
+                      style={[styles.userMenuButton, {backgroundColor: user.contentTime.images === null ? '#B4B4B4' : mainColor1}]}
                       onPress={() => {navigate('User', {username: user.name, content: 'image'})}}
                       disabled={user.contentTime.images === null ? true : false}
                     >
@@ -115,8 +203,18 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
                         사진
                       </Text>
                     </TouchableOpacity>
+                  </LinearGradient>
+                  <LinearGradient 
+                    colors={['#AB79EF', '#FC98AB']}
+                    style={{
+                      alignItems: 'center',
+                      borderRadius: 9.5,
+                      justifyContent: 'center',
+                      padding: isNewContent(user.contentTime.survey) ? 2.5 : 0,
+                    }}
+                  >
                     <TouchableOpacity
-                      style={[styles.userMenuButton, {opacity: user.contentTime.survey === null ? 0.6 : 1}]}
+                      style={[styles.userMenuButton, {backgroundColor: user.contentTime.survey === null ? '#B4B4B4' : mainColor1}]}
                       onPress={() => {navigate('User', {username: user.name, content: 'survey'})}}
                       disabled={user.contentTime.survey === null ? true : false}
                     >
@@ -127,6 +225,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
                         질문
                       </Text>
                     </TouchableOpacity>
+                  </LinearGradient>
                 </View>
               }
             </View>
