@@ -1,0 +1,43 @@
+## redirect-uri : {baseUrl}/{action}/oauth2/code/{registrationId}
+
+##Google
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 342631621094-nel3qdnifnh6uvo75qrgiu6b6cii5d4h.apps.googleusercontent.com
+            clientSecret: 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
+#            clientId: 5095342969-dcob776t7ckfeu2gddkb2j4ke2cprfst.apps.googleusercontent.com
+#            clientSecret: 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
+#            redirectUri: http://localhost:8085/login/oauth2/code/google
+            redirectUri: https://k5a101.p.ssafy.io/login/oauth2/code/google
+            scope: email, profile
+#              accessTokenUri: https://accounts.google.com/o/oauth2/token
+#              userAuthorizationUri: https://accounts.google.com/o/oauth2/auth
+#              clientAuthenticationScheme: form
+#            resource:
+#              userInfoUri: https://www.googleapis.com/oauth2/v2/userinfo
+
+## Kakao
+          kakao:
+            authorization-grant-type: authorization_code
+            client-id: 1c97a5b559f464209bff9c4c92edcad8
+            client-secret: oqp9w2qm9F8bM7Lw5WMrZ6ZSZ5PfaxUU
+#            redirect-uri: http://localhost:8085/login/oauth2/code/kakao
+            redirectUri: https://k5a101.p.ssafy.io/login/oauth2/code/kakao
+            scope:
+              - profile_nickname
+              - profile_image
+              - account_email
+            client-authentication-method: POST
+            client-name: Kakao
+
+        provider:
+
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
