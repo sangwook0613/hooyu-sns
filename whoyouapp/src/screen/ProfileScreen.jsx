@@ -1,15 +1,17 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Dimensions, Button, Text, Image, View, TouchableOpacity, ScrollView, FlatList } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import ImageContent from '../components/ImageContent';
-import StatusContent from '../components/StatusContent';
-import SurveyContent from '../components/SurveyContent';
-import DeleteModal from '../components/modal/deleteModal';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Dimensions, Button, Text, Image, View, TouchableOpacity, ScrollView, FlatList } from 'react-native'
+import { AntDesign } from '@expo/vector-icons'
+import Api from '../utils/api'
+import { connect } from 'react-redux'
+import { actionCreators } from '../store/reducers'
+import * as emojiImages from '../assets/images'
+import ImageContent from '../components/ImageContent'
+import StatusContent from '../components/StatusContent'
+import SurveyContent from '../components/SurveyContent'
+import DeleteModal from '../components/modal/deleteModal'
   
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
 
-const ProfileScreen = ({ navigation, route }) => {
+const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUserName, deviceWidth, deviceHeight }) => {
   const [isStatus, setIsStatus] = useState(true)
   const [isImage, setIsImage] = useState(true)
   const [isSurvey, setIsSurvey] = useState(true)
@@ -17,10 +19,20 @@ const ProfileScreen = ({ navigation, route }) => {
   const scrollRef = useRef()
   
   useEffect(() => {
-    setTimeout(() => {
-        const node = scrollRef.current
-        node.scrollTo({ y: 500, animated: true })
-    }, 400)
+    Api.getUser(userPK)
+      .then((res) => {
+        console.log('유저 상태 받아오기 - 프로필')
+        console.log(res.data.success)
+        setUserName(res.data.success.name)
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+    
+    // setTimeout(() => {
+    //     const node = scrollRef.current
+    //     node.scrollTo({ y: 500, animated: true })
+    // }, 400)
   },[])
 
   const toggleModal = () => {
@@ -32,11 +44,11 @@ const ProfileScreen = ({ navigation, route }) => {
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Image
           style={{ width: 50, height: 50 }}
-          source={route.params.emoji}
+          source={emojiImages.default.emoji[userEmoji]}
         />
-        <Text>{route.params.nickname}</Text>
+        <Text>{userName}</Text>
       </View>
-    );
+    )
   }
 
   useLayoutEffect(() => {
@@ -47,8 +59,8 @@ const ProfileScreen = ({ navigation, route }) => {
           <Text>설정</Text>
         </TouchableOpacity>
       )
-    });
-  }, [navigation]);
+    })
+  }, [navigation])
 
   // setIsEmojiSelect(!isEmojiSelect)
   // console.log(isEmojiSelect)
@@ -139,4 +151,22 @@ const ProfileScreen = ({ navigation, route }) => {
   )
 }
 
-export default ProfileScreen;
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    userPK: state.user.userPK,
+    userName: state.user.userName,
+    userEmoji: state.user.userEmoji,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserName: (emoji) => {
+      dispatch(actionCreators.setUserName(emoji))
+    },
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen)

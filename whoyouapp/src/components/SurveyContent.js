@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Image, Text, View, Dimensions, TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { SwiperFlatList } from 'react-native-swiper-flatlist';
+import Api from '../utils/api'
+import { connect } from 'react-redux'
 import images from '../assets/images';
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
 const emojiArray = ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
 
 const dummyStatus = [
@@ -50,9 +50,31 @@ const dummyStatus = [
   }
 ]
 
-const SurveyContent = ({ }) => {
+const SurveyContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
+  // const [statusData, setStatusData] = useState([])
   const [currentIndex, setCurrendIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
+
+  // useEffect(() => {
+  //   Api.getUserStatus(userName)
+  //     .then((res) => {
+  //       console.log('유저 상태 받아오기')
+  //       console.log(res.data.success)
+  //       let data = res.data.success
+  //       console.log('data', data[0])
+  //       Api.getContentEmotion(data[0].contentPk)
+  //         .then((res) => {
+  //           console.log(res.data)
+  //         })
+  //         .catch((err) => {
+  //           console.warn(err)
+  //         })
+  //       // setStatusData(res.data.success)
+  //     })
+  //     .catch((err) => {
+  //       console.warn(err)
+  //     })
+  // }, [])
 
   return (
     <View>
@@ -177,4 +199,14 @@ const SurveyContent = ({ }) => {
   )
 }
 
-export default SurveyContent;
+
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    userPK: state.user.userPK,
+    userName: state.user.userName,
+  }
+}
+
+export default connect(mapStateToProps)(SurveyContent)
