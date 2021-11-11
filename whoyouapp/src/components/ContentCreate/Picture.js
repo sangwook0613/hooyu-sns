@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, PermissionsAndroid, Dimensions, Image } from 'react-native';
+import React, {useEffect, useRef, useState, useCallback} from 'react';
+import { Text, TouchableOpacity, View, Animated, StyleSheet, PermissionsAndroid, Dimensions, Image } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import imageUpload from '../../assets/createcontent/uploadImage.png'
@@ -8,8 +8,11 @@ import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
 import * as emojiImages from '../../assets/images'
+import Toast from 'react-native-easy-toast';
+
 
 const clientWidth = Dimensions.get('screen').width
+const clientHeight = Dimensions.get('screen').height
 
 const emojiArray = [
   ['smile', 'amazing', 'sad', 'crying', 'sense', 'angry'], 
@@ -23,6 +26,8 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   const [imageFile, setImageFile] = useState('')
   const [sendForm, setSendForm] = useState('')
 
+  const floatValue = useRef(new Animated.Value(0)).current;
+  const toastRef = useRef();
 
   const PictureTitle = () => {
     return (
@@ -52,14 +57,45 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
               <Text>등록</Text>
             </TouchableOpacity>
             :
-            <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+            <TouchableWithoutFeedback
+              onPress={() => showToast()}
+            >
+              <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+            </TouchableWithoutFeedback>
           }
 
         </View>
       )
     });
+    floatUp()
+    floatValue.addListener(({value}) => {
+      if (value == 1) {
+        floatDown()
+      } else if (value == 0) {
+        floatUp()
+      }
+    })
   }, [navigation, emoji, imageFile, sendForm]);
 
+  const floatUp = () => {
+    Animated.timing(floatValue, {
+      toValue: 1,
+      duration: 1500,
+      useNativeDriver: false
+    }).start();
+  };
+
+  const floatDown = () => {
+    Animated.timing(floatValue, {
+      toValue: 0,
+      duration: 1500,
+      useNativeDriver: false
+    }).start();
+  };
+
+  const showToast = useCallback(() => {
+    toastRef.current.show('사진을 골라 주세요')
+  })
 
   const imageGalleryLaunch = () => {
     let options = {
@@ -194,18 +230,19 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
               requestGalleryPermission()
             }}
             >
-              <Image
-                style={{ width: 150, height: 150, marginLeft: 25 }}
-                source={imageUpload}
-              />
+              <Animated.View style={['', {
+                top: floatValue.interpolate({
+                  inputRange: [0, 0.5, 1],
+                  outputRange: [-3, 2, -3]
+                })
+              }]}>
+                <Image
+                  style={{ width: 150, height: 150, marginLeft: 25 }}
+                  source={imageUpload}
+                />
+              </Animated.View>
             </TouchableOpacity>
           }
-          {/* <TouchableOpacity onPress={() => imageGalleryLaunch()}>
-            <Image
-              style={{ width: 150, height: 150, marginLeft: 25 }}
-              source={imageUpload}
-            />
-          </TouchableOpacity> */}
         </View>
       </TouchableWithoutFeedback>
       { isEmojiSelect && 
@@ -233,6 +270,12 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
           ))}
         </View>
       }
+      <Toast ref={toastRef}
+        positionValue={clientHeight * 0.4}
+        fadeInDuration={200}
+        fadeOutDuration={1000}
+        style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
+      />
     </LinearGradient>
   )
 }
