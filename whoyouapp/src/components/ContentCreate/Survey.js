@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useCallback, useState} from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, KeyboardAvoidingView, ScrollView, Dimensions, TextInput, Image, Button } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
@@ -7,9 +7,8 @@ import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
 import * as emojiImages from '../../assets/images'
+import Toast from 'react-native-easy-toast';
 
-
-const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
 
@@ -28,7 +27,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
     ]
   )
   const [isSurveyValid, setIsSurveyValid] = useState(false)
-  
+  const toastRef = useRef();
 
   const SurveyTitle = () => {
     return (
@@ -75,7 +74,11 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
               <Text>등록</Text>
             </TouchableOpacity>
             :
-            <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+            <TouchableWithoutFeedback
+              onPress={() => showToast()}
+            >
+              <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+            </TouchableWithoutFeedback>
           }
 
         </View>
@@ -88,6 +91,14 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
       setIsSurveyValid(false)
     }
   }, [navigation, emoji, options, title, isSurveyValid]);
+
+  const showToast = useCallback(() => {
+    if (!title) {
+      toastRef.current.show('질문을 입력해 주세요')
+    } else {
+      toastRef.current.show('선택지 2개는 필수입니다')
+    }
+  })
 
   const createEmoji = () => {
     setUserEmoji(emoji)
@@ -218,6 +229,12 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
           ))}
         </View>
       }
+      <Toast ref={toastRef}
+        positionValue={clientHeight * 0.4}
+        fadeInDuration={200}
+        fadeOutDuration={1000}
+        style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
+      />
     </LinearGradient>
   )
 }
