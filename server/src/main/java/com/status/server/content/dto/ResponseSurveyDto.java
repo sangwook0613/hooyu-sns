@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ public class ResponseSurveyDto {
     private Long contentPK;
     private String exon;
     private String color;
+    private LocalDateTime createAt;
 
     private List<String> answerList;
 
@@ -29,6 +31,7 @@ public class ResponseSurveyDto {
         this.contentPK = entity.getId();
         this.exon = entity.getExon();
         this.color = entity.getColor();
+        this.createAt = entity.getCreatedAt();
         this.answerList = new ArrayList<>();
         this.count = new HashMap<>();
         this.answerPK = new HashMap<>();
