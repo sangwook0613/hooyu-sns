@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Image, Text, View, Dimensions, TouchableOpacity } from 'react-native'
+import { Image, Text, View, TouchableOpacity } from 'react-native'
 import { SwiperFlatList } from 'react-native-swiper-flatlist'
 import Api from '../utils/api'
 import { connect } from 'react-redux'
@@ -7,53 +7,8 @@ import * as emojiImages from '../assets/images'
 
 const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
 
-// const dummyStatus = [
-//   {
-//     id: 1,
-//     backgroundColor: 'tomato',
-//     emojis: [{
-//       emoji: images.emoji.amazing,
-//       count: 100,
-//     },],
-//   },
-//   {
-//     id: 2,
-//     backgroundColor: 'lightyellow',
-//     emojis: [
-//       {
-//         emoji: images.emoji.amazing2,
-//         count: 222,
-//       },
-//       {
-//         emoji: images.emoji.amazing,
-//         count: 111,
-//       },
-//     ],
-//   },
-//   {
-//     id: 3,
-//     backgroundColor: 'green',
-//     emojis: [{
-//       emoji: images.emoji.amazing,
-//       count: 1123,
-//     },],
-//   }
-// ]
-// Array [
-//   Object {
-//     "color": "",
-//     "contentPk": 14,
-//     "exon": "https://whoyou-bucket.s3.ap-northeast-2.amazonaws.com/image/fa55f9de-fa84-4060-9e8e-c406543dac89rn_image_picker_lib_temp_486b28fa-06e6-4813-bfab-2036567a5d90.jpg",
-//   },
-//   Object {
-//     "color": "",
-//     "contentPk": 6,
-//     "exon": "https://whoyou-bucket.s3.ap-northeast-2.amazonaws.com/image/5274d1e9-aba5-4613-af01-112a91867d40rn_image_picker_lib_temp_d9fe9958-20fe-46e5-86c6-f5f95e8e009b.jpg",
-//   },
-// ],
-
 const ImageContent = ({ userPK, userName, deviceWidth, deviceHeight, setIsImage }) => {
-  const [currentIndex, setCurrendIndex] = useState(0)
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [imageData, setImageData] = useState([])
   const [isEmotions, setEmotions] = useState([])
@@ -106,7 +61,7 @@ const ImageContent = ({ userPK, userName, deviceWidth, deviceHeight, setIsImage 
       <SwiperFlatList
         data={imageData}
         onChangeIndex={({ index }) => {
-          setCurrendIndex(index)
+          setCurrentIndex(index)
           // console.log(index, prevIndex)
         }}
         renderItem={({ item }) => (
@@ -120,7 +75,7 @@ const ImageContent = ({ userPK, userName, deviceWidth, deviceHeight, setIsImage 
               alignItems:"center"
             }}
           >
-            <Image source={{uri: item.exon}} style={{width: '100%', height: '100%'}} />
+            <Image resizeMode="contain" source={{ uri: item.exon }} style={{ width: '100%', height: '100%' }} />
           </View>
         )}
       />
@@ -187,6 +142,7 @@ const ImageContent = ({ userPK, userName, deviceWidth, deviceHeight, setIsImage 
         alignItems: 'center',
         height: 40,
         backgroundColor: 'white',
+        elevation: 10 
       }}>
         {!giveEmotion[currentIndex] &&
           <TouchableOpacity style={{ marginLeft: 20, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
