@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Alert, AppState, BackHandler, LogBox } from 'react-native'
+import { Alert, AppState, BackHandler, Dimensions, LogBox } from 'react-native'
 import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedback, Animated } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
 
 import shelter from '../assets/images/shelter.png'
-import wowImoticon from '../assets/images/wowimoticon.png'
-import amazingEmozi from '../assets/images/amazing2.png'
 import morning from '../assets/images/morning.png'
 import evening from '../assets/images/evening.png'
 import night from '../assets/images/night.png'
@@ -55,6 +53,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   const [privateZoneUsers, setPrivateZoneUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(-1)
   const [selectedPrivateZoneUser, setSelectedPrivateZoneUser] = useState(-1)
+  const [mainListSortMode, setMainListSortMode] = useState('distance')
 
   const mainListRef = useRef()
   const shelterListRef = useRef()
@@ -201,7 +200,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
       accuracy: Location.Accuracy.High,
       distanceInterval: 0,
-      timeInterval: 30000,
+      timeInterval: 60000,
       foregroundService: {
         notificationTitle: 'Hooyu',
         notificationBody : '당신의 반경을 탐색하는중...',
@@ -228,8 +227,22 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     })
       .then((res) => {
         if (appState.current === 'active') {
-          setUsers(res.data.success.filter(user => user.privateZone !== true))
-          setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
+          const newUsers = res.data.success.filter(user => user.privateZone !== true)
+          if (mainListSortMode ==='distance') {
+            newUsers.sort(function(a, b) {
+              return a.distDto.dist - b.distDto.dist
+            })
+          } else if (mainListSortMode === 'time') {
+            newUsers.sort(function(a, b) {
+              return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
+            })
+          }
+          setUsers(newUsers)
+          const newPrivateZoneUsers = res.data.success.filter(user => user.privateZone === true)
+          newPrivateZoneUsers.sort(function(a, b) {
+            return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
+          })
+          setPrivateZoneUsers(newPrivateZoneUsers)
         }
         console.warn('get users : ', AppState.currentState)
       })
@@ -259,7 +272,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         }}
         config={{
           velocityThreshold: 0.1,
-          directionalOffsetThreshold: 50,
+          directionalOffsetThreshold: 80,
         }}
         style={{
           height: deviceHeight,
@@ -327,8 +340,8 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 
           <View style={styles.raderArea}>
             <View style={styles.radar__text}>
-              <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
-              <Text style={styles.radar__text__count}>10000</Text>
+              <Text style={styles.radar__text__title}>내 반경 안의 유저</Text>
+              <Text style={styles.radar__text__count}>{users.length}</Text>
             </View>
             <TouchableOpacity
               style={styles.shelterArea}
@@ -472,7 +485,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
             </View>
           </View>
 
-          <AddButton navigate={navigate} />
+          <AddButton navigate={navigate} theme={theme} />
 
           {/* 중앙 내 이모티콘 */}
           <TouchableOpacity
@@ -494,6 +507,8 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
           </TouchableOpacity>
 
           {users.map((user, index) => (
+            user.distDto.dist <= myRadius
+            ?
             <View
               key={index}
               style={{
@@ -533,10 +548,14 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                     height: deviceWidth * 0.06,
                     width: deviceWidth * 0.06,
                   }}
-                  source={amazingEmozi}
+                  source={images.emoji[user.emoji]}
                   resizeMode="cover"
                 />
               </TouchableOpacity>
+            </View>
+            :
+            <View
+              key={index}>
             </View>
           ))}
         </LinearGradient >
@@ -550,6 +569,9 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         users={users}
         selectUser={selectUser}
         selectedUser={selectedUser}
+        setUsers={setUsers}
+        mainListSortMode={mainListSortMode}
+        setMainListSortMode={setMainListSortMode}
         ref={mainListRef}
       />
       <ShelterList
@@ -560,6 +582,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         users={privateZoneUsers}
         selectPrivateZoneUser={selectPrivateZoneUser}
         selectedPrivateZoneUser={selectedPrivateZoneUser}
+        setPrivateZoneUsers={setPrivateZoneUsers}
         ref={shelterListRef}
       />
     </>
@@ -569,23 +592,25 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create({
   evening: {
     left: deviceWidth * 0.025,
+    height: deviceWidth / 530 * 943,
     position: "absolute",
-    top: -deviceHeight * 0.2,
+    top: (deviceHeight - (deviceWidth / 530 * 943)) / 2,
     width: deviceWidth * 0.95
   },
   linearGradient: {
     flex: 1,
   },
   morning: {
-    left: deviceWidth * 0.025,
     position: "absolute",
-    top: -deviceHeight * 0.2,
-    width: deviceWidth * 0.95
+    height: deviceWidth / 530 * 942,
+    top: (deviceHeight - (deviceWidth / 530 * 942)) / 2,
+    width: deviceWidth
   },
   night: {
     left: deviceWidth * 0.025,
+    height: deviceWidth / 530 * 943,
     position: "absolute",
-    top: -deviceHeight * 0.2,
+    top: (deviceHeight - (deviceWidth / 530 * 943)) / 2,
     width: deviceWidth * 0.95
   },
   profileButton: {
@@ -614,7 +639,7 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     backgroundColor: 'white',
     borderRadius: Math.round(deviceWidth + deviceHeight
     ) / 2,
-    borderColor: "black",
+    borderColor: "#B4B4B4",
     borderWidth: 1.5,
     position: "absolute",
     top: deviceHeight
@@ -626,6 +651,7 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     alignItems: "center"
   },
   profileMeText: {
+    color: "#B4B4B4",
     fontSize: 10,
     marginBottom: 2
   },

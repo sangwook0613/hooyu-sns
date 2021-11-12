@@ -63,8 +63,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
       }
     })
     .then(() => {
-      navigate('Main')
-      alert('완료')
+      navigate('InfoAgree')
     })
     .catch((err) => {
       console.warn(err)

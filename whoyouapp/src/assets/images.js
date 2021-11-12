@@ -13,7 +13,13 @@ const images = {
     smile: require('./emoji/smile.png'),
     sunglass: require('./emoji/sunglass.png'),
   },
-  logo: require('../assets/images/logo.png')
+  logo: require('../assets/images/logo.png'),
+  menu: {
+    emoji: require('./emoji/smile.png'),
+    status: require('./images/menu_status.png'),
+    image: require('./images/menu_image.png'),
+    question: require('./images/menu_question.png'),
+  }
 };
 
 export default images
