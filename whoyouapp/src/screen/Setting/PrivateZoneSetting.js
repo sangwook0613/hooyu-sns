@@ -1,19 +1,50 @@
 import React, { useEffect, useState } from 'react'
 import { Dimensions, View, Text, TouchableOpacity } from 'react-native'
 import Geolocation from 'react-native-geolocation-service'
+import ListPrivateZone from '../../components/PrivateZone/ListPrivateZone'
+import NoPrivateZone from '../../components/PrivateZone/NoPrivateZone'
+import SettingPrivateZone from '../../components/PrivateZone/SettingPrivateZone'
 
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
 
 const PrivateZoneSetting = (props) => {
-  const [haveZone, setZone] = useState(true)
-  
+  const [isSettingPrivateZone, setIsSettingPrivateZone] = useState(false)
+  const [privateZoneList, setPrivateZoneList] = useState([])
+
   useEffect(() => {
     Geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
       console.log(latitude, longitude)
     })
-  })
+  }, [isSettingPrivateZone, privateZoneList])
+
+  const goToSettingPrivateZone = () => {
+    setIsSettingPrivateZone(true)
+  }
+
+  const setPrivateZone = (zone) => {
+    console.log(privateZoneList)
+    setPrivateZoneList((prev) => [...prev, zone])
+    console.log(privateZoneList)
+    setIsSettingPrivateZone(false)
+  }
+
+  const deletePrivateZone = () => {
+    console.log('delete')
+    setPrivateZoneList([])
+  }
+
+  const privateZoneComponent = () => {
+    if (isSettingPrivateZone) {
+      return <SettingPrivateZone setPrivateZone={setPrivateZone}  />
+    } else {
+      return privateZoneList.length ? 
+      <ListPrivateZone privateZoneList={privateZoneList} deletePrivateZone={deletePrivateZone} /> 
+      : 
+      <NoPrivateZone goToSettingPrivateZone={goToSettingPrivateZone}/>
+    }
+  }
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
@@ -31,27 +62,9 @@ const PrivateZoneSetting = (props) => {
       >
         <View><Text style={{fontSize: 16, fontWeight: '700'}}>나의 프라이빗 존</Text></View>
       </View>
-      {haveZone && (
-        <>
-          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{paddingBottom: 70, fontSize: 16}}>프라이빗 존을 설정해보세요.</Text>
-          </View>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <TouchableOpacity
-              style={{
-                width: deviceWidth * 0.7,
-                height: 50,
-                backgroundColor: '#F38181',
-                borderRadius: 50,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Text style={{fontSize: 16, fontWeight: '700', color: 'white'}}>프라이빗 존 설정</Text>
-            </TouchableOpacity>
-          </View> 
-        </>
-      )}
+      {
+        privateZoneComponent()
+      }
     </View>
   )
 }
