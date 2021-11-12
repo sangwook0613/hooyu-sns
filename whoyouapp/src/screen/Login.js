@@ -10,6 +10,7 @@ import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
 import messaging from '@react-native-firebase/messaging';
 import * as Location from 'expo-location'
+import { useNavigation } from '@react-navigation/native'
 import {
   SafeAreaView,
   StyleSheet,
@@ -32,19 +33,24 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
   const [userInfo2, setUserInfo2] = useState(null);
   const [gettingLoginStatus, setGettingLoginStatus] = useState(true)
 
+  const navigation = useNavigation()
+
   useEffect( async () => {
     const front = await Location.getForegroundPermissionsAsync()
     const back = await Location.getBackgroundPermissionsAsync()
 
     if (userPK !== 0 && userEmoji) {
       if (!front.granted && !back.granted) {
-        navigate('InfoAgree')
+        navigation.reset({ routes: [{ name: 'InfoAgree' }] })
+        // navigate('InfoAgree')
       }
       else {
-        navigate('Main')
+        navigation.reset({ routes: [{ name: 'Main' }] })
+        // navigate('Main')
       }
     } else if (userPK !== 0 && !userEmoji) {
-      navigate('NicknameTutorial')
+      navigation.reset({ routes: [{ name: 'NicknameTutorial' }] })
+      // navigate('NicknameTutorial')
     } else {
       GoogleSignin.configure({
         scopes: ['https://www.googleapis.com/auth/drive.readonly'],
