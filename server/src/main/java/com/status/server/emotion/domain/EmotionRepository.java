@@ -9,6 +9,7 @@ import java.util.Optional;
 @Repository
 public interface EmotionRepository extends JpaRepository<Emotion, Long> {
     List<Emotion> findByContentId(Long contentPk);
+    Boolean existsByUserIdAndContentId(Long userPK, Long contentPK);
     Boolean existsByUserIdAndContentIdAndContentEmoji(Long userPK, Long contentPK, String contentEmoji);
     Optional<Emotion> findByUserIdAndContentIdAndContentEmoji(Long userPk, Long contentPk, String contentEmoji);
 }
