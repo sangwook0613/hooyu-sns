@@ -1,54 +1,110 @@
-import React, { useState } from 'react';
-import { Image, Text, View, Dimensions, TouchableOpacity } from 'react-native';
-import { SwiperFlatList } from 'react-native-swiper-flatlist';
-import images from '../assets/images';
+import React, { useEffect, useState } from 'react'
+import { Image, Text, View, Dimensions, TouchableOpacity } from 'react-native'
+import { SwiperFlatList } from 'react-native-swiper-flatlist'
+import Api from '../utils/api'
+import { connect } from 'react-redux'
+import * as emojiImages from '../assets/images'
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
-const emojiArray = ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
+const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
 
-const dummyStatus = [
-  {
-    id: 1,
-    backgroundColor: 'tomato',
-    emojis: [{
-      emoji: images.emoji.amazing,
-      count: 100,
-    },],
-  },
-  {
-    id: 2,
-    backgroundColor: 'lightyellow',
-    emojis: [
-      {
-        emoji: images.emoji.amazing2,
-        count: 222,
-      },
-      {
-        emoji: images.emoji.amazing,
-        count: 111,
-      },
-    ],
-  },
-  {
-    id: 3,
-    backgroundColor: 'green',
-    emojis: [{
-      emoji: images.emoji.amazing,
-      count: 1123,
-    },],
-  }
-]
+// const dummyStatus = [
+//   {
+//     id: 1,
+//     backgroundColor: 'tomato',
+//     emojis: [{
+//       emoji: images.emoji.amazing,
+//       count: 100,
+//     },],
+//   },
+//   {
+//     id: 2,
+//     backgroundColor: 'lightyellow',
+//     emojis: [
+//       {
+//         emoji: images.emoji.amazing2,
+//         count: 222,
+//       },
+//       {
+//         emoji: images.emoji.amazing,
+//         count: 111,
+//       },
+//     ],
+//   },
+//   {
+//     id: 3,
+//     backgroundColor: 'green',
+//     emojis: [{
+//       emoji: images.emoji.amazing,
+//       count: 1123,
+//     },],
+//   }
+// ]
+// Array [
+//   Object {
+//     "color": "",
+//     "contentPk": 14,
+//     "exon": "https://whoyou-bucket.s3.ap-northeast-2.amazonaws.com/image/fa55f9de-fa84-4060-9e8e-c406543dac89rn_image_picker_lib_temp_486b28fa-06e6-4813-bfab-2036567a5d90.jpg",
+//   },
+//   Object {
+//     "color": "",
+//     "contentPk": 6,
+//     "exon": "https://whoyou-bucket.s3.ap-northeast-2.amazonaws.com/image/5274d1e9-aba5-4613-af01-112a91867d40rn_image_picker_lib_temp_d9fe9958-20fe-46e5-86c6-f5f95e8e009b.jpg",
+//   },
+// ],
 
-
-const ImageContent = ({}) => {
+const ImageContent = ({ userPK, userName, deviceWidth, deviceHeight, setIsImage }) => {
   const [currentIndex, setCurrendIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
+  const [imageData, setImageData] = useState([])
+  const [isEmotions, setEmotions] = useState([])
+  const [giveEmotion, setGiveEmotion] = useState([])
+  const [imageEmoji, setImageEmoji] = useState([])
+  
+  useEffect(() => {
+    Api.getUserImage('seungho')//seunghyun
+      .then((res) => {
+        console.log('유저 이미지 불러오기')
+        console.log(res.data.success)
+        if (res.data.success.length === 0) {
+          setIsImage(false)
+        } else {
+          let data = res.data.success
+          data.map((content, idx) => {
+            data[idx]['id'] = idx
+            Api.getContentEmotion(data[idx].contentPk)
+              .then((result) => {
+                console.log(result.data)
+                let chk = false
+                let isMe = false
+                let temp = {}
+                for (let emojiData of result.data.success) {
+                  if (emojiData.userPK === userPK) {
+                    isMe = true
+                  }
+                  temp[emojiData.contentEmoji] ? temp[emojiData.contentEmoji]++ : temp[emojiData.contentEmoji] = 1
+                  chk = true
+                }
+                setImageEmoji(emojis => [...emojis, temp])
+                setEmotions(chks => [...chks, chk])
+                setGiveEmotion(curr => [...curr, isMe])
+              })
+              .catch((err) => {
+                console.warn(err)
+              })
+          })
+          setImageData(data)
+          console.log('최종', imageData)
+        }
+      })
+      .catch((err) => {
+      console.warn(err)
+      })
+  }, [])
 
   return (
     <View>
       <SwiperFlatList
-        data={dummyStatus}
+        data={imageData}
         onChangeIndex={({ index }) => {
           setCurrendIndex(index)
           // console.log(index, prevIndex)
@@ -59,12 +115,12 @@ const ImageContent = ({}) => {
             style={{
               width: deviceWidth,
               height: deviceWidth,
-              backgroundColor: item.backgroundColor,
               flex: 1,
               justifyContent: 'center',
               alignItems:"center"
             }}
           >
+            <Image source={{uri: item.exon}} style={{width: '100%', height: '100%'}} />
           </View>
         )}
       />
@@ -97,10 +153,13 @@ const ImageContent = ({}) => {
                 }}
                 onPress={() => {
                   setIsEmojiSelect(false)
-                  console.warn(index)
+                  console.log('imageData', imageData)
+                  console.log('imageEmoji', imageEmoji)
+                  addEmotion(emotion, imageData[currentIndex].contentPk, userPK, currentIndex)
+                  console.warn(emotion, imageData[currentIndex], index)
                 }}
               >
-                <Image source={images.emoji.amazing2} style={{width: '100%', height: '100%'}}/>
+                <Image source={emojiImages.default.emoji[emotion]} style={{width: '100%', height: '100%'}}/>
               </TouchableOpacity>
             </View>
           ))}     
@@ -108,13 +167,17 @@ const ImageContent = ({}) => {
       }
       <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
         <View style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
-          {dummyStatus[currentIndex]['emojis'].map((item, index) => (
+          {!isEmotions[currentIndex] &&
+            <View>
+              <Text>공감이 없습니다!</Text>
+            </View>}
+          {isEmotions[currentIndex] && Object.keys(imageEmoji[currentIndex]).map((item, index) => (
             <View key={index} style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
               <Image
                 style={{ width: 24, height: 24, marginRight: 5 }}
-                source={item.emoji}
+                source={emojiImages.default.emoji[item]}
                 />
-              <Text>{item.count}</Text>
+              <Text>{imageEmoji[currentIndex][item]}</Text>
             </View>
           ))}
         </View>
@@ -125,12 +188,14 @@ const ImageContent = ({}) => {
         height: 40,
         backgroundColor: 'white',
       }}>
-        <TouchableOpacity style={{marginLeft: 20, marginRight: 20}}>
-          <Text
-            style={{ fontSize: 18, fontWeight: 'bold' }}
-            onPress={() => setIsEmojiSelect(!isEmojiSelect)}
-          >공감</Text>
-        </TouchableOpacity>
+        {!giveEmotion[currentIndex] &&
+          <TouchableOpacity style={{ marginLeft: 20, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold'}}>공감</Text>
+          </TouchableOpacity>
+        }
+        {giveEmotion[currentIndex] && 
+          <Text style={{ marginLeft: 20, marginRight: 20, fontSize: 16 }}>이미 공감하셨습니다.</Text>
+        }
         <Text>1시간 전</Text>
       </View>
       <View style={{ height: 10, backgroundColor: "#D7D7D7"}}></View>
@@ -138,4 +203,14 @@ const ImageContent = ({}) => {
   )
 }
 
-export default ImageContent;
+
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    userPK: state.user.userPK,
+    userName: state.user.userName,
+  }
+}
+
+export default connect(mapStateToProps)(ImageContent)

@@ -17,23 +17,6 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
   const [isSurvey, setIsSurvey] = useState(true)
   const [isModalVisible, setModalVisible] = useState(false)
   const scrollRef = useRef()
-  
-  useEffect(() => {
-    Api.getUser(userPK)
-      .then((res) => {
-        console.log('유저 상태 받아오기 - 프로필')
-        console.log(res.data.success)
-        setUserName(res.data.success.name)
-      })
-      .catch((err) => {
-        console.warn(err)
-      })
-    
-    // setTimeout(() => {
-    //     const node = scrollRef.current
-    //     node.scrollTo({ y: 500, animated: true })
-    // }, 400)
-  },[])
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible)
@@ -119,7 +102,7 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 <AntDesign name="exclamationcircleo" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            <ImageContent />
+            <ImageContent setIsImage={setIsImage}/>
           </>
         )}
 

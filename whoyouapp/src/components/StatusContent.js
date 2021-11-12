@@ -52,19 +52,7 @@ const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
   const [isEmotions, setEmotions] = useState([])
   const [giveEmotion, setGiveEmotion] = useState([])
   const [statusEmoji, setStatusEmoji] = useState([])
-  // {
-  //   smile: 0,
-  //   amazing: 0,
-  //   sad: 0,
-  //   love: 0,
-  //   sense: 0,
-  //   angry: 0,
-  // }
-  // Object {
-  //   "contentEmoji": "smile",
-  //   "contentPk": 8,
-  //   "userPK": 4,
-  // },
+  
   useEffect(() => {
     Api.getUserStatus(userName)
       .then((res) => {
@@ -78,11 +66,11 @@ const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
             .then((result) => {
               console.log(result.data)
               let chk = false
-              let isMe = false
+              let isMe = ''
               let temp = {}
               for (let emojiData of result.data.success) {
                 if (emojiData.userPK === userPK) {
-                  isMe = true
+                  isMe = emojiData.contentEmoji
                 }
                 temp[emojiData.contentEmoji] ? temp[emojiData.contentEmoji]++ : temp[emojiData.contentEmoji] = 1
                 chk = true
@@ -187,7 +175,7 @@ const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
                   setIsEmojiSelect(false)
                   console.log('statusData', statusData)
                   console.log('statusEmoji', statusEmoji)
-                  addEmotion(emotion, statusData[currentIndex].contentPk, userPK, currentIndex)
+                  // addEmotion(emotion, statusData[currentIndex].contentPk, userPK, currentIndex)
                   console.warn(emotion, statusData[currentIndex], index)
                 }}
               >
@@ -220,13 +208,19 @@ const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
         height: 40,
         backgroundColor: 'white',
       }}>
-        {!giveEmotion[currentIndex] &&
+        {giveEmotion[currentIndex] === '' &&
           <TouchableOpacity style={{ marginLeft: 20, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
             <Text style={{ fontSize: 18, fontWeight: 'bold'}}>공감</Text>
           </TouchableOpacity>
         }
-        {giveEmotion[currentIndex] && 
-          <Text style={{ marginLeft: 20, marginRight: 20, fontSize: 16 }}>이미 공감하셨습니다.</Text>
+        {giveEmotion[currentIndex] !== '' &&
+          <>
+            <Image
+              style={{ width: 20, height: 20, marginLeft: 20 }}
+              source={emojiImages.default.emoji[giveEmotion[currentIndex]]}
+            />
+            <Text style={{ marginLeft: 10, marginRight: 20, fontSize: 16 }}>이미 공감하셨습니다.</Text>
+          </>
         }
         <Text>1시간 전</Text>
       </View>
