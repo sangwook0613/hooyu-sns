@@ -43,6 +43,17 @@ public class ExceptionController {
         return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, status);
     }
 
+    @ExceptionHandler(NoTargetException.class)
+    protected ResponseEntity<ExceptionResponseDto> handleNoTarget(NoTargetException e) {
+        logger.error("[No User Exception] ", e);
+
+        String message = e.getMessage();
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        ExceptionResponseDto exceptionResponseDto = responseGenerateService.generateExceptionResponse(status, message);
+
+        return new ResponseEntity<ExceptionResponseDto>(exceptionResponseDto, status);
+    }
+
     @ExceptionHandler(NoContentException.class)
     public ResponseEntity<ExceptionResponseDto> noContentHandler(NoContentException e) {
         logger.error("[No Content Exception] ", e);
@@ -54,7 +65,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(NoEmotionException.class)
-    public ResponseEntity<ExceptionResponseDto> noContentHandler(NoEmotionException e) {
+    public ResponseEntity<ExceptionResponseDto> noEmotionHandler(NoEmotionException e) {
         logger.error("[No Content Exception] ", e);
         HttpStatus httpStatus = HttpStatus.NOT_FOUND;
         String message = e.getMessage();
@@ -64,7 +75,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(DuplicateNameException.class)
-    public ResponseEntity<ExceptionResponseDto> noContentHandler(DuplicateNameException e) {
+    public ResponseEntity<ExceptionResponseDto> noDuplicateNameHandler(DuplicateNameException e) {
         logger.error("[No Content Exception] ", e);
         HttpStatus httpStatus = HttpStatus.CONFLICT;
         String message = e.getMessage();
@@ -74,7 +85,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(GoogleLoginFailException.class)
-    public ResponseEntity<ExceptionResponseDto> noContentHandler(GoogleLoginFailException e) {
+    public ResponseEntity<ExceptionResponseDto> noLoginHandler(GoogleLoginFailException e) {
         logger.error("[No Content Exception] ", e);
         HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
         String message = e.getMessage();
@@ -84,7 +95,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(NoBrowserTokenException.class)
-    public ResponseEntity<ExceptionResponseDto> noContentHandler(NoBrowserTokenException e) {
+    public ResponseEntity<ExceptionResponseDto> noBrowserTokenHandler(NoBrowserTokenException e) {
         logger.error("[No Content Exception] ", e);
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
         String message = e.getMessage();
@@ -94,7 +105,7 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(NoAuthorityUserException.class)
-    public ResponseEntity<ExceptionResponseDto> noContentHandler(NoAuthorityUserException e) {
+    public ResponseEntity<ExceptionResponseDto> noAuthHandler(NoAuthorityUserException e) {
         logger.error("[No Content Exception] ", e);
         HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
         String message = e.getMessage();
