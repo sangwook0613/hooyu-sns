@@ -31,6 +31,7 @@ public class ContentServiceImpl implements ContentService {
     private final RecordTimeRepository recordTimeRepository;
     private final SurveyContentAnswerRepository surveyContentAnswerRepository;
     private final FcmTokenRepository fcmTokenRepository;
+    private final ReportedContentRepository reportedContentRepository;
 
 
     Logger logger = LoggerFactory.getLogger(ContentServiceImpl.class);
@@ -253,6 +254,14 @@ public class ContentServiceImpl implements ContentService {
         }
         recordTimeRepository.save(recordTime);
 
+        return "Success!";
+    }
+
+    @Override
+    public String reportContent(Long userPK, Long contentPK, String reason) throws NoContentException, NoUserException {
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        Content content = contentRepository.findById(contentPK).orElseThrow(() -> new NoContentException("해당하는 컨탠츠는 없습니다."));
+        reportedContentRepository.save(ReportedContent.builder().user(user).content(content).reason(reason).build());
         return "Success!";
     }
 
