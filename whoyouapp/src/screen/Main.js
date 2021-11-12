@@ -323,7 +323,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
           }
 
           <View style={styles.profileButton}>
-            <TouchableOpacity onPress={() => navigate("Profile")}>
+            <TouchableOpacity onPress={() => navigate("Profile", { nickname: userName})}>
               <View>
                 <View style={styles.profileBackground}></View>
                 <Image
@@ -565,7 +565,6 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         deviceWidth={deviceWidth}
         deviceHeight={deviceHeight}
         theme={theme}
-        navigate={navigate}
         users={users}
         selectUser={selectUser}
         selectedUser={selectedUser}
@@ -578,7 +577,6 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         deviceWidth={deviceWidth}
         deviceHeight={deviceHeight}
         theme={theme}
-        navigate={navigate}
         users={privateZoneUsers}
         selectPrivateZoneUser={selectPrivateZoneUser}
         selectedPrivateZoneUser={selectedPrivateZoneUser}

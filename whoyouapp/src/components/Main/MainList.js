@@ -1,10 +1,11 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
 import { Animated, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback, ScrollView } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import { useNavigation } from '@react-navigation/native'
 import images from '../../assets/images'
 
-
-const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users, selectUser, selectedUser, setUsers, mainListSortMode, setMainListSortMode }, ref) => {
+const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUser, selectedUser, setUsers, mainListSortMode, setMainListSortMode }, ref) => {
+  const navigation = useNavigation()
   const mainList = useRef(new Animated.Value(deviceHeight)).current
 
   const [now, setNow] = useState(new Date().toString())
@@ -172,7 +173,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
                   >
                     <TouchableOpacity
                       style={styles.userMenuButton}
-                      onPress={() => {navigate('User', {username: user.name, content: 'status'})}}
+                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'status'})}}
                     >
                       <Text style={{
                         color: 'white',
@@ -193,7 +194,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
                   >
                     <TouchableOpacity
                       style={[styles.userMenuButton, {backgroundColor: user.contentTime.images === null ? '#B4B4B4' : mainColor1}]}
-                      onPress={() => {navigate('User', {username: user.name, content: 'image'})}}
+                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'image'})}}
                       disabled={user.contentTime.images === null ? true : false}
                     >
                       <Text style={{
@@ -215,7 +216,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
                   >
                     <TouchableOpacity
                       style={[styles.userMenuButton, {backgroundColor: user.contentTime.survey === null ? '#B4B4B4' : mainColor1}]}
-                      onPress={() => {navigate('User', {username: user.name, content: 'survey'})}}
+                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'survey'})}}
                       disabled={user.contentTime.survey === null ? true : false}
                     >
                       <Text style={{

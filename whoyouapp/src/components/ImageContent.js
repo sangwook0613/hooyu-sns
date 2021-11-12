@@ -7,7 +7,7 @@ import * as emojiImages from '../assets/images'
 
 const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
 
-const ImageContent = ({ userPK, userName, deviceWidth, deviceHeight, setIsImage }) => {
+const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsImage }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [imageData, setImageData] = useState([])

@@ -13,6 +13,7 @@ import images from '../assets/images'
   
 
 const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUserName, deviceWidth, deviceHeight }) => {
+  const [isOwner, setOwner] = useState(route.params.nickname === userName)
   const [isStatus, setIsStatus] = useState(true)
   const [isImage, setIsImage] = useState(true)
   const [isSurvey, setIsSurvey] = useState(true)
