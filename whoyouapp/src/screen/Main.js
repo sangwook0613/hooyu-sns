@@ -199,7 +199,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
       accuracy: Location.Accuracy.High,
       distanceInterval: 0,
-      timeInterval: 30000,
+      timeInterval: 60000,
       foregroundService: {
         notificationTitle: 'Hooyu',
         notificationBody : '당신의 반경을 탐색하는중...',
