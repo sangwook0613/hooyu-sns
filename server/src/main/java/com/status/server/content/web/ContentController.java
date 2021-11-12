@@ -121,6 +121,16 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
+    @PostMapping("/report")
+    public ResponseEntity<SuccessResponseDto> reportContent(@RequestBody RequestReportDto requestReportDto) throws NoUserException, NoContentException {
+
+        String message = contentService.reportContent(requestReportDto.getUserPK(),requestReportDto.getContentPK(),requestReportDto.getReason());
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
+
     @GetMapping("/status/{userName}")
     public ResponseEntity<SuccessResponseDto> getStatusContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
