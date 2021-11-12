@@ -1,17 +1,18 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
 import * as emojiImages from '../../assets/images'
+import Toast from 'react-native-easy-toast';
 
 
 const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
 
-const colorArray = ['#FFD0D0', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']
+const colorArray = ['#FFD0D0', '#CDD1FF', '#E8AFFE', '#CECECE', '#DEBACC', '#F9A996', '#FBF997']
 const emojiArray = [
   ['smile', 'amazing', 'sad', 'crying', 'sense', 'angry'], 
   ['pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep']
@@ -26,7 +27,7 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
   const [status, setStatus] = useState('')
   const statusBackground = useRef()
   const colorScroll = useRef()
-  
+  const toastRef = useRef();
   
   const StatusTitle = () => {
     return (
@@ -56,7 +57,11 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
               <Text>등록</Text>
             </TouchableOpacity>
             :
-            <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+            <TouchableWithoutFeedback
+              onPress={() => showToast()}
+            >
+              <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+            </TouchableWithoutFeedback>
           }
 
         </View>
@@ -64,6 +69,9 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
     });
   }, [navigation, status, color, emoji]);
 
+  const showToast = useCallback(() => {
+    toastRef.current.show('상태를 입력해 주세요')
+  })
 
   const onEndScroll = () => {
     colorScroll.current.scrollTo({ x : parseInt((colorScrollX+35)/70)*70 })
@@ -213,6 +221,12 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
           ))}
         </View>
         }
+        <Toast ref={toastRef}
+          positionValue={clientHeight * 0.4}
+          fadeInDuration={200}
+          fadeOutDuration={1000}
+          style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
+        />
       </View>
     </TouchableWithoutFeedback>
   )
