@@ -31,4 +31,7 @@ public interface ContentService {
     //삭제
     String deleteContent(Long userPK, Long contentPK, Type type) throws NoContentException, NoUserException, NoAuthorityUserException;
 
+    //신고
+    String reportContent(Long userPK, Long contentPK, String reason) throws NoContentException, NoUserException;
+
 }
