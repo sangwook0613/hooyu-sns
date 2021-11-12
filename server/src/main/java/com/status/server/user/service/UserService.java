@@ -1,9 +1,10 @@
 package com.status.server.user.service;
 
 import com.status.server.global.domain.Token;
-import com.status.server.global.exception.NoBrowserTokenException;
-import com.status.server.global.exception.NoUserException;
 import com.status.server.global.exception.DuplicateNameException;
+import com.status.server.global.exception.NoBrowserTokenException;
+import com.status.server.global.exception.NoTargetException;
+import com.status.server.global.exception.NoUserException;
 import com.status.server.user.domain.User;
 import com.status.server.user.dto.ResponseUserLocationDto;
 import com.status.server.user.dto.UserResponseDto;
@@ -27,7 +28,8 @@ public interface UserService {
 
     String changeEmoji(Long userPK, String userEmoji) throws NoUserException;
 
-    String setUpPrivateZone(Long userPK, BigDecimal lat, BigDecimal lon) throws NoUserException;
+    String setUpPrivateZone(Long userPK, String title, BigDecimal lat, BigDecimal lon) throws NoUserException;
+    String deletePrivateZone(Long userPK, String title, BigDecimal lat, BigDecimal lon) throws NoTargetException;
 
     String setPushAlarmReceive(Long userPK, Boolean accept) throws NoUserException;
     String setPushAlarmSync(Long userPK, Boolean sync) throws NoUserException;

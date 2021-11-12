@@ -17,6 +17,7 @@ public class PrivateZoneDto {
     @NotNull(message = "id는 필수 값입니다.")
     @Min(1)
     Long userPK;
+    String title;
     BigDecimal lat;
     BigDecimal lon;
 }
