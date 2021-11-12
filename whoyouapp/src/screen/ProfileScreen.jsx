@@ -13,7 +13,7 @@ import images from '../assets/images'
   
 
 const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUserName, deviceWidth, deviceHeight }) => {
-  const [isOwner, setOwner] = useState(route.params.nickname === userName)
+  const [ownerName, setOwnerName] = useState(route.params.nickname === userName ? userName : route.params.nickname)
   const [isStatus, setIsStatus] = useState(true)
   const [isImage, setIsImage] = useState(true)
   const [isSurvey, setIsSurvey] = useState(true)
@@ -113,7 +113,7 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 <AntDesign name="close" size={18} color="black" />
               </TouchableOpacity>
             </View>
-            <StatusContent />
+            <StatusContent ownerName={ownerName}/>
           </>
         )}
 
@@ -152,7 +152,7 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 <AntDesign name="close" size={18} color="black" />
               </TouchableOpacity>
             </View>
-            <ImageContent setIsImage={setIsImage}/>
+            <ImageContent ownerName={ownerName} setIsImage={setIsImage}/>
           </>
         )}
 
@@ -192,7 +192,7 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 <AntDesign name="close" size={18} color="black" />
               </TouchableOpacity>
             </View>
-            <SurveyContent setIsSurvey={setIsSurvey} />
+            <SurveyContent ownerName={ownerName} setIsSurvey={setIsSurvey} />
           </>
         )}
       </ScrollView>
