@@ -38,74 +38,6 @@ const mainColor6 = theme == "morning" ? "#000000" : (theme == "evening" ? '#0000
 // 선택 된 반경 옆 표시색
 const mainColor7 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#FFFFFF')
 
-const testUsers = [
-  {
-    "contentTime": {
-      "images": "2021-11-12T00:50:41.862085",
-      "recent": "2021-11-12T01:11:20.115517",
-      "status": "2021-11-12T01:19:20.115517",
-      "survey": null,
-    },
-    "distDto": {
-      "dist": 1024.26937672832003,
-      "xdist": 1521.99639309943186,
-      "ydist": 101.848937014469676,
-    },
-    "emoji": "angry",
-    "name": "asdad",
-    "privateZone": false,
-  },
-  {
-    "contentTime": {
-      "images": "2021-11-12T00:50:41.862085",
-      "recent": "2021-11-12T01:12:20.115517",
-      "status": "2021-11-12T01:19:20.115517",
-      "survey": null,
-    },
-    "distDto": {
-      "dist": 924.26937672832003,
-      "xdist": 1321.99639309943186,
-      "ydist": 81.848937014469676,
-    },
-    "emoji": "angry",
-    "name": "asdad",
-    "privateZone": false,
-  },
-  {
-    "contentTime": {
-      "images": "2021-11-12T00:50:41.862085",
-      "recent": "2021-11-12T01:13:20.115517",
-      "status": "2021-11-12T01:19:20.115517",
-      "survey": null,
-    },
-    "distDto": {
-      "dist": 824.26937672832003,
-      "xdist": 1061.99639309943186,
-      "ydist": 51.848937014469676,
-    },
-    "emoji": "angry",
-    "name": "asdad",
-    "privateZone": false,
-  },
-  {
-    "contentTime": {
-      "images": "2021-11-12T00:50:41.862085",
-      "recent": "2021-11-12T01:17:20.115517",
-      "status": "2021-11-12T01:19:20.115517",
-      "survey": null,
-    },
-    "distDto": {
-      "dist": 724.26937672832003,
-      "xdist": 851.99639309943186,
-      "ydist": 41.848937014469676,
-    },
-    "emoji": "angry",
-    "name": "asdad",
-    "privateZone": false,
-  }
-]
-
-
 const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK,userEmoji, setMyRadius }) => {
 
   LogBox.ignoreAllLogs()
@@ -120,6 +52,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   const [privateZoneUsers, setPrivateZoneUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(-1)
   const [selectedPrivateZoneUser, setSelectedPrivateZoneUser] = useState(-1)
+  const [mainListSortMode, setMainListSortMode] = useState('distance')
 
   const mainListRef = useRef()
   const shelterListRef = useRef()
@@ -293,8 +226,22 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     })
       .then((res) => {
         if (appState.current === 'active') {
-          setUsers([...testUsers, ...res.data.success.filter(user => user.privateZone !== true)])
-          setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
+          const newUsers = res.data.success.filter(user => user.privateZone !== true)
+          if (mainListSortMode ==='distance') {
+            newUsers.sort(function(a, b) {
+              return a.distDto.dist - b.distDto.dist
+            })
+          } else if (mainListSortMode === 'time') {
+            newUsers.sort(function(a, b) {
+              return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
+            })
+          }
+          setUsers(newUsers)
+          const newPrivateZoneUsers = res.data.success.filter(user => user.privateZone === true)
+          newPrivateZoneUsers.sort(function(a, b) {
+            return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
+          })
+          setPrivateZoneUsers(newPrivateZoneUsers)
         }
         console.warn('get users : ', AppState.currentState)
       })
@@ -622,6 +569,8 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         selectUser={selectUser}
         selectedUser={selectedUser}
         setUsers={setUsers}
+        mainListSortMode={mainListSortMode}
+        setMainListSortMode={setMainListSortMode}
         ref={mainListRef}
       />
       <ShelterList
@@ -632,6 +581,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         users={privateZoneUsers}
         selectPrivateZoneUser={selectPrivateZoneUser}
         selectedPrivateZoneUser={selectedPrivateZoneUser}
+        setPrivateZoneUsers={setPrivateZoneUsers}
         ref={shelterListRef}
       />
     </>

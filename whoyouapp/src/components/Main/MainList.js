@@ -4,13 +4,16 @@ import LinearGradient from 'react-native-linear-gradient'
 import images from '../../assets/images'
 
 
-const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users, selectUser, selectedUser, setUsers }, ref) => {
+const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users, selectUser, selectedUser, setUsers, mainListSortMode, setMainListSortMode }, ref) => {
   const mainList = useRef(new Animated.Value(deviceHeight)).current
 
   const [now, setNow] = useState(new Date().toString())
-  const [sortMode, setSortMode] = useState('distance')
 
   const isInitialMount = useRef(true)
+
+  useEffect(() => {
+    sortByDistance()
+  }, [])
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -81,7 +84,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
       return a.distDto.dist - b.distDto.dist
     })
     setUsers(newUsers)
-    setSortMode('distance')
+    setMainListSortMode('distance')
     selectUser(-1)
   }
 
@@ -91,7 +94,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
       return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
     })
     setUsers(newUsers)
-    setSortMode('time')
+    setMainListSortMode('time')
     selectUser(-1)
   }
 
@@ -108,7 +111,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
             onPress={() => sortByDistance()}
           >
             <View style={styles.mainListHeaderOption}>
-              <Text style={[styles.mainListHeaderOptionText, {color: sortMode === 'distance' ? 'black': '#B4B4B4'}]}>
+              <Text style={[styles.mainListHeaderOptionText, {color: mainListSortMode === 'distance' ? 'black': '#B4B4B4'}]}>
                 거리순
               </Text>
             </View>
@@ -117,7 +120,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
             onPress={() => sortByTime()}
           >
             <View style={styles.mainListHeaderOption}>
-              <Text style={[styles.mainListHeaderOptionText, {color: sortMode === 'time' ? 'black': '#B4B4B4'}]}>
+              <Text style={[styles.mainListHeaderOptionText, {color: mainListSortMode === 'time' ? 'black': '#B4B4B4'}]}>
                 최신순
               </Text>
             </View>
@@ -125,9 +128,6 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
         </View>
         <ScrollView
           ref={scrollRef}
-          // contentOffset={{
-          //   y: (deviceWidth * 0.07 + 22) *  selectedUser
-          // }}
         >
           {users.map((user, index) => (
             <View

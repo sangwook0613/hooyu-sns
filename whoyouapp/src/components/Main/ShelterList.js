@@ -4,10 +4,21 @@ import LinearGradient from 'react-native-linear-gradient'
 import images from '../../assets/images'
 
 
-const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users, selectPrivateZoneUser, selectedPrivateZoneUser }, ref) => {
+const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users, selectPrivateZoneUser, selectedPrivateZoneUser, setPrivateZoneUsers }, ref) => {
   const shelterList = useRef(new Animated.Value(deviceHeight)).current
 
   const [now, setNow] = useState(new Date().toString())
+
+  const isInitialMount = useRef(true)
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false
+    } else {
+      const node = scrollRef.current
+      node.scrollTo({ y: (deviceWidth * 0.07 + 22) *  selectedPrivateZoneUser, animated: true})
+    }
+  }, [selectedPrivateZoneUser])
 
   useImperativeHandle(ref, () => ({
     open: () => {
@@ -52,6 +63,18 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, us
     }
     return r;
   }
+
+  const isNewContent = (date) => {
+    if (date != null) {
+      let r = Date.parse(now) - Date.parse(date) + 32400000
+      if (parseInt(r) <= 86400000) {
+        return true
+      }
+    } 
+    return false
+  }
+
+  const scrollRef = useRef()
   
   return (
     <Animated.View
@@ -67,9 +90,7 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, us
           </View>
         </View>
         <ScrollView
-          contentOffset={{
-            y: (deviceWidth * 0.07 + 22) *  selectedPrivateZoneUser
-          }}
+          ref={scrollRef}
         >
           {users.map((user, index) => (
             <View
