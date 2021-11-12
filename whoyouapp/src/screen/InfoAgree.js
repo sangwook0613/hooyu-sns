@@ -15,9 +15,10 @@ const InfoAgree = ({ navigation: { navigate }, deviceWidth }) => {
           <View style={{ alignItems: 'flex-start', marginBottom: 10, width: '100%' }}>
             <Text style={{ fontSize: 20, fontWeight: '700', color: '#FF6A77' }}>후유 권한 안내</Text>
           </View>
-          <View style={{ alignItems: 'flex-start', marginBottom: 20, width: '100%' }}>
+          <View style={{ alignItems: 'flex-start', marginBottom: 15, width: '100%' }}>
             <Text style={{ fontWeight: 'bold' }}>후유는 아래 권한들을 필요로 합니다.</Text>
             <Text style={{ fontWeight: 'bold' }}>서비스 사용 중 앱에서 요청 시 허용해 주세요</Text>
+            <Text style={{ fontWeight: 'bold', color:'red', fontSize:12, marginTop:3 }}>필수 권한은 허용하지 않을 시 앱을 사용하실 수 없습니다.</Text>
           </View>
 
           <View style={{ height: 2, backgroundColor: '#B1B1B1', width: '100%' }}></View>
@@ -33,7 +34,7 @@ const InfoAgree = ({ navigation: { navigate }, deviceWidth }) => {
             </View>
             <View>
               <Text style={{ fontWeight: 'bold', marginBottom:4 }}>위치 정보</Text>
-              <Text>위치 정보는 주변 사람들을 찾는데{'\n'} 필요한 필수 정보로 활용됩니다.</Text>
+              <Text>위치 정보는 주변 사용자들을 탐지하는데{'\n'}필요한 필수 정보로 활용됩니다.</Text>
             </View>
           </View>
 
@@ -45,7 +46,8 @@ const InfoAgree = ({ navigation: { navigate }, deviceWidth }) => {
 
             <View>
               <Text style={{ fontWeight: 'bold', marginBottom:4 }}>백그라운드 권한</Text>
-              <Text>이 앱을 사용하지 않을때도 현재 위치 갱신 및{'\n'}주변 유저 검색, 푸시알림을 받기 위해 {'\n'}접근이 필요합니다.</Text>
+              <Text>후유는 앱이 사용되지 않을 때도 사용자의{`\n`}현재 위치 갱신 및 위치를 기반으로 화면 상{`\n`}유저 표시와 푸시알림 기능을 제공하기 위해{`\n`}위치 데이터를 수집합니다.</Text>
+              {/* <Text>후유는 앱이 닫힐 때나 사용중이 아닐 때도 {`\n`}위치 데이터를 수집하여 위치 정보 갱신 및{`\n`}푸시 알림 기능을 사용 설정합니다.</Text> */}
             </View>
           </View>
 
