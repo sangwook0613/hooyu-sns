@@ -44,7 +44,7 @@ const dummyStatus = [
   }
 ]
 
-const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
+const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [statusData, setStatusData] = useState([])
@@ -53,7 +53,7 @@ const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
   const [statusEmoji, setStatusEmoji] = useState([])
   
   useEffect(() => {
-    Api.getUserStatus(userName)
+    Api.getUserStatus(ownerName)
       .then((res) => {
         console.log('유저 상태 받아오기')
         console.log(res.data.success)
@@ -174,7 +174,7 @@ const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
                   setIsEmojiSelect(false)
                   console.log('statusData', statusData)
                   console.log('statusEmoji', statusEmoji)
-                  // addEmotion(emotion, statusData[currentIndex].contentPk, userPK, currentIndex)
+                  addEmotion(emotion, statusData[currentIndex].contentPk, userPK, currentIndex)
                   console.warn(emotion, statusData[currentIndex], index)
                 }}
               >
