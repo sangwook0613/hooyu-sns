@@ -53,19 +53,19 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
   const [giveEmotion, setGiveEmotion] = useState([])
   const [statusEmoji, setStatusEmoji] = useState([])
   const [isLoaded, setIsLoaded] = useState(false)
-  
+  const now = new Date()
+
   useEffect(() => {
     Api.getUserStatus(ownerName)
       .then((res) => {
-        console.log('유저 상태 받아오기')
-        console.log(res.data.success)
+        console.log('유저 상태 받아오기', res.data.success)
         let data = res.data.success
-        console.log('data', data[0])
+        console.log('자몽이0')
         data.map((content, idx) => {
           data[idx]['id'] = idx
           Api.getContentEmotion(data[idx].contentPk)
             .then((result) => {
-              console.log(result.data)
+              console.log('자몽이1', idx, result.data)
               let chk = false
               let isMe = ''
               let temp = {}
@@ -118,6 +118,23 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
       .catch((err) => {
         console.warn(err)
       })
+  }
+
+  const humanize = (date) => {
+    const moment = require("moment")
+    let r = Date.parse(now) - Date.parse(date) + 32400000
+    if (parseInt(r) > 2678400000) {
+      r = moment(date).format("YYYY.MM.DD")
+    } else if (parseInt(r) > 86400000) {
+      r = parseInt(parseInt(r) / 86400000).toString() + "일 전"
+    } else if (parseInt(r) >= 3600000) {
+      r = parseInt(parseInt(r) / 3600000).toString() + "시간 전"
+    } else if (parseInt(r) >= 60000) {
+      r = parseInt(parseInt(r) / 60000).toString() + "분 전"
+    } else {
+      r = "방금 전"
+    }
+    return r;
   }
 
   const convertCount = (cnt) => {
@@ -272,7 +289,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
                 fontSize: 12,
               }}
             >
-              {statusData[currentIndex].exon}
+              {humanize(statusData[currentIndex].createAt)}
             </Text>
           :
             <>
