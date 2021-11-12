@@ -15,10 +15,10 @@ const SettingPrivateZone = ({ navigation, userPK, setPrivateZone }) => {
 
   return (
     <View style={{flex:1}}>
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Text style={{paddingBottom: 70, fontSize: 16}}>프라이빗 존을 설정중입니다.</Text>
+      <View style={{flex: 2, width: 200, height: 200, borderWidth: 2}}>
+
       </View>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'start', alignItems: 'center' }}>
         <TouchableOpacity
           style={styles.mainButton}
           onPress={confirmPrivateZone}
