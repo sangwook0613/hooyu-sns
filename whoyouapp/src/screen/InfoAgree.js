@@ -4,7 +4,7 @@ import { Ionicons, Entypo } from '@expo/vector-icons';
 import { connect } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 
-const InfoAgree = ({ navigation: { navigate }, deviceWidth }) => {
+const InfoAgree = ({ navigation: { navigate }, deviceWidth, deviceHeight }) => {
 
   const navigation = useNavigation()
 
@@ -13,18 +13,18 @@ const InfoAgree = ({ navigation: { navigate }, deviceWidth }) => {
       <View style={{ flex: 0.9, justifyContent: 'center', alignItems: 'center' }}>
         <View style={{ width: deviceWidth * 0.75 }}>
           <View style={{ alignItems: 'flex-start', marginBottom: 10, width: '100%' }}>
-            <Text style={{ fontSize: 20, fontWeight: '700', color: '#FF6A77' }}>후유 권한 안내</Text>
+            <Text style={{ fontSize: deviceHeight * 0.03, fontWeight: '700', color: '#FF6A77' }}>후유 권한 안내</Text>
           </View>
           <View style={{ alignItems: 'flex-start', marginBottom: 15, width: '100%' }}>
-            <Text style={{ fontWeight: 'bold' }}>후유는 아래 권한들을 필요로 합니다.</Text>
-            <Text style={{ fontWeight: 'bold' }}>서비스 사용 중 앱에서 요청 시 허용해 주세요</Text>
-            <Text style={{ fontWeight: 'bold', color:'red', fontSize:12, marginTop:3 }}>필수 권한은 허용하지 않을 시 앱을 사용하실 수 없습니다.</Text>
+            <Text style={{ fontSize: deviceHeight * 0.02, fontWeight: 'bold' }}>후유는 아래 권한들을 필요로 합니다.</Text>
+            <Text style={{ fontSize: deviceHeight * 0.02, fontWeight: 'bold' }}>서비스 사용 중 앱에서 요청 시 허용해 주세요</Text>
+            <Text style={{ fontWeight: 'bold', color:'red', fontSize:deviceHeight * 0.017, marginTop:3 }}>필수 권한은 허용하지 않을 시 앱을 사용하실 수 없습니다.</Text>
           </View>
 
           <View style={{ height: 2, backgroundColor: '#B1B1B1', width: '100%' }}></View>
 
           <View style={{ width: '100%', marginTop: 20 }}>
-            <Text style={{ fontWeight: 'bold', color: '#FF6A77' }}>필수 접근 권한</Text>
+            <Text style={{ fontSize: deviceHeight * 0.02, fontWeight: 'bold', color: '#FF6A77' }}>필수 접근 권한</Text>
           </View>
 
 
@@ -33,8 +33,8 @@ const InfoAgree = ({ navigation: { navigate }, deviceWidth }) => {
               <Ionicons name="location-outline" size={24} color="black" />
             </View>
             <View>
-              <Text style={{ fontWeight: 'bold', marginBottom:4 }}>위치 정보</Text>
-              <Text>위치 정보는 주변 사용자들을 탐지하는데{'\n'}필요한 필수 정보로 활용됩니다.</Text>
+              <Text style={{fontSize: deviceHeight * 0.017, fontWeight: 'bold', marginBottom:4 }}>위치 정보</Text>
+              <Text style={{fontSize: deviceHeight * 0.015,}}>위치 정보는 주변 사용자들을 탐지하는데{'\n'}필요한 필수 정보로 활용됩니다.</Text>
             </View>
           </View>
 
@@ -45,23 +45,23 @@ const InfoAgree = ({ navigation: { navigate }, deviceWidth }) => {
             </View>
 
             <View>
-              <Text style={{ fontWeight: 'bold', marginBottom:4 }}>백그라운드 권한</Text>
-              <Text>후유는 앱이 사용되지 않을 때도 사용자의{`\n`}현재 위치 갱신 및 위치를 기반으로 화면 상{`\n`}유저 표시와 푸시알림 기능을 제공하기 위해{`\n`}위치 데이터를 수집합니다.</Text>
+              <Text style={{fontSize: deviceHeight * 0.017, fontWeight: 'bold', marginBottom:4 }}>백그라운드 권한</Text>
+              <Text style={{fontSize: deviceHeight * 0.015,}}>후유는 앱이 사용되지 않을 때도 사용자의{`\n`}현재 위치 갱신 및 위치를 기반으로 화면 상{`\n`}유저 표시와 푸시알림 기능을 제공하기 위해{`\n`}위치 데이터를 수집합니다.</Text>
               {/* <Text>후유는 앱이 닫힐 때나 사용중이 아닐 때도 {`\n`}위치 데이터를 수집하여 위치 정보 갱신 및{`\n`}푸시 알림 기능을 사용 설정합니다.</Text> */}
             </View>
           </View>
 
 
           <View style={{ width: '100%', marginTop: 20 }}>
-            <Text style={{ fontWeight: 'bold', color: '#FF6A77' }}>선택 접근 권한</Text>
+            <Text style={{ fontSize: deviceHeight * 0.02,fontWeight: 'bold', color: '#FF6A77' }}>선택 접근 권한</Text>
           </View>
           <View style={{ flexDirection: "row", width: '100%', marginTop: 15 }}>
             <View style={{ justifyContent: 'center', paddingRight: 15 }}>
               <Ionicons name="folder-outline" size={24} color="black" />
             </View>
             <View>
-              <Text style={{ fontWeight: 'bold', marginBottom:4 }}>저장공간</Text>
-              <Text>앨범에 접근하여 사진을 업로드 할 수 있습니다.</Text>
+              <Text style={{fontSize: deviceHeight * 0.017, fontWeight: 'bold', marginBottom:4 }}>저장공간</Text>
+              <Text style={{fontSize: deviceHeight * 0.015,}}>앨범에 접근하여 사진을 업로드 할 수 있습니다.</Text>
             </View>
           </View>
         </View>
@@ -70,7 +70,7 @@ const InfoAgree = ({ navigation: { navigate }, deviceWidth }) => {
 
       <View style={{ flex: 0.1, width: '100%' }}>
         <TouchableOpacity style={{ height: '100%', backgroundColor: '#FF6A77', justifyContent: 'center', alignItems: 'center' }} onPress={()=>navigation.reset({routes: [{name: 'Main'}]})}>
-          <Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}>다음으로</Text>
+          <Text style={{fontSize: deviceWidth * 0.04, color: 'white', fontWeight: 'bold' }}>다음으로</Text>
         </TouchableOpacity>
       </View>
     </>
@@ -81,10 +81,6 @@ function mapStateToProps(state) {
   return {
     deviceWidth: state.user.deviceWidth,
     deviceHeight: state.user.deviceHeight,
-    myRadius: state.user.myRadius,
-    SERVER_URL: state.user.SERVER_URL,
-    userPK: state.user.userPK,
-    userEmoji: state.user.userEmoji
   }
 }
 
