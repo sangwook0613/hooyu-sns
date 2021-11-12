@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Image, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
 import { SwiperFlatList } from 'react-native-swiper-flatlist'
+import LinearGradient from 'react-native-linear-gradient'
 import Api from '../utils/api'
 import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
@@ -51,8 +52,10 @@ const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
   const [isEmotions, setEmotions] = useState([])
   const [giveEmotion, setGiveEmotion] = useState([])
   const [statusEmoji, setStatusEmoji] = useState([])
+  const [isLoaded, setIsLoaded] = useState(false)
   
   useEffect(() => {
+    console.log(userName)
     Api.getUserStatus(userName)
       .then((res) => {
         console.log('유저 상태 받아오기')
@@ -77,6 +80,7 @@ const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
               setStatusEmoji(emojis => [...emojis, temp])
               setEmotions(chks => [...chks, chk])
               setGiveEmotion(curr => [...curr, isMe])
+              setIsLoaded(true)
             })
             .catch((err) => {
               console.warn(err)
@@ -117,13 +121,26 @@ const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
       })
   }
 
+  const convertCount = (cnt) => {
+    if (cnt > 1000000) {
+      const convert = cnt / 1000000
+      return convert.toFixed(1) + 'M'
+    } else if (cnt > 1000) {
+      const convert = cnt / 1000
+      return convert.toFixed(1) + 'K'
+    } else {
+      return cnt
+    }
+  }
+
   return (
     <View>
       <SwiperFlatList
         data={statusData}
+        showPagination
         onChangeIndex={({ index }) => {
           setCurrentIndex(index)
-          // console.log(index, prevIndex)
+          setIsEmojiSelect(false)
         }}
         renderItem={({ item }) => (
           <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
@@ -144,86 +161,126 @@ const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
         )}
       />
       { isEmojiSelect && 
+        <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
+          <View style={{
+            position: 'absolute',
+            width: 300,
+            height: 70,
+            borderRadius: 10,
+            backgroundColor: 'white',
+            elevation: 4,
+            left: 50,
+            bottom: 50,
+            paddingLeft: 10,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}>
+            {emojiArray.map((emotion, index) => (
+              <View key={index} style={{
+                flex:1, 
+                height: '50%',
+              }}>
+                <TouchableOpacity
+                  style={{
+                    flex:1, 
+                    width: '70%',
+                    height: '100%',
+                  }}
+                  onPress={() => {
+                    setIsEmojiSelect(false)
+                    console.log('statusData', statusData)
+                    console.log('statusEmoji', statusEmoji)
+                    addEmotion(emotion, statusData[currentIndex].contentPk, userPK, currentIndex)
+                    console.warn(emotion, statusData[currentIndex], index)
+                  }}
+                >
+                  <Image source={emojiImages.default.emoji[emotion]} style={{width: '100%', height: '100%'}}/>
+                </TouchableOpacity>
+              </View>
+            ))}     
+          </View>
+        </TouchableWithoutFeedback>
+      }
+      <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
+        <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
+            {!isEmotions[currentIndex] &&
+              <View>
+                <Text
+                  style={{
+                    color: '#B4B4B4',
+                  }}
+                >
+                  첫 공감을 남겨보세요
+                </Text>
+              </View>}
+            {isEmotions[currentIndex] && Object.keys(statusEmoji[currentIndex]).map((item, index) => (
+              <View key={index} style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
+                <Image
+                  style={{ width: 22, height: 22, marginRight: 5 }}
+                  source={emojiImages.default.emoji[item]}
+                  />
+                <Text
+                  style={{
+                    fontSize: 12,
+                  }}
+                >
+                  {convertCount(statusEmoji[currentIndex][item])}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </TouchableWithoutFeedback>
+      <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
         <View style={{
-          position: 'absolute',
-          width: 300,
-          height: 70,
-          borderWidth: 1,
-          borderColor: "#aaa",
-          borderRadius: 10,
-          backgroundColor: 'white',
-          elevation: 4,
-          left: 50,
-          bottom: 100,
-          paddingLeft: 10,
           flexDirection: 'row',
           alignItems: 'center',
+          height: 40,
+          backgroundColor: 'white',
+          elevation: 10 
         }}>
-          {emojiArray.map((emotion, index) => (
-            <View key={index} style={{
-              flex:1, 
-              height: '50%',
-            }}>
-              <TouchableOpacity
+          {isLoaded && giveEmotion[currentIndex] === '' &&
+            <TouchableOpacity style={{ marginLeft: 15, marginRight: 15 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
+              <Text style={{ fontSize: 15 }}>{isEmojiSelect ? '닫기': '공감'}</Text>
+            </TouchableOpacity>
+          }
+          {isLoaded && giveEmotion[currentIndex] !== '' &&
+            <>
+              <LinearGradient 
+                colors={['#AB79EF', '#FC98AB']}
                 style={{
-                  flex:1, 
-                  width: '70%',
-                  height: '100%',
-                }}
-                onPress={() => {
-                  setIsEmojiSelect(false)
-                  console.log('statusData', statusData)
-                  console.log('statusEmoji', statusEmoji)
-                  // addEmotion(emotion, statusData[currentIndex].contentPk, userPK, currentIndex)
-                  console.warn(emotion, statusData[currentIndex], index)
+                  alignItems: 'center',
+                  borderRadius: 20,
+                  justifyContent: 'center',
+                  marginLeft: 15,
+                  marginRight: 15,
+                  padding: 2,
                 }}
               >
-                <Image source={emojiImages.default.emoji[emotion]} style={{width: '100%', height: '100%'}}/>
-              </TouchableOpacity>
-            </View>
-          ))}     
-        </View>
-      }
-      <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
-          {!isEmotions[currentIndex] &&
-            <View>
-              <Text>공감이 없습니다!</Text>
-            </View>}
-          {isEmotions[currentIndex] && Object.keys(statusEmoji[currentIndex]).map((item, index) => (
-            <View key={index} style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
-              <Image
-                style={{ width: 24, height: 24, marginRight: 5 }}
-                source={emojiImages.default.emoji[item]}
+                <Image
+                  style={{ width: 24, height: 24 }}
+                  source={emojiImages.default.emoji[giveEmotion[currentIndex]]}
                 />
-              <Text>{statusEmoji[currentIndex][item]}</Text>
-            </View>
-          ))}
+              </LinearGradient>
+            </>
+          }
+          {statusData.length !== 0
+          ?
+            <Text
+              style={{
+                color: '#B4B4B4',
+                fontSize: 12,
+              }}
+            >
+              {statusData[currentIndex].exon}
+            </Text>
+          :
+            <>
+            </>
+          }
         </View>
-      </View>
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: 40,
-        backgroundColor: 'white',
-        elevation: 10 
-      }}>
-        {giveEmotion[currentIndex] === '' &&
-          <TouchableOpacity style={{ marginLeft: 20, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold'}}>공감</Text>
-          </TouchableOpacity>
-        }
-        {giveEmotion[currentIndex] !== '' &&
-          <>
-            <Image
-              style={{ width: 20, height: 20, marginLeft: 20 }}
-              source={emojiImages.default.emoji[giveEmotion[currentIndex]]}
-            />
-            <Text style={{ marginLeft: 10, marginRight: 20, fontSize: 16 }}>이미 공감하셨습니다.</Text>
-          </>
-        }
-        <Text>1시간 전</Text>
-      </View>
+      </TouchableWithoutFeedback>
       <View style={{ height: 10, backgroundColor: "#D7D7D7"}}></View>
     </View>
   )

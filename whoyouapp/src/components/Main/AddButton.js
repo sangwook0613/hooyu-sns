@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Animated, Dimensions, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback, __spread } from 'react-native'
 import { connect } from 'react-redux'
 import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons"
-import images from '../../assets/images';
+import images from '../../assets/images'
 
 
 const AddButton = ({ navigate, deviceWidth, deviceHeight, theme }) => {
