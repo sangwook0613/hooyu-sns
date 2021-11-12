@@ -12,6 +12,7 @@ import DeleteModal from '../components/modal/deleteModal'
   
 
 const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUserName, deviceWidth, deviceHeight }) => {
+  const [isOwner, setOwner] = useState(route.params.nickname === userName)
   const [isStatus, setIsStatus] = useState(true)
   const [isImage, setIsImage] = useState(true)
   const [isSurvey, setIsSurvey] = useState(true)
@@ -129,7 +130,7 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 <AntDesign name="exclamationcircleo" size={24} color="black" />
               </TouchableOpacity>
             </View>
-            <SurveyContent />
+            <SurveyContent setIsSurvey={setIsSurvey}/>
           </>
         )}
       </ScrollView>
