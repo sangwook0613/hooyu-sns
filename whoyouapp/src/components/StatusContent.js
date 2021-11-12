@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Image, Text, View, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
-import Swiper from 'react-native-web-swiper'
+import { Image, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
 import { SwiperFlatList } from 'react-native-swiper-flatlist'
 import Api from '../utils/api'
 import { connect } from 'react-redux'
@@ -207,6 +206,7 @@ const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
         alignItems: 'center',
         height: 40,
         backgroundColor: 'white',
+        elevation: 10 
       }}>
         {giveEmotion[currentIndex] === '' &&
           <TouchableOpacity style={{ marginLeft: 20, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>

@@ -116,7 +116,7 @@ export default {
       url: `emotion/${contentPK}`,
     })
   },
-
+  
   setContentEmotion(emoji, contentPK, userPK) {
     return axios({
       method: 'post',
@@ -125,6 +125,29 @@ export default {
         contentEmoji: emoji,
         contentPk: contentPK,
         userPK: userPK,
+      }
+    })
+  },
+  
+  voteCheck(contentPK, userPK) {
+    return axios({
+      method: 'post',
+      url: 'content/vote/check',
+      data: {
+        contentPK,
+        userPK,
+      }
+    })
+  },
+
+  voteSurvey(answerPK, contentPK, userPK) {
+    return axios({
+      method: 'post',
+      url: 'content/vote/survey',
+      data: {
+        answerPK,
+        contentPK,
+        userPK,
       }
     })
   },

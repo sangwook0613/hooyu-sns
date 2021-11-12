@@ -71,7 +71,8 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 justifyContent: 'space-between',
                 paddingLeft: 20,
                 paddingRight: 20,
-                alignItems: 'center'
+                alignItems: 'center',
+                elevation: 10,
               }}
             >
               <Text>상태창</Text>
@@ -94,7 +95,8 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 justifyContent: 'space-between',
                 paddingLeft: 20,
                 paddingRight: 20,
-                alignItems: 'center'
+                alignItems: 'center',
+                elevation: 10,
               }}
             >
               <Text>이미지</Text>
@@ -118,7 +120,8 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 justifyContent: 'space-between',
                 paddingLeft: 20,
                 paddingRight: 20,
-                alignItems: 'center'
+                alignItems: 'center',
+                elevation: 10,
               }}
             >
               <Text>설문</Text>
