@@ -43,14 +43,20 @@ public class EmotionServiceImpl implements EmotionService {
         Content content = contentRepository.findById(contentPK).orElseThrow(() -> new NoContentException("해당하는 컨탠츠는 없습니다."));
         String message = "";
         Emotion emotion;
+
         if (emotionRepository.existsByUserIdAndContentIdAndContentEmoji(userPK, contentPK, contentEmoji)) {
             emotion = emotionRepository.findByUserIdAndContentIdAndContentEmoji(userPK, contentPK, contentEmoji).orElseThrow(() -> new NoEmotionException("공감중에 문제가 발생했습니다."));
             emotionRepository.deleteById(emotion.getId());
             message = "성공적으로 공감을 취소했습니다.";
         } else {
-            emotion = Emotion.builder().user(user).content(content).contentEmoji(contentEmoji).build();
-            emotionRepository.save(emotion);
-            message = "성공적으로 공감했습니다.";
+
+            if (emotionRepository.existsByUserIdAndContentId(userPK, contentPK)) {
+                message = "다른 감정의 공감을 이미 하셨습니다.";
+            } else {
+                emotion = Emotion.builder().user(user).content(content).contentEmoji(contentEmoji).build();
+                emotionRepository.save(emotion);
+                message = "성공적으로 공감했습니다.";
+            }
         }
         return message;
     }
