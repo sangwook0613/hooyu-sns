@@ -75,7 +75,7 @@ const ImageContent = ({ userPK, userName, deviceWidth, deviceHeight, setIsImage 
               alignItems:"center"
             }}
           >
-            <Image resizeMode="contain" source={{ uri: item.exon }} style={{ width: '100%', height: '100%' }} />
+            <Image source={{ uri: item.exon }} style={{ width: '100%', height: '100%' }} />
           </View>
         )}
       />
@@ -124,7 +124,13 @@ const ImageContent = ({ userPK, userName, deviceWidth, deviceHeight, setIsImage 
         <View style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
           {!isEmotions[currentIndex] &&
             <View>
-              <Text>공감이 없습니다!</Text>
+              <Text
+                style={{
+                  color: '#B4B4B4'
+                }}
+              >
+                첫 공감을 남겨보세요
+              </Text>
             </View>}
           {isEmotions[currentIndex] && Object.keys(imageEmoji[currentIndex]).map((item, index) => (
             <View key={index} style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
@@ -145,7 +151,7 @@ const ImageContent = ({ userPK, userName, deviceWidth, deviceHeight, setIsImage 
         elevation: 10 
       }}>
         {!giveEmotion[currentIndex] &&
-          <TouchableOpacity style={{ marginLeft: 20, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
+          <TouchableOpacity style={{ marginLeft: 15, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
             <Text style={{ fontSize: 18, fontWeight: 'bold'}}>공감</Text>
           </TouchableOpacity>
         }

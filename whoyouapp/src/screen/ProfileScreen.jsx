@@ -9,6 +9,7 @@ import ImageContent from '../components/ImageContent'
 import StatusContent from '../components/StatusContent'
 import SurveyContent from '../components/SurveyContent'
 import DeleteModal from '../components/modal/deleteModal'
+import images from '../assets/images'
   
 
 const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUserName, deviceWidth, deviceHeight }) => {
@@ -16,6 +17,8 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
   const [isImage, setIsImage] = useState(true)
   const [isSurvey, setIsSurvey] = useState(true)
   const [isModalVisible, setModalVisible] = useState(false)
+  
+  const now = new Date()
   const scrollRef = useRef()
 
   const toggleModal = () => {
@@ -26,10 +29,10 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Image
-          style={{ width: 50, height: 50 }}
+          style={{ width: 40, height: 40 }}
           source={emojiImages.default.emoji[userEmoji]}
         />
-        <Text>{userName}</Text>
+        <Text style={{ marginLeft: 10 }}>{userName}</Text>
       </View>
     )
   }
@@ -45,12 +48,27 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
     })
   }, [navigation])
 
-  // setIsEmojiSelect(!isEmojiSelect)
-  // console.log(isEmojiSelect)
+  const humanize = (date) => {
+    const moment = require("moment")
+    let r = Date.parse(now) - Date.parse(date) + 32400000
+    if (parseInt(r) > 2678400000) {
+      r = "1달 이전"
+    } else if (parseInt(r) > 86400000) {
+      r = parseInt(parseInt(r) / 86400000).toString() + "일 전"
+    } else if (parseInt(r) >= 3600000) {
+      r = parseInt(parseInt(r) / 3600000).toString() + "시간 전"
+    } else if (parseInt(r) >= 60000) {
+      r = parseInt(parseInt(r) / 60000).toString() + "분 전"
+    } else {
+      r = "방금 전"
+    }
+    return r;
+  }
 
   return (
     <>
       <ScrollView
+        style={{backgroundColor: '#C7C7C7'}}
         ref={scrollRef}
       >
         <View style={{ flex: 1 }}>
@@ -69,15 +87,29 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 backgroundColor: 'white',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                paddingLeft: 20,
+                paddingLeft: 15,
                 paddingRight: 20,
                 alignItems: 'center',
                 elevation: 10,
               }}
             >
-              <Text>상태창</Text>
+              <View
+                style={{
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}
+              >
+                <Image 
+                  style={{
+                    height: deviceWidth * 0.07,
+                    width: deviceWidth * 0.07,
+                  }}
+                  source={images.menu.status}
+                  resizeMode='contain' />
+                <Text>상태 메시지</Text>
+              </View>
               <TouchableOpacity onPress={toggleModal}>
-                <AntDesign name="exclamationcircleo" size={24} color="black" />
+                <AntDesign name="close" size={18} color="black" />
               </TouchableOpacity>
             </View>
             <StatusContent />
@@ -99,9 +131,24 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 elevation: 10,
               }}
             >
-              <Text>이미지</Text>
+              <View
+                style={{
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}
+              >
+                <Image 
+                  style={{
+                    height: deviceWidth * 0.06,
+                    width: deviceWidth * 0.06,
+                    marginRight: 7,
+                  }}
+                  source={images.menu.image}
+                  resizeMode='contain' />
+                <Text>사진</Text>
+              </View>
               <TouchableOpacity onPress={toggleModal}>
-                <AntDesign name="exclamationcircleo" size={24} color="black" />
+                <AntDesign name="close" size={18} color="black" />
               </TouchableOpacity>
             </View>
             <ImageContent setIsImage={setIsImage}/>
@@ -118,18 +165,33 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 backgroundColor: 'white',
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                paddingLeft: 20,
+                paddingLeft: 17,
                 paddingRight: 20,
                 alignItems: 'center',
                 elevation: 10,
               }}
             >
-              <Text>설문</Text>
+              <View
+                style={{
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}
+              >
+                <Image 
+                  style={{
+                    height: deviceWidth * 0.06,
+                    width: deviceWidth * 0.06,
+                    marginRight: 5,
+                  }}
+                  source={images.menu.question}
+                  resizeMode='contain' />
+                <Text>질문</Text>
+              </View>
               <TouchableOpacity onPress={toggleModal}>
-                <AntDesign name="exclamationcircleo" size={24} color="black" />
+                <AntDesign name="close" size={18} color="black" />
               </TouchableOpacity>
             </View>
-            <SurveyContent />
+            <SurveyContent setIsSurvey={setIsSurvey} />
           </>
         )}
       </ScrollView>
