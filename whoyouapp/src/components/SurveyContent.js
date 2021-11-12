@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Image, Text, View, Dimensions, TouchableOpacity } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import { SwiperFlatList } from 'react-native-swiper-flatlist';
-import images from '../assets/images';
+import React, { useEffect, useState } from 'react'
+import { Image, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
+import { SwiperFlatList } from 'react-native-swiper-flatlist'
+import Api from '../utils/api'
+import { connect } from 'react-redux'
+import * as emojiImages from '../assets/images'
+import images from '../assets/images'
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
-const emojiArray = ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
+const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
 
 const dummyStatus = [
   {
@@ -50,16 +51,70 @@ const dummyStatus = [
   }
 ]
 
-const SurveyContent = ({ }) => {
-  const [currentIndex, setCurrendIndex] = useState(0)
+const SurveyContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
+  const [surveyData, setSurveyData] = useState([])
+  const [isEmotions, setEmotions] = useState([])
+  const [giveEmotion, setGiveEmotion] = useState([])
+  const [surveyEmoji, setSurveyEmoji] = useState([])
+  const [checkVote, setCheckVote] = useState([])
+
+  useEffect(() => {
+    Api.getUserSurvey('seunghyun')
+      .then((res) => {
+        console.log('유저 설문 받아오기')
+        let data = res.data.success
+        data.map((content, idx) => {
+          data[idx]['id'] = idx
+          Api.getContentEmotion(data[idx].contentPK)
+            .then((result) => {
+              console.log(result.data)
+              let chk = false
+              let isMe = ''
+              let temp = {}
+              for (let emojiData of result.data.success) {
+                if (emojiData.userPK === userPK) {
+                  isMe = emojiData.contentEmoji
+                }
+                temp[emojiData.contentEmoji] ? temp[emojiData.contentEmoji]++ : temp[emojiData.contentEmoji] = 1
+                chk = true
+              }
+              setSurveyEmoji(emojis => [...emojis, temp])
+              setEmotions(chks => [...chks, chk])
+              setGiveEmotion(curr => [...curr, isMe])
+            })
+            .catch((err) => {
+              console.warn(err)
+            })
+          // 투표 했는지 여부는 post로 체크한다!
+          Api.voteCheck(data[idx].contentPK, userPK)
+            .then((res) => {
+              console.log('voteCheck', res.data, res.data.success)
+              if (res.data.success === "투표하지 않았습니다.") {
+                setCheckVote(item => [...item, ''])
+              } else {
+                setCheckVote(item => [...item, res.data.success])
+              }
+            })
+            .catch((err) => {
+              console.warn(err)
+            })
+        })
+        setSurveyData(data)
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+  }, [])
+
 
   return (
     <View>
       <SwiperFlatList
-        data={dummyStatus}
+        data={surveyData}
         onChangeIndex={({ index }) => {
-          setCurrendIndex(index)
+          setCurrentIndex(index)
         }}
         renderItem={({ item }) => (
           <View
@@ -73,11 +128,12 @@ const SurveyContent = ({ }) => {
               alignItems:"center"
             }}
           >
-            <Text style={{color: 'white', fontSize: 24, marginBottom: 50}}>{item.question}</Text>
-            {item.answer.map((ans, idx) => {
-              const num = Math.round(item.count[idx]/item.sum*100)
+            <Text style={{color: 'white', fontSize: 24, marginBottom: 50}}>{item.exon}</Text>
+            {item.answerList.map((ans, idx) => {
+              const total = Object.values(item.count).reduce((a, b) => a + b)
+              const num = Number.isNaN(Math.round(item.count[ans]/total*100)) ? 0 : Math.round(item.count[ans]/total*100)
               return (
-                <View key={idx} style={{
+                <View key={item.answerPK[ans]} style={{
                   width: deviceWidth * 0.75,
                   height: 40,
                   backgroundColor: '#0B1C26',
@@ -94,9 +150,13 @@ const SurveyContent = ({ }) => {
                   <Text style={{zIndex: 1, height: '100%', fontSize: 20, textAlignVertical: 'center', paddingLeft: 10, color: 'white'}}
                     onChangeText={(text) => onTextChange(0, text)}
                   >{num + "%"}</Text>
-                  <LinearGradient colors={["#AB79EF", "#FC98AB"]} style={{
-                    width: deviceWidth * 0.75 * num / 100,
+                  <LinearGradient colors={["#AB79EF", "#FC98AB"]}
+                    start={{ x: 0, y: 1 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{
+                    width: deviceWidth * 0.735 * num / 100,
                     position: 'absolute',
+                    opacity: 0.8,
                     top: 0,
                     left: 0,
                     bottom: 0,
@@ -136,10 +196,13 @@ const SurveyContent = ({ }) => {
                 }}
                 onPress={() => {
                   setIsEmojiSelect(false)
-                  console.warn(index)
+                  console.log('surveyData', surveyData)
+                  console.log('surveyEmoji', surveyEmoji)
+                  // addEmotion(emotion, surveyData[currentIndex].contentPk, userPK, currentIndex)
+                  console.warn('checkehck', surveyData, checkVote)
                 }}
               >
-                <Image source={images.emoji.amazing2} style={{width: '100%', height: '100%'}}/>
+                <Image source={emojiImages.default.emoji[emotion]} style={{width: '100%', height: '100%'}}/>
               </TouchableOpacity>
             </View>
           ))}     
@@ -147,13 +210,17 @@ const SurveyContent = ({ }) => {
       }
       <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
         <View style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
-          {dummyStatus[currentIndex]['emojis'].map((item, index) => (
+          {!isEmotions[currentIndex] &&
+            <View>
+              <Text>공감이 없습니다!</Text>
+            </View>}
+          {isEmotions[currentIndex] && Object.keys(surveyEmoji[currentIndex]).map((item, index) => (
             <View key={index} style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
               <Image
                 style={{ width: 24, height: 24, marginRight: 5 }}
-                source={item.emoji}
+                source={emojiImages.default.emoji[item]}
                 />
-              <Text>{item.count}</Text>
+              <Text>{surveyEmoji[currentIndex][item]}</Text>
             </View>
           ))}
         </View>
@@ -163,13 +230,22 @@ const SurveyContent = ({ }) => {
         alignItems: 'center',
         height: 40,
         backgroundColor: 'white',
+        elevation: 10 
       }}>
-        <TouchableOpacity
-          style={{ marginLeft: 20, marginRight: 20 }}
-          onPress={() => setIsEmojiSelect(!isEmojiSelect)}
-        >
-          <Text style={{ fontSize: 18, fontWeight: 'bold'}}>공감</Text>
-        </TouchableOpacity>
+        {giveEmotion[currentIndex] === '' &&
+          <TouchableOpacity style={{ marginLeft: 20, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold'}}>공감</Text>
+          </TouchableOpacity>
+        }
+        {giveEmotion[currentIndex] !== '' &&
+          <>
+            <Image
+              style={{ width: 20, height: 20, marginLeft: 20 }}
+              source={emojiImages.default.emoji[giveEmotion[currentIndex]]}
+            />
+            <Text style={{ marginLeft: 10, marginRight: 20, fontSize: 16 }}>이미 공감하셨습니다.</Text>
+          </>
+        }
         <Text>1시간 전</Text>
       </View>
       <View style={{ height: 10, backgroundColor: "#D7D7D7"}}></View>
@@ -177,4 +253,14 @@ const SurveyContent = ({ }) => {
   )
 }
 
-export default SurveyContent;
+
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    userPK: state.user.userPK,
+    userName: state.user.userName,
+  }
+}
+
+export default connect(mapStateToProps)(SurveyContent)

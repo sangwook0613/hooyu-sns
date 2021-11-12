@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Image, Text, View, Dimensions, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
-import Swiper from 'react-native-web-swiper';
-import { SwiperFlatList } from 'react-native-swiper-flatlist';
-import images from '../assets/images';
+import React, { useEffect, useState } from 'react'
+import { Image, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
+import { SwiperFlatList } from 'react-native-swiper-flatlist'
+import Api from '../utils/api'
+import { connect } from 'react-redux'
+import * as emojiImages from '../assets/images'
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
 
-const emojiArray = ['amazing', 'amazing', 'amazing', 'amazing', 'amazing', 'amazing']
+const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
 
 const dummyStatus = [
   {
@@ -15,7 +14,7 @@ const dummyStatus = [
     backgroundColor: 'skyblue',
     content: '나는 오늘도 눈물을 흘린다.',
     emojis: [{
-      emoji: images.emoji.amazing,
+      emoji: 'amazing',
       count: 100,
     },],
   },
@@ -25,11 +24,11 @@ const dummyStatus = [
     content: '나는 오늘도 눈물을 흘린다.',
     emojis: [
       {
-        emoji: images.emoji.amazing2,
+        emoji: 'amazing',
         count: 222,
       },
       {
-        emoji: images.emoji.amazing,
+        emoji: 'sad',
         count: 111,
       },
     ],
@@ -39,22 +38,91 @@ const dummyStatus = [
     backgroundColor: 'blue',
     content: '나는 오늘도 눈물을 흘린다.',
     emojis: [{
-      emoji: images.emoji.amazing,
+      emoji: 'amazing',
       count: 1123,
     },],
   }
 ]
 
-const StatusContent = ({ }) => {
-  const [currentIndex, setCurrendIndex] = useState(0)
+const StatusContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
+  const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
+  const [statusData, setStatusData] = useState([])
+  const [isEmotions, setEmotions] = useState([])
+  const [giveEmotion, setGiveEmotion] = useState([])
+  const [statusEmoji, setStatusEmoji] = useState([])
+  
+  useEffect(() => {
+    Api.getUserStatus(userName)
+      .then((res) => {
+        console.log('유저 상태 받아오기')
+        console.log(res.data.success)
+        let data = res.data.success
+        console.log('data', data[0])
+        data.map((content, idx) => {
+          data[idx]['id'] = idx
+          Api.getContentEmotion(data[idx].contentPk)
+            .then((result) => {
+              console.log(result.data)
+              let chk = false
+              let isMe = ''
+              let temp = {}
+              for (let emojiData of result.data.success) {
+                if (emojiData.userPK === userPK) {
+                  isMe = emojiData.contentEmoji
+                }
+                temp[emojiData.contentEmoji] ? temp[emojiData.contentEmoji]++ : temp[emojiData.contentEmoji] = 1
+                chk = true
+              }
+              setStatusEmoji(emojis => [...emojis, temp])
+              setEmotions(chks => [...chks, chk])
+              setGiveEmotion(curr => [...curr, isMe])
+            })
+            .catch((err) => {
+              console.warn(err)
+            })
+        })
+        setStatusData(data)
+        console.log('최종', statusData)
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+  }, [])
+
+  const addEmotion = (emoji, contentId, userPK, idx) => {
+    Api.setContentEmotion(emoji, contentId, userPK)
+      .then((res) => {
+        console.log('emotion success')
+        console.log(res.data)
+        // 공감 완료 표시
+        setStatusEmoji(emojis => {
+          const updated = [...emojis]
+          updated[idx][emoji] ? updated[idx][emoji]++ : updated[idx][emoji] = 1
+          return updated
+        })
+        setEmotions(chks => {
+          const updated = [...chks]
+          updated[idx] = true
+          return updated
+        })
+        setGiveEmotion(curr => {
+          const updated = [...curr]
+          updated[idx] = true
+          return updated
+        })
+      })  
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
 
   return (
     <View>
       <SwiperFlatList
-        data={dummyStatus}
+        data={statusData}
         onChangeIndex={({ index }) => {
-          setCurrendIndex(index)
+          setCurrentIndex(index)
           // console.log(index, prevIndex)
         }}
         renderItem={({ item }) => (
@@ -64,13 +132,13 @@ const StatusContent = ({ }) => {
               style={{
                 width: deviceWidth,
                 height: deviceWidth,
-                backgroundColor: item.backgroundColor,
+                backgroundColor: item.color,
                 flex: 1,
                 justifyContent: 'center',
                 alignItems:"center"
               }}
-              >
-              <Text>{item.content}</Text>
+            >
+              <Text style={{fontSize: 18}}>{item.exon}</Text>
             </View>
           </TouchableWithoutFeedback>
         )}
@@ -104,24 +172,31 @@ const StatusContent = ({ }) => {
                 }}
                 onPress={() => {
                   setIsEmojiSelect(false)
-                  console.warn(index)
+                  console.log('statusData', statusData)
+                  console.log('statusEmoji', statusEmoji)
+                  // addEmotion(emotion, statusData[currentIndex].contentPk, userPK, currentIndex)
+                  console.warn(emotion, statusData[currentIndex], index)
                 }}
               >
-                <Image source={images.emoji.amazing2} style={{width: '100%', height: '100%'}}/>
+                <Image source={emojiImages.default.emoji[emotion]} style={{width: '100%', height: '100%'}}/>
               </TouchableOpacity>
             </View>
           ))}     
         </View>
       }
       <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
-        <View style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
-          {dummyStatus[currentIndex]['emojis'].map((item, index) => (
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
+          {!isEmotions[currentIndex] &&
+            <View>
+              <Text>공감이 없습니다!</Text>
+            </View>}
+          {isEmotions[currentIndex] && Object.keys(statusEmoji[currentIndex]).map((item, index) => (
             <View key={index} style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
               <Image
                 style={{ width: 24, height: 24, marginRight: 5 }}
-                source={item.emoji}
+                source={emojiImages.default.emoji[item]}
                 />
-              <Text>{item.count}</Text>
+              <Text>{statusEmoji[currentIndex][item]}</Text>
             </View>
           ))}
         </View>
@@ -131,10 +206,22 @@ const StatusContent = ({ }) => {
         alignItems: 'center',
         height: 40,
         backgroundColor: 'white',
+        elevation: 10 
       }}>
-        <TouchableOpacity style={{marginLeft: 20, marginRight: 20}} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
-          <Text style={{ fontSize: 18, fontWeight: 'bold'}}>공감</Text>
-        </TouchableOpacity>
+        {giveEmotion[currentIndex] === '' &&
+          <TouchableOpacity style={{ marginLeft: 20, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold'}}>공감</Text>
+          </TouchableOpacity>
+        }
+        {giveEmotion[currentIndex] !== '' &&
+          <>
+            <Image
+              style={{ width: 20, height: 20, marginLeft: 20 }}
+              source={emojiImages.default.emoji[giveEmotion[currentIndex]]}
+            />
+            <Text style={{ marginLeft: 10, marginRight: 20, fontSize: 16 }}>이미 공감하셨습니다.</Text>
+          </>
+        }
         <Text>1시간 전</Text>
       </View>
       <View style={{ height: 10, backgroundColor: "#D7D7D7"}}></View>
@@ -142,4 +229,14 @@ const StatusContent = ({ }) => {
   )
 }
 
-export default StatusContent;
+
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    userPK: state.user.userPK,
+    userName: state.user.userName,
+  }
+}
+
+export default connect(mapStateToProps)(StatusContent)
