@@ -23,7 +23,7 @@ import PushSetting from '../screen/Setting/PushSetting';
 
 const Nav = createNativeStackNavigator()
 
-const Root = ({ setUserPK, setUserEmoji, userEmoji }) => {
+const Root = ({ setUserPK, setUserEmoji, setUserName, userEmoji }) => {
   const navigation = useNavigation();
 
   const [accessToken, setAccessToken] = useState(null)
@@ -40,8 +40,9 @@ const Root = ({ setUserPK, setUserEmoji, userEmoji }) => {
 
         await api.getUser(jwt_decode(result).pk)
           .then((res) => {
-            console.log(res.data.success.emoji)
+            console.log(res.data.success)
             setUserEmoji(res.data.success.emoji)
+            setUserName(res.data.success.name)
             setEmoji(res.data.success.emoji)
           }).catch((err) => {
             console.log(err)
@@ -128,7 +129,10 @@ function mapDispatchToProps(dispatch) {
     },
     setUserEmoji: (emoji) => {
       dispatch(actionCreators.setUserEmoji(emoji))
-    }
+    },
+    setUserName: (emoji) => {
+      dispatch(actionCreators.setUserName(emoji))
+    },
   }
 }
 
