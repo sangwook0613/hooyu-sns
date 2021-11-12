@@ -51,7 +51,7 @@ const dummyStatus = [
   }
 ]
 
-const SurveyContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
+const SurveyContent = ({ userPK, userName, deviceWidth, deviceHeight, setIsSurvey }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [surveyData, setSurveyData] = useState([])
@@ -61,10 +61,14 @@ const SurveyContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
   const [checkVote, setCheckVote] = useState([])
 
   useEffect(() => {
-    Api.getUserSurvey('seunghyun')
+    Api.getUserSurvey(userName)
       .then((res) => {
         console.log('유저 설문 받아오기')
         let data = res.data.success
+        console.log(data)
+        if (data.length === 0) {
+          setIsSurvey(false)
+        }
         data.map((content, idx) => {
           data[idx]['id'] = idx
           Api.getContentEmotion(data[idx].contentPK)
@@ -212,7 +216,13 @@ const SurveyContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
         <View style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
           {!isEmotions[currentIndex] &&
             <View>
-              <Text>공감이 없습니다!</Text>
+              <Text
+                style={{
+                  color: '#B4B4B4'
+                }}
+              >
+                첫 공감을 남겨보세요
+              </Text>
             </View>}
           {isEmotions[currentIndex] && Object.keys(surveyEmoji[currentIndex]).map((item, index) => (
             <View key={index} style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
@@ -233,7 +243,7 @@ const SurveyContent = ({ userPK, userName, deviceWidth, deviceHeight }) => {
         elevation: 10 
       }}>
         {giveEmotion[currentIndex] === '' &&
-          <TouchableOpacity style={{ marginLeft: 20, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
+          <TouchableOpacity style={{ marginLeft: 15, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
             <Text style={{ fontSize: 18, fontWeight: 'bold'}}>공감</Text>
           </TouchableOpacity>
         }

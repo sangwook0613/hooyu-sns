@@ -59,9 +59,9 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, navigate, users
     } else if (parseInt(r) > 86400000) {
       r = parseInt(parseInt(r) / 86400000).toString() + "일 전 게시"
     } else if (parseInt(r) >= 3600000) {
-      r = parseInt(parseInt(r) / 3600000).toString() + "시간 전 게시";
+      r = parseInt(parseInt(r) / 3600000).toString() + "시간 전 게시"
     } else if (parseInt(r) >= 60000) {
-      r = parseInt(parseInt(r) / 60000).toString() + "분 전 게시";
+      r = parseInt(parseInt(r) / 60000).toString() + "분 전 게시"
     } else {
       r = "방금 전 게시";
     }
