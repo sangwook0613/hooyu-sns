@@ -1,51 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { Image, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
+import { AntDesign } from '@expo/vector-icons'
 import { SwiperFlatList } from 'react-native-swiper-flatlist'
 import LinearGradient from 'react-native-linear-gradient'
 import Api from '../utils/api'
 import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
+import images from '../assets/images'
 
 
 const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
 
-const dummyStatus = [
-  {
-    id: 1,
-    backgroundColor: 'skyblue',
-    content: '나는 오늘도 눈물을 흘린다.',
-    emojis: [{
-      emoji: 'amazing',
-      count: 100,
-    },],
-  },
-  {
-    id: 2,
-    backgroundColor: '#D7D7D7',
-    content: '나는 오늘도 눈물을 흘린다.',
-    emojis: [
-      {
-        emoji: 'amazing',
-        count: 222,
-      },
-      {
-        emoji: 'sad',
-        count: 111,
-      },
-    ],
-  },
-  {
-    id: 3,
-    backgroundColor: 'blue',
-    content: '나는 오늘도 눈물을 흘린다.',
-    emojis: [{
-      emoji: 'amazing',
-      count: 1123,
-    },],
-  }
-]
-
-const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight }) => {
+const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, isModalVisible, setModalVisible, setDeleteContent }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [statusData, setStatusData] = useState([])
@@ -93,6 +59,11 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
       })
   }, [])
 
+  const toggleModal = () => {
+    setDeleteContent(statusData[currentIndex].contentPk)
+    setModalVisible(!isModalVisible)
+  }
+
   const addEmotion = (emoji, contentId, userPK, idx) => {
     Api.setContentEmotion(emoji, contentId, userPK)
       .then((res) => {
@@ -118,6 +89,17 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
       .catch((err) => {
         console.warn(err)
       })
+  }
+
+  const deleteEmotion = () => {
+    Api.setContentEmotion(giveEmotion[currentIndex], statusData[currentIndex].contentPk, userPK)
+      .then((res) => {
+        console.log(res.data.success)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    console.log('공감 취소')
   }
 
   const humanize = (date) => {
@@ -151,6 +133,38 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
 
   return (
     <View>
+      <View
+        style={{
+          width: deviceWidth,
+          height: 50,
+          backgroundColor: 'white',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingLeft: 13,
+          paddingRight: 20,
+          alignItems: 'center',
+          elevation: 10,
+        }}
+      >
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+          }}
+        >
+          <Image 
+            style={{
+              height: deviceWidth * 0.075,
+              width: deviceWidth * 0.075,
+            }}
+            source={images.menu.status}
+            resizeMode='contain' />
+          <Text>상태 메시지</Text>
+        </View>
+        <TouchableOpacity onPress={toggleModal}>
+          <AntDesign name="close" size={18} color="black" />
+        </TouchableOpacity>
+      </View>
       <SwiperFlatList
         data={statusData}
         showPagination
@@ -177,16 +191,15 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
         )}
       />
       { isEmojiSelect && 
-        <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
           <View style={{
             position: 'absolute',
             width: 300,
             height: 70,
             borderRadius: 10,
             backgroundColor: 'white',
-            elevation: 4,
+            elevation: 2,
             left: 50,
-            bottom: 50,
+            bottom: 55,
             paddingLeft: 10,
             flexDirection: 'row',
             alignItems: 'center',
@@ -198,6 +211,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
               }}>
                 <TouchableOpacity
                   style={{
+                    elevation: 10,
                     flex:1, 
                     width: '70%',
                     height: '100%',
@@ -215,7 +229,6 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
               </View>
             ))}     
           </View>
-        </TouchableWithoutFeedback>
       }
       <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
         <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
@@ -263,22 +276,26 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
           }
           {isLoaded && giveEmotion[currentIndex] !== '' &&
             <>
-              <LinearGradient 
-                colors={['#AB79EF', '#FC98AB']}
-                style={{
-                  alignItems: 'center',
-                  borderRadius: 20,
-                  justifyContent: 'center',
-                  marginLeft: 15,
-                  marginRight: 15,
-                  padding: 2,
-                }}
+              <TouchableOpacity
+                onPress={() => deleteEmotion()}
               >
-                <Image
-                  style={{ width: 24, height: 24 }}
-                  source={emojiImages.default.emoji[giveEmotion[currentIndex]]}
-                />
-              </LinearGradient>
+                <LinearGradient 
+                  colors={['#AB79EF', '#FC98AB']}
+                  style={{
+                    alignItems: 'center',
+                    borderRadius: 20,
+                    justifyContent: 'center',
+                    marginLeft: 15,
+                    marginRight: 15,
+                    padding: 2,
+                  }}
+                >
+                  <Image
+                    style={{ width: 24, height: 24 }}
+                    source={emojiImages.default.emoji[giveEmotion[currentIndex]]}
+                  />
+                </LinearGradient>
+              </TouchableOpacity>
             </>
           }
           {statusData.length !== 0
