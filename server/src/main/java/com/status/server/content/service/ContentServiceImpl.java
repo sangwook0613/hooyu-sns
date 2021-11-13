@@ -5,6 +5,7 @@ import com.status.server.content.dto.ResponseContentDto;
 import com.status.server.content.dto.ResponseContentPlusDto;
 import com.status.server.content.dto.ResponseSurveyDto;
 import com.status.server.content.dto.ResponseSurveyPlusDto;
+import com.status.server.emotion.domain.EmotionRepository;
 import com.status.server.emotion.service.EmotionServiceImpl;
 import com.status.server.fcm.domain.FcmToken;
 import com.status.server.fcm.domain.FcmTokenRepository;
@@ -35,6 +36,7 @@ public class ContentServiceImpl implements ContentService {
     private final SurveyContentAnswerRepository surveyContentAnswerRepository;
     private final FcmTokenRepository fcmTokenRepository;
     private final ReportedContentRepository reportedContentRepository;
+    private final EmotionRepository emotionRepository;
 
     private final EmotionServiceImpl emotionService;
 
@@ -301,6 +303,9 @@ public class ContentServiceImpl implements ContentService {
 
         if (content.getUser().getId() != userPK)
             throw new NoAuthorityUserException("해당 컨텐츠 삭재할 권한이 없습니다.");
+
+        emotionRepository.deleteAllByContentId(contentPK);
+
         surveyContentAnswerRepository.deleteByContentId(contentPK);
         contentRepository.deleteById(contentPK);
 

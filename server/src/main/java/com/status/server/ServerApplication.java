@@ -9,7 +9,7 @@ import java.util.TimeZone;
 
 @EnableJpaAuditing
 @SpringBootApplication
-public class BackendApplication {
+public class ServerApplication {
 
     @PostConstruct
     public void started() {
@@ -19,7 +19,7 @@ public class BackendApplication {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(BackendApplication.class, args);
+        SpringApplication.run(ServerApplication.class, args);
     }
 
 }
