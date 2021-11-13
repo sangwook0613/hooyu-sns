@@ -58,8 +58,8 @@ const AddButton = ({ navigate, deviceWidth, deviceHeight, theme }) => {
         }]}>
           <Image 
           style={{
-            height: deviceWidth * 0.09,
-            width: deviceWidth * 0.09,
+            height: deviceWidth * 0.095,
+            width: deviceWidth * 0.095,
           }}
           source={images.menu.status}
           resizeMode='contain' />

@@ -75,7 +75,7 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
     navigation.setOptions({
       headerTitle: (props) => <EmojiTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} 
+        <TouchableOpacity style={{ padding: 10 }} 
           onPress={() => {
             createEmoji()
             navigation.navigate('Main')
