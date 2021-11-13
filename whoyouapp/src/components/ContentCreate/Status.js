@@ -19,7 +19,7 @@ const emojiArray = [
 ]
 
 
-const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
+const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji, deviceHeight, deviceWidth }) => {
   const [emoji, setEmoji] = useState(userEmoji)
   const [isEmojiSelect, setIsEmojiSelect] = useState(0)
   const [color, setColor] = useState('#FFD0D0')
@@ -28,7 +28,7 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
   const statusBackground = useRef()
   const colorScroll = useRef()
   const toastRef = useRef();
-  
+  const styles = styleSheet(deviceWidth, deviceHeight)
   const StatusTitle = () => {
     return (
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -222,7 +222,7 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
         </View>
         }
         <Toast ref={toastRef}
-          positionValue={clientHeight * 0.4}
+          positionValue={deviceHeight * 0.4}
           fadeInDuration={200}
           fadeOutDuration={1000}
           style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
@@ -232,7 +232,7 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight) => StyleSheet.create({
   mainView: {
     flex: 1,
     flexDirection: 'column',
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 15
   },
   blankBox: {
-    width: clientWidth/2-65,
+    width: deviceWidth/2-65,
     height: 40,
     marginHorizontal: 15
   },
@@ -298,6 +298,8 @@ function mapStateToProps(state) {
     SERVER_URL: state.user.SERVER_URL,
     userPK: state.user.userPK,
     userEmoji: state.user.userEmoji,
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
   }
 }
 

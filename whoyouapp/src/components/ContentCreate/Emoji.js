@@ -19,14 +19,14 @@ const emojiArray = [
   'smile', 'amazing', 'sad', 'crying', 'sense', 'angry', 'pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep'
 ]
 
-const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
+const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji, deviceHeight, deviceWidth }) => {
   
   const open = useRef(new Animated.Value(0)).current
   const [emoji, setEmoji] = useState(userEmoji)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
 
   const floatValue = useRef(new Animated.Value(0)).current;
-
+  const styles = styleSheet(deviceWidth, deviceHeight)
   const range = (n) => {
     let arr = [];
     for (let i = 0; i < n; i++) {
@@ -186,7 +186,7 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight) => StyleSheet.create({
   mainView: {
     flex: 1,
     flexDirection: 'column',
@@ -232,6 +232,8 @@ function mapStateToProps(state) {
     SERVER_URL: state.user.SERVER_URL,
     userPK: state.user.userPK,
     userEmoji: state.user.userEmoji,
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
   }
 }
 

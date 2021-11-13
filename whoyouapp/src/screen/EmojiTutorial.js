@@ -88,7 +88,8 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
         > 
           <Text style={{
             color: '#0B1C26',
-            fontSize: 22,
+            fontSize: deviceWidth * 0.053,
+            // fontSize: 22,
             fontWeight: 'bold',
           }}>
             지금의 감정은 무엇인가요?
@@ -205,7 +206,8 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
   },
   register__text: {
     color: 'white',
-    fontSize: 15,
+    fontSize: deviceWidth * 0.037,
+    // fontSize: 15,
   },
   emojiSelect: {
     height: deviceHeight * 0.5,

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet } from 'react-native'
-
-const PushButtonGroup = ({ setPushRadius, currentRadius, isPushEnabled }) => {
+import { connect } from 'react-redux'
+const PushButtonGroup = ({ setPushRadius, currentRadius, isPushEnabled, deviceWidth, deviceHeight }) => {
   const [selection, setSelection] = useState(currentRadius)
   useEffect(() => {
     setPushRadius(selection)
   }, [selection])
+
+  const styles = styleSheet(deviceWidth, deviceHeight)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -44,7 +46,7 @@ const PushButtonGroup = ({ setPushRadius, currentRadius, isPushEnabled }) => {
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight) => StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -63,8 +65,17 @@ const styles = StyleSheet.create({
   btnText: {
     textAlign: 'center',
     paddingVertical: 10,
-    fontSize: 14,
+    fontSize: deviceWidth * 0.035,
+    // fontSize: 14,
   }
 })
 
-export default PushButtonGroup
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+  }
+}
+
+
+export default connect(mapStateToProps)(PushButtonGroup)

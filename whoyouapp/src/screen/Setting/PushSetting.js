@@ -6,12 +6,12 @@ import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
 
 
-const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptPush, acceptRadius, acceptSync}) => {
+const PushSetting = ({ deviceHeight, deviceWidth, userPK, setPushSetting, acceptPush, acceptRadius, acceptSync }) => {
   const [isPushEnabled, setIsPushEnabled] = useState(acceptPush)
   const [isPushSyncEnabled, setIsPushSyncEnabled] = useState(acceptSync)
   const [pushRadius, setPushRadius] = useState(acceptRadius)
   const [first, setFirst] = useState(0)
-  
+
   const updateAcceptPush = () => {
     console.log('----Push------', isPushEnabled, pushRadius, isPushSyncEnabled, '---------------')
     Api.setPushSetting(isPushEnabled, pushRadius, isPushSyncEnabled, userPK)
@@ -33,7 +33,7 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
       updateAcceptPush()
     }
     setFirst(1)
-  }, [ isPushEnabled, isPushSyncEnabled, pushRadius ])
+  }, [isPushEnabled, isPushSyncEnabled, pushRadius])
 
   const pushToggleSwitch = () => {
     setIsPushEnabled(!isPushEnabled)
@@ -61,7 +61,13 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
           alignItems: 'center',
         }}
       >
-        <Text style={{ fontSize: 16, fontWeight: '700' }}>푸시 알림 받기</Text>
+        <Text style={{
+          fontSize: deviceWidth * 0.038,
+          // fontSize: 16,
+          fontWeight: '700'
+        }}>
+          푸시 알림 받기
+        </Text>
         <Switch
           trackColor={{ false: "#767577", true: "#F38181" }}
           thumbColor={isPushEnabled ? "white" : "#f4f3f4"}
@@ -70,7 +76,7 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
           value={isPushEnabled}
         />
       </View>
-      
+
       <View
         style={{
           width: deviceWidth,
@@ -82,7 +88,14 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
           backgroundColor: `${isPushEnabled && !isPushSyncEnabled ? 'white' : "#E5E5E5"}`,
         }}
       >
-        <Text style={{ color: `${isPushEnabled && !isPushSyncEnabled ? 'black' : "#767577"}`, fontSize: 16, fontWeight: '700' }}>푸시 알람 반경</Text>
+        <Text style={{
+          color: `${isPushEnabled && !isPushSyncEnabled ? 'black' : "#767577"}`,
+          fontSize: deviceWidth * 0.038,
+          // fontSize: 16, 
+          fontWeight: '700'
+        }}>
+          푸시 알람 반경
+        </Text>
       </View>
       <View
         style={{
@@ -97,10 +110,10 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
           backgroundColor: `${isPushEnabled && !isPushSyncEnabled ? 'white' : "#E5E5E5"}`,
         }}
       >
-        <PushButtonGroup setPushRadius={setPushRadius} currentRadius={acceptRadius} isPushEnabled={isPushEnabled && !isPushSyncEnabled }/>
+        <PushButtonGroup setPushRadius={setPushRadius} currentRadius={acceptRadius} isPushEnabled={isPushEnabled && !isPushSyncEnabled} />
       </View>
       <View
-        pointerEvents={isPushEnabled ? "auto" : "none"} 
+        pointerEvents={isPushEnabled ? "auto" : "none"}
         style={{
           width: deviceWidth,
           height: 60,
@@ -114,7 +127,14 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
           alignItems: 'center',
         }}
       >
-        <Text style={{ color: `${isPushEnabled ? 'black' : "#767577"}`, fontSize: 16, fontWeight: '700' }}>푸시 알림 반경 메인과 동기화</Text>
+        <Text style={{
+          color: `${isPushEnabled ? 'black' : "#767577"}`,
+          fontSize: deviceWidth * 0.038,
+          // fontSize: 16,
+          fontWeight: '700'
+        }}>
+          푸시 알림 반경 메인과 동기화
+        </Text>
         <Switch
           trackColor={{ false: "#767577", true: "#F38181" }}
           thumbColor={isPushSyncEnabled ? "white" : "#f4f3f4"}
@@ -142,7 +162,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     setPushSetting: (acceptPush, acceptRadius, acceptSync) => {
-      dispatch(actionCreators.setPushSetting({acceptPush, acceptRadius, acceptSync}))
+      dispatch(actionCreators.setPushSetting({ acceptPush, acceptRadius, acceptSync }))
     },
   }
 }

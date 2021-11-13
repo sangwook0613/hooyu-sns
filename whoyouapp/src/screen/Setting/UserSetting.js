@@ -6,12 +6,12 @@ import LogoutModal from '../../components/modal/logoutModal'
 import UnregisterModal from '../../components/modal/unregisterModal'
 
 
-const UserSetting = ({deviceWidth, deviceHeight}) => {
+const UserSetting = ({ deviceWidth, deviceHeight }) => {
   const [isNicknameChangeModalVisible, setNicknameChangeModalVisible] = useState(false)
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false)
   const [isUnregisterModalVisible, setUnregisterModalVisible] = useState(false)
 
-  
+
   return (
     <>
       <View>
@@ -41,7 +41,13 @@ const UserSetting = ({deviceWidth, deviceHeight}) => {
         }}
         onPress={() => { setNicknameChangeModalVisible(true) }}
       >
-        <View><Text style={{fontSize: 16, fontWeight: '700'}}>닉네임 변경</Text></View>
+        <View>
+          <Text style={{
+            fontSize: deviceWidth * 0.038,
+            // fontSize: 16,
+            fontWeight: '700'
+          }}>닉네임 변경</Text>
+        </View>
       </TouchableOpacity>
       <TouchableOpacity
         style={{
@@ -56,7 +62,13 @@ const UserSetting = ({deviceWidth, deviceHeight}) => {
         }}
         onPress={() => { setLogoutModalVisible(true) }}
       >
-        <View><Text style={{fontSize: 16, fontWeight: '700'}}>로그아웃</Text></View>
+        <View>
+          <Text style={{
+            fontSize: deviceWidth * 0.038,
+            // fontSize: 16,
+            fontWeight: '700'
+          }}>로그아웃</Text>
+        </View>
       </TouchableOpacity>
       <TouchableOpacity
         style={{
@@ -71,7 +83,14 @@ const UserSetting = ({deviceWidth, deviceHeight}) => {
         }}
         onPress={() => { setUnregisterModalVisible(true) }}
       >
-        <View><Text style={{fontSize: 16, fontWeight: '700', color: 'red'}}>회원탈퇴</Text></View>
+        <View>
+          <Text style={{
+            fontSize: deviceWidth * 0.038,
+            // fontSize: 16,
+            fontWeight: '700',
+            color: 'red'
+          }}>회원탈퇴</Text>
+        </View>
       </TouchableOpacity>
     </>
   )

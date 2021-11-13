@@ -264,7 +264,8 @@ const styleSheet = (deviceWidth, deviceHeight, mainColor1, mainColor4) => StyleS
     paddingRight: 20,
   },
   mainListHeaderOptionText: {
-    fontSize: 14,
+    fontSize: deviceWidth * 0.035,
+    // fontSize: 14,
     fontWeight: 'bold',
   },
   user: {

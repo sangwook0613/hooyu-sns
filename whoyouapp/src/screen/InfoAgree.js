@@ -70,7 +70,7 @@ const InfoAgree = ({ navigation: { navigate }, deviceWidth, deviceHeight }) => {
 
       <View style={{ flex: 0.1, width: '100%' }}>
         <TouchableOpacity style={{ height: '100%', backgroundColor: '#FF6A77', justifyContent: 'center', alignItems: 'center' }} onPress={()=>navigation.reset({routes: [{name: 'Main'}]})}>
-          <Text style={{fontSize: deviceWidth * 0.04, color: 'white', fontWeight: 'bold' }}>다음으로</Text>
+          <Text style={{fontSize: deviceWidth * 0.037, color: 'white', fontWeight: 'bold' }}>다음으로</Text>
         </TouchableOpacity>
       </View>
     </>

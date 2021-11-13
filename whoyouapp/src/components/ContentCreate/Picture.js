@@ -19,7 +19,7 @@ const emojiArray = [
   ['pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep']
 ]
 
-const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
+const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji, deviceHeight, deviceWidth }) => {
   
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [emoji, setEmoji] = useState(userEmoji)
@@ -28,7 +28,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
 
   const floatValue = useRef(new Animated.Value(0)).current;
   const toastRef = useRef();
-
+  const styles = styleSheet(deviceWidth, deviceHeight)
   const PictureTitle = () => {
     return (
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -197,13 +197,13 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   return (
     <LinearGradient colors={["#AB79EF", "#FC98AB"]} style={styles.mainView}>
       <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}} style={{flex: 1}}>
-        <View style={{width: clientWidth, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{width: deviceWidth, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           {
             imageFile ? 
             <View>
               <View style={{ elevation: 15}}>
                 <Image
-                  style={{ width: clientWidth-80, height: clientWidth-80 }}
+                  style={{ width: deviceWidth-80, height: deviceWidth-80 }}
                   source={{ uri: imageFile.uri }}
                 />
               </View>
@@ -271,7 +271,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         </View>
       }
       <Toast ref={toastRef}
-        positionValue={clientHeight * 0.4}
+        positionValue={deviceHeight * 0.4}
         fadeInDuration={200}
         fadeOutDuration={1000}
         style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
@@ -280,7 +280,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight) => StyleSheet.create({
   mainView: {
     flex: 1,
     flexDirection: 'column',
@@ -316,6 +316,8 @@ function mapStateToProps(state) {
     SERVER_URL: state.user.SERVER_URL,
     userPK: state.user.userPK,
     userEmoji: state.user.userEmoji,
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
   }
 }
 

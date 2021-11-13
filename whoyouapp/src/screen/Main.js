@@ -678,7 +678,8 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
   },
   radar__text__count: {
     color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 22,
+    fontSize: deviceWidth * 0.051,
+    // fontSize: 22,
     fontWeight: '700',
     textShadowColor: 'rgba(0, 0, 0, 0.4)',
     textShadowOffset: { width: 0, height: 2 },
@@ -686,7 +687,8 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
   },
   radar__text__title: {
     color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 18,
+    fontSize: deviceWidth * 0.045,
+    // fontSize: 18,
     fontWeight: '700',
     marginBottom: deviceHeight
       * 0.002,

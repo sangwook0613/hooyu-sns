@@ -9,8 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
   GoogleSignin,
 } from '@react-native-google-signin/google-signin'
-
-const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK }) => {
+const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK, deviceHeight, deviceWidth }) => {
   const navigation = useNavigation()
 
   const sendModalVisible = () => {
@@ -36,7 +35,7 @@ const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK 
       setModalVisible(!isModalVisible)
       setUserEmoji(null)
       setUserPK(0)
-      navigation.reset({routes: [{name: 'Login'}]})
+      navigation.reset({ routes: [{ name: 'Login' }] })
     } catch (error) {
       console.error(error)
     }
@@ -44,7 +43,7 @@ const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK 
 
 
   return (
-    <Modal 
+    <Modal
       isVisible={isModalVisible}
       onBackdropPress={sendModalVisible}
       useNativeDriver={true}
@@ -58,20 +57,45 @@ const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK 
         width: 320,
         height: 170,
       }}>
-        <Text style={{fontSize: 22, fontWeight: 'bold', marginBottom: 20}}>로그아웃</Text>
-        <Text style={{fontSize: 14, marginBottom: 2}}>로그아웃 하시겠습니까?</Text>
-        <View style={{paddingTop: 30, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-          <TouchableOpacity style={{paddingRight: 30}} onPress={sendModalVisible}>
-            <Text style={{fontSize: 16, color: 'black'}}>아니오</Text>
+        <Text style={{
+          fontSize: deviceWidth * 0.053,
+          // fontSize: 22,
+          fontWeight: 'bold',
+          marginBottom: 20
+        }}>로그아웃</Text>
+        <Text style={{
+          fontSize: deviceWidth * 0.035,
+          // fontSize: 14,
+          marginBottom: 2
+        }}>로그아웃 하시겠습니까?</Text>
+        <View style={{ paddingTop: 30, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <TouchableOpacity style={{ paddingRight: 30 }} onPress={sendModalVisible}>
+            <Text style={{
+              fontSize: deviceWidth * 0.038,
+              // fontSize: 16,
+              color: 'black'
+            }}>아니오</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{paddingRight: 20}} onPress={sendLogout}>
-            <Text style={{fontSize: 16, color: 'red'}}>네</Text>
+          <TouchableOpacity style={{ paddingRight: 20 }} onPress={sendLogout}>
+            <Text style={{
+              fontSize: deviceWidth * 0.038,
+              // fontSize: 16,
+              color: 'red'
+            }}>네</Text>
           </TouchableOpacity>
         </View>
       </View>
     </Modal>
   )
 }
+
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+  }
+}
+
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -84,4 +108,4 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-export default connect(null, mapDispatchToProps)(LogoutModal)
+export default connect(mapStateToProps, mapDispatchToProps)(LogoutModal)

@@ -17,7 +17,7 @@ const emojiArray = [
   ['pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep']
 ]
 
-const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
+const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji, deviceWidth, deviceHeight }) => {
   const [emoji, setEmoji] = useState(userEmoji)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [title, setTitle] = useState('')
@@ -28,7 +28,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
   )
   const [isSurveyValid, setIsSurveyValid] = useState(false)
   const toastRef = useRef();
-
+  const styles = styleSheet(deviceWidth, deviceHeight)
   const SurveyTitle = () => {
     return (
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -144,13 +144,13 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
 
   return (
     <LinearGradient colors={["#AB79EF", "#FC98AB"]} style={styles.mainView}>
-      <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}} style={{flex: 1, width: clientWidth, alignItems: 'center'}}>
+      <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}} style={{flex: 1, width: deviceWidth, alignItems: 'center'}}>
         <KeyboardAwareScrollView style={{flex: 1}}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.surveyTitleView}>
-            <Text>무엇이 궁금하신가요?</Text>
-            <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
+            <Text >무엇이 궁금하신가요?</Text>
+            <View style={{width: deviceWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
               <TextInput style={{height: '100%'}}
                 placeholder={"질문을 입력해주세요"}
                 onChangeText={(text) => setTitle(text)}
@@ -159,13 +159,13 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
           </View>
           <View style={styles.surveyContentView}>
             <Text>옵션</Text>
-            <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
+            <View style={{width: deviceWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
               <TextInput style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}
                 onChangeText={(text) => onTextChange(0, text)}
               />
             </View>
-            <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
+            <View style={{width: deviceWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
               <TextInput style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}
                 onChangeText={(text) => onTextChange(1, text)}
@@ -174,7 +174,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
             {
               options.map((option, index) => (
                 index > 1 &&
-                <View key={index} style={{width: clientWidth*0.8, height: 40, flexDirection: 'row', backgroundColor: 'white', borderRadius: 3, justifyContent: 'space-between', alignItems:'center', marginTop: 10, paddingHorizontal: 10}}>
+                <View key={index} style={{width: deviceWidth*0.8, height: 40, flexDirection: 'row', backgroundColor: 'white', borderRadius: 3, justifyContent: 'space-between', alignItems:'center', marginTop: 10, paddingHorizontal: 10}}>
                   <TextInput style={{height: '100%'}}
                     placeholder={"옵션을 입력해주세요"}
                     onChangeText={(text) => onTextChange(index, text)}
@@ -184,7 +184,9 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
                     onPress={()=> onOptionDelete(index)}
                   >
                     <View style={styles.minusOption}>
-                      <Text style={{ fontSize: 16 }}>-</Text>
+                      <Text style={{ 
+                        fontSize: 16 
+                        }}>-</Text>
                     </View>
                   </TouchableOpacity>
                 </View>
@@ -230,7 +232,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
         </View>
       }
       <Toast ref={toastRef}
-        positionValue={clientHeight * 0.4}
+        positionValue={deviceHeight * 0.4}
         fadeInDuration={200}
         fadeOutDuration={1000}
         style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
@@ -239,7 +241,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight) => StyleSheet.create({
   mainView: {
     flex: 1,
     flexDirection: 'column',
@@ -305,6 +307,8 @@ function mapStateToProps(state) {
     SERVER_URL: state.user.SERVER_URL,
     userPK: state.user.userPK,
     userEmoji: state.user.userEmoji,
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
   }
 }
 

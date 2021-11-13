@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
 import Modal from "react-native-modal";
 import Checkbox from 'expo-checkbox';
+import { connect } from 'react-redux'
 
-const ReportModal = ({ isModalVisible, setModalVisible }) => {
+const ReportModal = ({ isModalVisible, setModalVisible, deviceHeight, deviceWidth }) => {
   const [isCheckedOne, setCheckedOne] = useState(false)
   const [isCheckedTwo, setCheckedTwo] = useState(false)
   const [isCheckedThree, setCheckedThree] = useState(false)
@@ -27,7 +28,7 @@ const ReportModal = ({ isModalVisible, setModalVisible }) => {
       setChecked: setCheckedThree,
     }
   ]
-  
+
   const sendModalVisible = () => {
     setModalVisible(!isModalVisible)
   }
@@ -38,7 +39,7 @@ const ReportModal = ({ isModalVisible, setModalVisible }) => {
   }
 
   return (
-    <Modal 
+    <Modal
       isVisible={isModalVisible}
       onBackdropPress={sendModalVisible}
       useNativeDriver={true}
@@ -52,8 +53,17 @@ const ReportModal = ({ isModalVisible, setModalVisible }) => {
         width: 320,
         height: 280,
       }}>
-        <Text style={{fontSize: 22, fontWeight: 'bold', marginBottom: 20}}>신고하기</Text>
-        <Text style={{fontSize: 14, marginBottom: 20}}>신고 사유를 선택하주세요.</Text>
+        <Text style={{
+          fontSize: deviceWidth * 0.053,
+          // fontSize: 22,
+          fontWeight: 'bold',
+          marginBottom: 20
+        }}>신고하기</Text>
+        <Text style={{
+          fontSize: deviceWidth * 0.035,
+          // fontSize: 14,
+          marginBottom: 20
+        }}>신고 사유를 선택하주세요.</Text>
         {reportItems.map((item) => (
           <View
             key={item.id}
@@ -70,21 +80,40 @@ const ReportModal = ({ isModalVisible, setModalVisible }) => {
                 marginRight: 16,
               }}
             />
-            <Text style={{fontSize: 16, fontWeight: '700'}}>{item.title}</Text>
+            <Text style={{
+              fontSize: deviceWidth * 0.038,
+              // fontSize: 16,
+              fontWeight: '700'
+            }}>{item.title}</Text>
           </View>
         ))}
-        <View style={{paddingTop: 20, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-          <TouchableOpacity style={{paddingRight: 30}} onPress={sendModalVisible}>
-            <Text style={{fontSize: 16}}>아니오</Text>
+        <View style={{ paddingTop: 20, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <TouchableOpacity style={{ paddingRight: 30 }} onPress={sendModalVisible}>
+            <Text style={{
+              fontSize: deviceWidth * 0.038,
+              // fontSize: 16
+            }}>아니오</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{paddingRight: 20}} onPress={sendReport}>
-            <Text style={{fontSize: 16, color: 'red'}}>네</Text>
+          <TouchableOpacity style={{ paddingRight: 20 }} onPress={sendReport}>
+            <Text style={{
+              fontSize: deviceWidth * 0.038,
+              // fontSize: 16,
+              color: 'red'
+            }}>네</Text>
           </TouchableOpacity>
         </View>
       </View>
     </Modal>
   )
-  
+
 };
 
-export default ReportModal;
+
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+  }
+}
+
+export default connect(mapStateToProps)(ReportModal)

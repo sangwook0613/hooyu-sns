@@ -7,7 +7,7 @@ const deviceHeight = Dimensions.get('window').height
 
 const PrivateZoneSetting = (props) => {
   const [haveZone, setZone] = useState(true)
-  
+
   useEffect(() => {
     Geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
@@ -16,7 +16,7 @@ const PrivateZoneSetting = (props) => {
   })
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white'}}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <View
         style={{
           width: deviceWidth,
@@ -29,12 +29,26 @@ const PrivateZoneSetting = (props) => {
           borderBottomColor: '#E5E5E5',
         }}
       >
-        <View><Text style={{fontSize: 16, fontWeight: '700'}}>나의 프라이빗 존</Text></View>
+        <View>
+          <Text style={{
+            fontSize: deviceWidth * 0.038,
+            // fontSize: 16,
+            fontWeight: '700'
+          }}>
+            나의 프라이빗 존
+          </Text>
+        </View>
       </View>
       {haveZone && (
         <>
-          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{paddingBottom: 70, fontSize: 16}}>프라이빗 존을 설정해보세요.</Text>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style={{
+              paddingBottom: 70,
+              fontSize: deviceWidth * 0.038,
+              // fontSize: 16
+            }}>
+              프라이빗 존을 설정해보세요.
+            </Text>
           </View>
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <TouchableOpacity
@@ -47,9 +61,16 @@ const PrivateZoneSetting = (props) => {
                 alignItems: 'center',
               }}
             >
-              <Text style={{fontSize: 16, fontWeight: '700', color: 'white'}}>프라이빗 존 설정</Text>
+              <Text style={{
+                fontSize: deviceWidth * 0.038,
+                // fontSize: 16,
+                fontWeight: '700',
+                color: 'white'
+              }}>
+                프라이빗 존 설정
+              </Text>
             </TouchableOpacity>
-          </View> 
+          </View>
         </>
       )}
     </View>

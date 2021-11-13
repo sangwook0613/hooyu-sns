@@ -79,14 +79,16 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
         > 
           <Text style={{
             color: '#0B1C26',
-            fontSize: 22,
+            fontSize:deviceWidth * 0.053,
+            // fontSize: 22,
             fontWeight: 'bold',
           }}>
             오늘 내 기분은?
           </Text>
           <Text style={{
             color: '#4F5457',
-            fontSize: 14,
+            fontSize:deviceWidth * 0.035,
+            // fontSize: 14,
             marginTop: deviceHeight * 0.01,
           }}>
             오늘 당신의 기분은 어떠신가요?
@@ -97,7 +99,8 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
         >
           <TextInput
             style={{
-              fontSize: 18,
+              fontSize: deviceWidth * 0.044
+              // fontSize: 18,
             }}
             autoCapitalize={'none'}
             value={inputValue}
@@ -150,7 +153,8 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
   },
   register__text: {
     color: 'white',
-    fontSize: 15,
+    fontSize: deviceWidth * 0.037,
+    // fontSize: 15,
   }
 })
 

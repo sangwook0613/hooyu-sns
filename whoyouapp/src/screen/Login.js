@@ -134,9 +134,9 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
         })
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-        console.log('아직 로그인 하지 않았음')
+        console.log('아직 로그인 하지 않았습니다')
       } else {
-        console.log("에러에러")
+        console.log("에러")
       }
     }
   };
@@ -172,13 +172,13 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
     } catch (error) {
       console.log('Message', JSON.stringify(error))
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        alert('로그인이 중단되었음니다.')
+        alert('로그인이 중단되었습니다.')
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        alert('로그인이 진행중임.')
+        alert('로그인이 진행중입니다.')
       } else if (
         error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE
       ) {
-        alert('서비스를 이용할 수 없음.')
+        alert('서비스를 이용할 수 없습니다.')
       } else {
         alert(error.message)
       }
@@ -239,34 +239,34 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
 
 const styles = StyleSheet.create({
 
-  titleText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    padding: 20,
-  },
-  imageStyle: {
-    width: 200,
-    height: 300,
-    resizeMode: 'contain',
-  },
-  buttonStyle: {
-    alignItems: 'center',
-    backgroundColor: '#DDDDDD',
-    padding: 10,
-    width: 300,
-    marginTop: 30,
-  },
-  footerHeading: {
-    fontSize: 18,
-    textAlign: 'center',
-    color: 'grey',
-  },
-  footerText: {
-    fontSize: 16,
-    textAlign: 'center',
-    color: 'grey',
-  },
+  // titleText: {
+  //   fontSize: 20,
+  //   fontWeight: 'bold',
+  //   textAlign: 'center',
+  //   padding: 20,
+  // },
+  // imageStyle: {
+  //   width: 200,
+  //   height: 300,
+  //   resizeMode: 'contain',
+  // },
+  // buttonStyle: {
+  //   alignItems: 'center',
+  //   backgroundColor: '#DDDDDD',
+  //   padding: 10,
+  //   width: 300,
+  //   marginTop: 30,
+  // },
+  // footerHeading: {
+  //   fontSize: 18,
+  //   textAlign: 'center',
+  //   color: 'grey',
+  // },
+  // footerText: {
+  //   fontSize: 16,
+  //   textAlign: 'center',
+  //   color: 'grey',
+  // },
 })
 
 function mapStateToProps(state) {
