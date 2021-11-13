@@ -1,17 +1,19 @@
 import React, {useRef, useState, useEffect} from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import Status from '../components/ContentCreate/Status';
 import Emoji from '../components/ContentCreate/Emoji';
 import Picture from '../components/ContentCreate/Picture';
 import Survey from '../components/ContentCreate/Survey';
+import { connect } from 'react-redux'
 
 const clientWidth = Dimensions.get('screen').width
 const menuArray = ['이모지', '프로필 메시지', '사진', '설문']
 const menuLocation = [0, 100, 185, 254]
 
-const CreateContent = ({ navigation, route }) => {
+const CreateContent = ({ navigation, route, deviceWidth, deviceHeight }) => {
   const [selectedMenu, setSelectedMenu] = useState(route.params.menu)
   const menuScroll = useRef()
+  const styles = styleSheet(deviceWidth, deviceHeight)
   const menuComponent = [
     <Emoji navigation={navigation} route={route} />,
     <Status navigation={navigation} route={route} />, 
@@ -68,7 +70,7 @@ const CreateContent = ({ navigation, route }) => {
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight) => StyleSheet.create({
   mainView: {
     flex: 1,
     flexDirection: 'column',
@@ -86,24 +88,33 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   blankBoxStart: {
-    width: clientWidth/2-85,
+    width: deviceWidth/2-85,
     marginHorizontal: 20,
   },
   blankBoxEnd: {
-    width: clientWidth/2-76,
+    width: deviceWidth/2-76,
     marginHorizontal: 20,
   },
   selectedMenuText: {
     marginHorizontal: 20,
-    fontSize: 16,
+    fontSize: deviceWidth * 0.038,
+    // fontSize: 16,
     paddingBottom: 2
   },
   notSelectedMenuText: {
     marginHorizontal: 20,
-    fontSize: 16,
+    fontSize: deviceWidth * 0.038,
+    // fontSize: 16,
     paddingBottom: 2
   }
 });
 
 
-export default CreateContent;
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+  }
+}
+
+export default connect(mapStateToProps)(CreateContent)
