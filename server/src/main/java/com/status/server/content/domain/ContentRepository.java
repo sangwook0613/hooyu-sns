@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface ContentRepository extends JpaRepository<Content, Long> {
     List<Content> findByTypeAndUserIdOrderByCreatedAtDesc(Type type,Long userPK);
     Optional<Content> findByUserIdAndIdAndType(Long userPK, Long contentPK, Type type);
+    Optional<Content> findByUserIdAndId(Long userPK, Long contentPK);
 }

@@ -5,6 +5,7 @@ import com.status.server.content.domain.ContentRepository;
 import com.status.server.emotion.domain.Emotion;
 import com.status.server.emotion.domain.EmotionRepository;
 import com.status.server.emotion.dto.EmotionDto;
+import com.status.server.emotion.dto.EmotionPlusDto;
 import com.status.server.global.exception.NoContentException;
 import com.status.server.global.exception.NoEmotionException;
 import com.status.server.global.exception.NoUserException;
@@ -33,6 +34,12 @@ public class EmotionServiceImpl implements EmotionService {
     public List<EmotionDto> getEmotions(Long contentPK) throws NoContentException {
         if (!contentRepository.existsById(contentPK)) throw new NoContentException("해당하는 컨탠츠는 없습니다.");
         List<EmotionDto> emotions = emotionRepository.findByContentId(contentPK).stream().map(EmotionDto::new).collect(Collectors.toList());
+        return emotions;
+    }
+
+    @Transactional
+    public List<EmotionPlusDto> getEmotionsPlus(Long contentPK) {
+        List<EmotionPlusDto> emotions = emotionRepository.findByContentId(contentPK).stream().map(EmotionPlusDto::new).collect(Collectors.toList());
         return emotions;
     }
 

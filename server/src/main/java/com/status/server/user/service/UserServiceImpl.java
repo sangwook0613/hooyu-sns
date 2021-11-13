@@ -19,6 +19,7 @@ import com.status.server.global.exception.*;
 import com.status.server.global.service.TokenService;
 import com.status.server.global.util.RadarMath;
 import com.status.server.user.domain.*;
+import com.status.server.user.dto.ResponsePrivateZoneDto;
 import com.status.server.user.dto.ResponseUserLocationDto;
 import com.status.server.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -179,6 +181,16 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         pzRepository.save(privateZone);
         return "Success";
+    }
+
+    @Override
+    public List<ResponsePrivateZoneDto> getPrivateZone(Long userPK) throws NoUserException {
+        if (!userRepository.existsById(userPK)) throw new NoUserException("해당하는 사용자가 없습니다.");
+        List<ResponsePrivateZoneDto> privateZones = pzRepository.findAllByUserId(userPK).stream().map((t)->{
+            ResponsePrivateZoneDto privateZoneDto = new ResponsePrivateZoneDto(t);
+            return privateZoneDto;
+        }).collect(Collectors.toList());
+        return privateZones;
     }
 
     @Override

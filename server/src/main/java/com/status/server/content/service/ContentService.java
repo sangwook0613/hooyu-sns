@@ -2,7 +2,9 @@ package com.status.server.content.service;
 
 import com.status.server.content.domain.Type;
 import com.status.server.content.dto.ResponseContentDto;
+import com.status.server.content.dto.ResponseContentPlusDto;
 import com.status.server.content.dto.ResponseSurveyDto;
+import com.status.server.content.dto.ResponseSurveyPlusDto;
 import com.status.server.global.exception.NoAuthorityUserException;
 import com.status.server.global.exception.NoContentException;
 import com.status.server.global.exception.NoUserException;
@@ -28,8 +30,13 @@ public interface ContentService {
     List<ResponseContentDto> imageContent(String userName) throws NoUserException, NoContentException;
     List<ResponseSurveyDto> surveyContent(String userName) throws NoUserException, NoContentException;
 
+ // 가져오기2
+    List<ResponseContentPlusDto> statusesContent(String userName) throws NoUserException, NoContentException;
+    List<ResponseContentPlusDto> imagesContent(String userName) throws NoUserException, NoContentException;
+    List<ResponseSurveyPlusDto> surveysContent(String userName) throws NoUserException, NoContentException;
+
     //삭제
-    String deleteContent(Long userPK, Long contentPK, Type type) throws NoContentException, NoUserException, NoAuthorityUserException;
+    String deleteContent(Long userPK, Long contentPK) throws NoContentException, NoUserException, NoAuthorityUserException;
 
     //신고
     String reportContent(Long userPK, Long contentPK, String reason) throws NoContentException, NoUserException;
