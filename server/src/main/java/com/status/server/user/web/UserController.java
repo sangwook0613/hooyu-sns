@@ -91,6 +91,16 @@ public class UserController {
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
+    @GetMapping("/private")
+    public ResponseEntity<SuccessResponseDto> getPrivateZone(@RequestBody Long userPK) throws NoUserException {
+        logger.trace("User Controller 진입 getPrivateZone param {}", userPK);
+        List<ResponsePrivateZoneDto> responsePrivateZoneDtoList = userService.getPrivateZone(userPK);
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(responsePrivateZoneDtoList);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
+
     @DeleteMapping("/deletePrivate")
     public ResponseEntity<SuccessResponseDto> deletePrivateZone(@RequestBody @Valid PrivateZoneDto privateZoneDto) throws NoTargetException {
         logger.trace("User Controller 진입 SetUpPrivateZone param {}", privateZoneDto);
