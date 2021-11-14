@@ -14,53 +14,56 @@ const deviceHeight = Dimensions.get('window').height
 const PrivateZoneSetting = ({ userPK, SERVER_URL }) => {
   const [isSettingPrivateZone, setIsSettingPrivateZone] = useState(false)
   const [privateZoneList, setPrivateZoneList] = useState([])
-
+  const [gotList, setGotList] = useState(false)
   const [userLocation, setUserLocation] = useState({ latitude: 0, longitude: 0 })
 
   useEffect(() => {
+    if (!gotList) {
+      getPrivateZone()
+      setGotList(true)
+      console.log('getList')
+    }
     Geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
       setUserLocation({ latitude: latitude, longitude: longitude})
     })
-    // getPrivateZone()s
+    console.log(privateZoneList)
   }, [isSettingPrivateZone, privateZoneList])
-
+  
   const goToSettingPrivateZone = () => {
     setIsSettingPrivateZone(true)
   }
 
-  const setPrivateZone = (zone) => {
-    console.log(privateZoneList)
-    setPrivateZoneList((prev) => [...prev, zone])
-    console.log(privateZoneList)
-    setIsSettingPrivateZone(false)
+
+  const getPrivateZone = () => {
+    console.log(userPK)
+    console.log(SERVER_URL + 'user/private/' + userPK)
+    axios({
+      method: 'get',
+      url: SERVER_URL + 'user/private/' + userPK,
+    })
+    .then((res) => {
+      setPrivateZoneList(res.data.success)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
   }
 
-  // const getPrivateZone = () => {
-  //   console.log(SERVER_URL)
-  //   axios({
-  //     method: 'get',
-  //     url: SERVER_URL + 'user/private' + userPK,
-  //   })
-  //   .then((res) => {
-  //     console.log(res.data.success)
-  //   })
-  //   .catch((err) => {
-  //     console.log(err)
-  //   })
-  // }
-
-  const deletePrivateZone = () => {
-    console.log('delete')
-    setPrivateZoneList([])
-  }
 
   const privateZoneComponent = () => {
     if (isSettingPrivateZone) {
-      return <SettingPrivateZone setPrivateZone={setPrivateZone} userLocation={userLocation} privateZoneList={privateZoneList} />
+      return <SettingPrivateZone 
+        userLocation={userLocation} 
+        privateZoneList={privateZoneList} 
+        onCreate={() => {
+          setIsSettingPrivateZone(false)
+          getPrivateZone()
+        }} 
+      />
     } else {
       return privateZoneList.length ? 
-      <ListPrivateZone privateZoneList={privateZoneList} deletePrivateZone={deletePrivateZone} userLocation={userLocation} /> 
+      <ListPrivateZone privateZoneList={privateZoneList} onDelete={getPrivateZone} userLocation={userLocation} /> 
       : 
       <NoPrivateZone goToSettingPrivateZone={goToSettingPrivateZone}/>
     }

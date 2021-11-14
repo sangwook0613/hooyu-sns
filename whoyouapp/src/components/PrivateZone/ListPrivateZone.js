@@ -7,12 +7,28 @@ import PrivateZoneModal from '../modal/PrivateZoneModal'
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
 
-const ListPrivateZone = ({ navigation, userPK, privateZoneList, deletePrivateZone, userLocation }) => {
+const ListPrivateZone = ({ navigation, userPK, privateZoneList, onDelete, SERVER_URL }) => {
   
   const [isModalVisible, setIsModalVisible] = useState(false)
+  const [currentPrivateZone, setCurrentPrivateZone] = useState({ latitude: 0, longitude: 0, title: ''})
 
-  const onDelete = () => {
-    deletePrivateZone()
+
+  const deletePrivateZone = (pzPK) => {
+    axios({
+      method: 'delete',
+      url: SERVER_URL + 'user/deletePrivate',
+      data: {
+        'pzPK': pzPK,
+        'userPK': userPK
+      }
+    })
+    .then((res) => {
+      console.log(res.data.success)
+      onDelete()
+    })
+    .catch((err) => {
+      console.log(err)
+    })
   }
 
   const showMap = () => {
@@ -30,17 +46,26 @@ const ListPrivateZone = ({ navigation, userPK, privateZoneList, deletePrivateZon
   return (
     <View style={{flex:1}}>
       <View style={styles.zoneListContainer}>
-        <View style={styles.zoneList}>
-          <Text>{privateZoneList}</Text>
-          <View style={styles.zoneListButtonView}>
-            <TouchableWithoutFeedback onPress={() => showMap()} >
-              <Text style={styles.zoneListButtonShow}>지도보기</Text>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={() => onDelete()} >
-              <Text style={styles.zoneListButtonDelete}>삭제</Text>
-            </TouchableWithoutFeedback>
-          </View>
-        </View>
+        {
+          privateZoneList.map((privateZone, idx) => (
+            <View style={styles.zoneList} key={idx}>
+              <Text>{privateZone.title}</Text>
+              <View style={styles.zoneListButtonView}>
+                <TouchableWithoutFeedback 
+                  onPress={() => {
+                    setCurrentPrivateZone(privateZone)
+                    showMap()
+                  }} 
+                >
+                  <Text style={styles.zoneListButtonShow}>지도보기</Text>
+                </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={() => deletePrivateZone(privateZone.pzPK)} >
+                  <Text style={styles.zoneListButtonDelete}>삭제</Text>
+                </TouchableWithoutFeedback>
+              </View>
+            </View>    
+          ))
+        }
       </View>
       <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
         <TouchableOpacity
@@ -49,7 +74,7 @@ const ListPrivateZone = ({ navigation, userPK, privateZoneList, deletePrivateZon
           <Text style={{fontSize: 16, fontWeight: '700', color: 'white'}}>프라이빗 존은 한개만 설정 가능합니다.</Text>
         </TouchableOpacity>
       </View> 
-      <PrivateZoneModal isModalVisible={isModalVisible} onCloseModal={onCloseModal} userLocation={userLocation} />
+      <PrivateZoneModal isModalVisible={isModalVisible} onCloseModal={onCloseModal} currentPrivateZone={currentPrivateZone} />
     </View>
   )
 }
