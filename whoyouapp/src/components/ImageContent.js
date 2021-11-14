@@ -11,12 +11,12 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [imageData, setImageData] = useState([])
-  const [isEmotions, setEmotions] = useState([])
-  const [giveEmotion, setGiveEmotion] = useState([])
-  const [imageEmoji, setImageEmoji] = useState([])
+  const [isEmotions, setEmotions] = useState(false)
+  const [giveEmotion, setGiveEmotion] = useState('')
+  const [imageEmoji, setImageEmoji] = useState({})
   
   useEffect(() => {
-    Api.getUserImage('seungho')//seunghyun
+    Api.getUserImage(ownerName)//ownerName
       .then((res) => {
         console.log('유저 이미지 불러오기')
         console.log(res.data.success)
@@ -24,29 +24,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
           setIsImage(false)
         } else {
           let data = res.data.success
-          data.map((content, idx) => {
-            data[idx]['id'] = idx
-            Api.getContentEmotion(data[idx].contentPk)
-              .then((result) => {
-                console.log(result.data)
-                let chk = false
-                let isMe = false
-                let temp = {}
-                for (let emojiData of result.data.success) {
-                  if (emojiData.userPK === userPK) {
-                    isMe = true
-                  }
-                  temp[emojiData.contentEmoji] ? temp[emojiData.contentEmoji]++ : temp[emojiData.contentEmoji] = 1
-                  chk = true
-                }
-                setImageEmoji(emojis => [...emojis, temp])
-                setEmotions(chks => [...chks, chk])
-                setGiveEmotion(curr => [...curr, isMe])
-              })
-              .catch((err) => {
-                console.warn(err)
-              })
-          })
+          getEmotion(data[0].contentPk)
           setImageData(data)
           console.log('최종', imageData)
         }
@@ -56,17 +34,60 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
       })
   }, [])
 
+
+  const getEmotion = (contentPK) => {
+    Api.getContentEmotion(contentPK)
+      .then((result) => {
+        console.log('자몽이1', result.data)
+        let chk = false
+        let isMe = ''
+        let emojis = {}
+        for (let emojiData of result.data.success) {
+          if (emojiData.userPK === userPK) {
+            isMe = emojiData.contentEmoji
+          }
+          emojis[emojiData.contentEmoji] ? emojis[emojiData.contentEmoji]++ : emojis[emojiData.contentEmoji] = 1
+          chk = true
+        }
+        setImageEmoji(emojis)
+        setEmotions(chk)
+        setGiveEmotion(isMe)
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
+
+  const addEmotion = (emoji, contentId, userPK) => {
+    Api.setContentEmotion(emoji, contentId, userPK)
+      .then((res) => {
+        console.log('emotion success')
+        console.log(res.data)
+        // 공감 완료 표시
+        setImageEmoji(emojis => {
+          const updated = {...emojis}
+          updated[emoji] ? updated[emoji]++ : updated[emoji] = 1
+          return updated
+        })
+        setEmotions(true)
+        setGiveEmotion(emoji)
+      })  
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
+
   return (
     <View>
       <SwiperFlatList
         data={imageData}
         onChangeIndex={({ index }) => {
           setCurrentIndex(index)
-          // console.log(index, prevIndex)
+          getEmotion(imageData[index].contentPk)
         }}
         renderItem={({ item }) => (
           <View
-            key={item.id}
+            key={item.contentPk}
             style={{
               width: deviceWidth,
               height: deviceWidth,
@@ -110,7 +131,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
                   setIsEmojiSelect(false)
                   console.log('imageData', imageData)
                   console.log('imageEmoji', imageEmoji)
-                  addEmotion(emotion, imageData[currentIndex].contentPk, userPK, currentIndex)
+                  addEmotion(emotion, imageData[currentIndex].contentPk, userPK)
                   console.warn(emotion, imageData[currentIndex], index)
                 }}
               >
@@ -122,7 +143,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
       }
       <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
         <View style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
-          {!isEmotions[currentIndex] &&
+          {!isEmotions &&
             <View>
               <Text
                 style={{
@@ -132,13 +153,13 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
                 첫 공감을 남겨보세요
               </Text>
             </View>}
-          {isEmotions[currentIndex] && Object.keys(imageEmoji[currentIndex]).map((item, index) => (
+          {isEmotions && Object.keys(imageEmoji).map((item, index) => (
             <View key={index} style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
               <Image
                 style={{ width: 24, height: 24, marginRight: 5 }}
                 source={emojiImages.default.emoji[item]}
                 />
-              <Text>{imageEmoji[currentIndex][item]}</Text>
+              <Text>{imageEmoji[item]}</Text>
             </View>
           ))}
         </View>
@@ -150,12 +171,12 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
         backgroundColor: 'white',
         elevation: 10 
       }}>
-        {!giveEmotion[currentIndex] &&
+        {giveEmotion.length === 0 &&
           <TouchableOpacity style={{ marginLeft: 15, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
             <Text style={{ fontSize: 18, fontWeight: 'bold'}}>공감</Text>
           </TouchableOpacity>
         }
-        {giveEmotion[currentIndex] && 
+        {giveEmotion.length !== 0 && 
           <Text style={{ marginLeft: 20, marginRight: 20, fontSize: 16 }}>이미 공감하셨습니다.</Text>
         }
         <Text>1시간 전</Text>

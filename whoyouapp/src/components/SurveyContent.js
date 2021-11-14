@@ -55,10 +55,10 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [surveyData, setSurveyData] = useState([])
-  const [isEmotions, setEmotions] = useState([])
-  const [giveEmotion, setGiveEmotion] = useState([])
-  const [surveyEmoji, setSurveyEmoji] = useState([])
-  const [checkVote, setCheckVote] = useState([])
+  const [isEmotions, setEmotions] = useState(false)
+  const [giveEmotion, setGiveEmotion] = useState('')
+  const [surveyEmoji, setSurveyEmoji] = useState({})
+  const [checkVote, setCheckVote] = useState('')
 
   useEffect(() => {
     Api.getUserSurvey(ownerName)
@@ -68,42 +68,8 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         if (data.length === 0) {
           setIsImage(false)
         } else {
-          data.map((content, idx) => {
-            data[idx]['id'] = idx
-            Api.getContentEmotion(data[idx].contentPK)
-              .then((result) => {
-                console.log(result.data)
-                let chk = false
-                let isMe = ''
-                let temp = {}
-                for (let emojiData of result.data.success) {
-                  if (emojiData.userPK === userPK) {
-                    isMe = emojiData.contentEmoji
-                  }
-                  temp[emojiData.contentEmoji] ? temp[emojiData.contentEmoji]++ : temp[emojiData.contentEmoji] = 1
-                  chk = true
-                }
-                setSurveyEmoji(emojis => [...emojis, temp])
-                setEmotions(chks => [...chks, chk])
-                setGiveEmotion(curr => [...curr, isMe])
-              })
-              .catch((err) => {
-                console.warn(err)
-              })
-            // 투표 했는지 여부는 post로 체크한다!
-            Api.voteCheck(data[idx].contentPK, userPK)
-              .then((res) => {
-                console.log('voteCheck', res.data, res.data.success)
-                if (res.data.success === "투표하지 않았습니다.") {
-                  setCheckVote(item => [...item, ''])
-                } else {
-                  setCheckVote(item => [...item, res.data.success])
-                }
-              })
-              .catch((err) => {
-                console.warn(err)
-              })
-          })
+          getEmotion(data[0].contentPK)
+          getVoteCheck(data[0].contentPK)
           setSurveyData(data)
         }
       })
@@ -112,11 +78,66 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       })
   }, [])
 
+
+  const addEmotion = (emoji, contentId, userPK) => {
+    Api.setContentEmotion(emoji, contentId, userPK)
+      .then((res) => {
+        console.log('emotion success')
+        console.log(res.data)
+        // 공감 완료 표시
+        setSurveyEmoji(emojis => {
+          const updated = {...emojis}
+          updated[emoji] ? updated[emoji]++ : updated[emoji] = 1
+          return updated
+        })
+        setEmotions(true)
+        setGiveEmotion(emoji)
+      })  
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
+
+  const getEmotion = (contentPK) => {
+    Api.getContentEmotion(contentPK)
+      .then((result) => {
+        console.log('자몽이1', result.data)
+        let chk = false
+        let isMe = ''
+        let emojis = {}
+        for (let emojiData of result.data.success) {
+          if (emojiData.userPK === userPK) {
+            isMe = emojiData.contentEmoji
+          }
+          emojis[emojiData.contentEmoji] ? emojis[emojiData.contentEmoji]++ : emojis[emojiData.contentEmoji] = 1
+          chk = true
+        }
+        setSurveyEmoji(emojis)
+        setEmotions(chk)
+        setGiveEmotion(isMe)
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
+
+  const getVoteCheck = (contentPK) => {
+    Api.voteCheck(contentPK, userPK)
+      .then((res) => {
+        console.log('voteCheck', res.data, res.data.success)
+        if (res.data.success !== "투표하지 않았습니다.") {
+          setCheckVote(res.data.success)
+        }
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
+
   const voteToSurvey = (answerPK, contentPK) => {
     Api.voteSurvey(answerPK, contentPK, userPK)
       .then((res) => {
         console.log('투표완료!', res.data)
-        
         Api.getUserSurvey(ownerName)
         .then((res) => {
           console.log('유저 설문 받아오기')
@@ -124,43 +145,9 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           if (data.length === 0) {
             setIsImage(false)
           } else {
-            data.map((content, idx) => {
-            data[idx]['id'] = idx
-            Api.getContentEmotion(data[idx].contentPK)
-              .then((result) => {
-                console.log(result.data)
-                let chk = false
-                let isMe = ''
-                let temp = {}
-                for (let emojiData of result.data.success) {
-                  if (emojiData.userPK === userPK) {
-                    isMe = emojiData.contentEmoji
-                  }
-                  temp[emojiData.contentEmoji] ? temp[emojiData.contentEmoji]++ : temp[emojiData.contentEmoji] = 1
-                  chk = true
-                }
-                setSurveyEmoji(emojis => [...emojis, temp])
-                setEmotions(chks => [...chks, chk])
-                setGiveEmotion(curr => [...curr, isMe])
-              })
-              .catch((err) => {
-                console.warn(err)
-              })
-              // 투표 했는지 여부는 post로 체크한다!
-              Api.voteCheck(data[idx].contentPK, userPK)
-                .then((res) => {
-                  console.log('voteCheck', res.data, res.data.success)
-                  if (res.data.success === "투표하지 않았습니다.") {
-                    setCheckVote(item => [...item, ''])
-                  } else {
-                    setCheckVote(item => [...item, res.data.success])
-                  }
-                })
-                .catch((err) => {
-                  console.warn(err)
-                })
-            })
-          setSurveyData(data)
+            getEmotion(data[0].contentPk)
+            getVoteCheck(data[0].contentPk)
+            setSurveyData(data)
           }
         })
         .catch((err) => {
@@ -182,10 +169,11 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         data={surveyData}
         onChangeIndex={({ index }) => {
           setCurrentIndex(index)
+          getEmotion(surveyData[index].contentPK)
         }}
         renderItem={({ item }) => (
           <View
-            key={item.id}
+            key={item.contentPK}
             style={{
               width: deviceWidth,
               height: deviceWidth,
@@ -195,7 +183,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
               alignItems:"center"
             }}
           >
-            {checkVote[currentIndex] === '' &&
+            {checkVote === '' &&
               <>
                 <Text style={{ color: 'white', fontSize: 24, marginBottom: 50 }}>{item.exon}</Text>
                 {item.answerList.map((ans, idx) => {
@@ -206,7 +194,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                       key={item.answerPK[ans]} 
                       onPress={() => {
                         console.log(ans, surveyData[currentIndex].answerPK[ans])
-                        setCheckVote([])
+                        setCheckVote('')
                         voteToSurvey(surveyData[currentIndex].answerPK[ans], surveyData[currentIndex].contentPK)
                       }}
                     >
@@ -229,7 +217,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                   )})}
               </>
             }
-            {checkVote[currentIndex] !== '' &&
+            {checkVote !== '' &&
               <>
                 <Text style={{color: 'white', fontSize: 24, marginBottom: 50}}>{item.exon}</Text>
                 {item.answerList.map((ans, idx) => {
@@ -308,7 +296,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                   setIsEmojiSelect(false)
                   console.log('surveyData', surveyData)
                   console.log('surveyEmoji', surveyEmoji)
-                  // addEmotion(emotion, surveyData[currentIndex].contentPk, userPK, currentIndex)
+                  // addEmotion(emotion, surveyData[currentIndex].contentPk, userPK)
                   console.warn('checkehck', surveyData, checkVote)
                 }}
               >
@@ -320,7 +308,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       }
       <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
         <View style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
-          {!isEmotions[currentIndex] &&
+          {!isEmotions &&
             <View>
               <Text
                 style={{
@@ -330,13 +318,13 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                 첫 공감을 남겨보세요
               </Text>
             </View>}
-          {isEmotions[currentIndex] && Object.keys(surveyEmoji[currentIndex]).map((item, index) => (
+          {isEmotions && Object.keys(surveyEmoji).map((item, index) => (
             <View key={index} style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
               <Image
                 style={{ width: 24, height: 24, marginRight: 5 }}
                 source={emojiImages.default.emoji[item]}
                 />
-              <Text>{surveyEmoji[currentIndex][item]}</Text>
+              <Text>{surveyEmoji[item]}</Text>
             </View>
           ))}
         </View>
@@ -348,16 +336,16 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         backgroundColor: 'white',
         elevation: 10 
       }}>
-        {giveEmotion[currentIndex] === '' &&
+        {giveEmotion === '' &&
           <TouchableOpacity style={{ marginLeft: 15, marginRight: 20 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
             <Text style={{ fontSize: 18, fontWeight: 'bold'}}>공감</Text>
           </TouchableOpacity>
         }
-        {giveEmotion[currentIndex] !== '' &&
+        {giveEmotion !== '' &&
           <>
             <Image
               style={{ width: 20, height: 20, marginLeft: 20 }}
-              source={emojiImages.default.emoji[giveEmotion[currentIndex]]}
+              source={emojiImages.default.emoji[giveEmotion]}
             />
             <Text style={{ marginLeft: 10, marginRight: 20, fontSize: 16 }}>이미 공감하셨습니다.</Text>
           </>
