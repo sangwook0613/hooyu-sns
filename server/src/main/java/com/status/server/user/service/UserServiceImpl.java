@@ -15,13 +15,11 @@ import com.status.server.fcm.domain.FcmTokenRepository;
 import com.status.server.fcm.service.FcmService;
 import com.status.server.global.domain.Token;
 import com.status.server.global.dto.DistDto;
-import com.status.server.global.exception.DuplicateNameException;
-import com.status.server.global.exception.GoogleLoginFailException;
-import com.status.server.global.exception.NoBrowserTokenException;
-import com.status.server.global.exception.NoUserException;
+import com.status.server.global.exception.*;
 import com.status.server.global.service.TokenService;
 import com.status.server.global.util.RadarMath;
 import com.status.server.user.domain.*;
+import com.status.server.user.dto.ResponsePrivateZoneDto;
 import com.status.server.user.dto.ResponseUserLocationDto;
 import com.status.server.user.dto.UserResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +33,7 @@ import java.math.BigDecimal;
 import java.security.GeneralSecurityException;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -165,27 +164,40 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public String setUpPrivateZone(Long userPK, BigDecimal lat, BigDecimal lon) throws NoUserException {
+    public String setUpPrivateZone(Long userPK, String title, BigDecimal lat, BigDecimal lon) throws NoUserException {
         logger.debug("user pk check : {}", userPK);
         logger.debug("lat check : {}", lat);
         logger.debug("lon check : {}", lon);
-        PrivateZone privateZone;
-        if (pzRepository.existsByUserId(userPK)) {
-            privateZone = pzRepository.findByUserId(userPK).get();
-            privateZone.setLatitude(lat);
-            privateZone.setLongitude(lon);
-        } else {
-            privateZone = new PrivateZone(lat, lon);
-            logger.debug("privatezone : {}", privateZone);
 
-            User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-            logger.info("user privateZone존재여부 : {}", user.getPrivateZones());
+        PrivateZone privateZone = PrivateZone.builder().title(title).lat(lat).lon(lon).build();
+        logger.debug("privatezone : {}", privateZone);
 
-            privateZone.setUser(user);
-            logger.info("user privateZone get(0) : {}", user.getPrivateZones().get(0));
-            userRepository.save(user);
-        }
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        logger.debug("user privateZone존재여부 : {}", user.getPrivateZones());
+
+        privateZone.setUser(user);
+        logger.debug("user privateZone get(0) : {}", user.getPrivateZones().get(0));
+
+        userRepository.save(user);
         pzRepository.save(privateZone);
+        return "Success";
+    }
+
+    @Override
+    public List<ResponsePrivateZoneDto> getPrivateZone(Long userPK) throws NoUserException {
+        if (!userRepository.existsById(userPK)) throw new NoUserException("해당하는 사용자가 없습니다.");
+        List<ResponsePrivateZoneDto> privateZones = pzRepository.findAllByUserId(userPK).stream().map((t)->{
+            ResponsePrivateZoneDto privateZoneDto = new ResponsePrivateZoneDto(t);
+            return privateZoneDto;
+        }).collect(Collectors.toList());
+        return privateZones;
+    }
+
+    @Transactional
+    @Override
+    public String deletePrivateZone(Long userPK, Long pzPK) throws NoTargetException, NoUserException {
+        if (!userRepository.existsById(userPK)) throw new NoUserException("해당하는 사용자가 없습니다.");
+        pzRepository.deleteByIdAndUserId(pzPK,userPK);
         return "Success";
     }
 
@@ -281,14 +293,14 @@ public class UserServiceImpl implements UserService {
 //        logger.debug("LocalDataTime check : {}",nowTime.isAfter(null));
         //push
 
-        //장기 미 사용자 까꿍 message
-        logger.debug("nowTime null Exception check : {}", nowTime.isAfter(LocalDateTime.now()));
-        if (targetToken.getPushThree() != null && nowTime.isAfter(targetToken.getPushThree())) {
-            String title = "주변 사람들이 당신의 생각을 궁금해하고 있어요!";
-            String body = "클릭해서 컨텐츠를 작성해보세요";
-            fcmService.sendMessageTo(targetToken.getToken(), title, body);
-            targetToken.setPushThree(nowTime.plusDays(5));
-        }
+//        //장기 미 사용자 까꿍 message
+//        logger.debug("nowTime null Exception check : {}", nowTime.isAfter(LocalDateTime.now()));
+//        if (targetToken.getPushThree() != null && nowTime.isAfter(targetToken.getPushThree())) {
+//            String title = "주변 사람들이 당신의 생각을 궁금해하고 있어요!";
+//            String body = "클릭해서 컨텐츠를 작성해보세요";
+//            fcmService.sendMessageTo(targetToken.getToken(), title, body);
+//            targetToken.setPushThree(nowTime.plusDays(5));
+//        }
 
         if (countOfNew != 0 && (targetToken.getPushOne() == null || nowTime.isAfter(targetToken.getPushOne()))) {
             String title = "반경 내에 " + countOfNew + "명의 사람이 새로 들어왔어요!";
@@ -319,7 +331,7 @@ public class UserServiceImpl implements UserService {
             User targetUser = target.getUser();
 
             // 앱을 끈 사람은 out
-            if(!targetUser.isAlive()) continue;
+            if (!targetUser.isAlive()) continue;
 
             //본인인 경우 out
             if (target.getUser().getId() == user.getId()) continue;
@@ -330,13 +342,24 @@ public class UserServiceImpl implements UserService {
             //privateZone안에 있는 여부check
             boolean userInPrivateZone = false;
             List<PrivateZone> privateZoneList = targetUser.getPrivateZones();
-            if (privateZoneList.size() != 0) {
-                PrivateZone targetPrivateZone = privateZoneList.get(0);
+            for (int j = 0; j < privateZoneList.size(); j++) {
+                PrivateZone targetPrivateZone = privateZoneList.get(i);
                 DistDto targetInPrivateZone = radarMath.distance(targetPrivateZone.getLatitude(), targetPrivateZone.getLongitude(), target.getLatitude(), target.getLongitude());
                 //targetUser의 위치가 privateZone 100 안쪽에 있을때 true
-                if (targetInPrivateZone.getDist() < 100)
+                if (targetInPrivateZone.getDist() < 100) {
                     userInPrivateZone = true;
+                    break;
+                }
             }
+
+            //단일 PZ일때
+//            if (privateZoneList.size() != 0) {
+//                PrivateZone targetPrivateZone = privateZoneList.get(0);
+//                DistDto targetInPrivateZone = radarMath.distance(targetPrivateZone.getLatitude(), targetPrivateZone.getLongitude(), target.getLatitude(), target.getLongitude());
+//                //targetUser의 위치가 privateZone 100 안쪽에 있을때 true
+//                if (targetInPrivateZone.getDist() < 100)
+//                    userInPrivateZone = true;
+//            }
 
             //targetUser의 컨텐츠 time기록을 넘겨준다.
             RequestContentTimeDto contentTimeDto = new RequestContentTimeDto(target.getUser().getRecordTime());

@@ -12,4 +12,5 @@ public interface EmotionRepository extends JpaRepository<Emotion, Long> {
     Boolean existsByUserIdAndContentId(Long userPK, Long contentPK);
     Boolean existsByUserIdAndContentIdAndContentEmoji(Long userPK, Long contentPK, String contentEmoji);
     Optional<Emotion> findByUserIdAndContentIdAndContentEmoji(Long userPk, Long contentPk, String contentEmoji);
+    void deleteAllByContentId(Long contentPK);
 }

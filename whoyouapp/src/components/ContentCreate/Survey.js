@@ -67,7 +67,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
       headerRight: () => (
         <View>
           { isSurveyValid ? 
-            <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
+            <TouchableOpacity style={{ padding: 10 }} onPress={() => {
               createSurvey()
               navigation.navigate('Main')
             }}>
@@ -77,7 +77,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
             <TouchableWithoutFeedback
               onPress={() => showToast()}
             >
-              <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+              <Text style={{color: 'gray', padding: 10 }}>등록</Text>
             </TouchableWithoutFeedback>
           }
 

@@ -10,6 +10,7 @@ import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
 import messaging from '@react-native-firebase/messaging';
 import * as Location from 'expo-location'
+import { useNavigation } from '@react-navigation/native'
 import {
   SafeAreaView,
   StyleSheet,
@@ -26,11 +27,13 @@ import {
 } from '@react-native-google-signin/google-signin'
 
 
-const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji, setPushSetting, userPK, userEmoji }) => {
+const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji, setUserName, setPushSetting, userPK, userEmoji }) => {
   // const [userpk, setUserpk] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
   const [userInfo2, setUserInfo2] = useState(null);
   const [gettingLoginStatus, setGettingLoginStatus] = useState(true)
+
+  const navigation = useNavigation()
 
   useEffect( async () => {
     const front = await Location.getForegroundPermissionsAsync()
@@ -38,13 +41,16 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
 
     if (userPK !== 0 && userEmoji) {
       if (!front.granted && !back.granted) {
-        navigate('InfoAgree')
+        navigation.reset({ routes: [{ name: 'InfoAgree' }] })
+        // navigate('InfoAgree')
       }
       else {
-        navigate('Main')
+        navigation.reset({ routes: [{ name: 'Main' }] })
+        // navigate('Main')
       }
     } else if (userPK !== 0 && !userEmoji) {
-      navigate('NicknameTutorial')
+      navigation.reset({ routes: [{ name: 'NicknameTutorial' }] })
+      // navigate('NicknameTutorial')
     } else {
       GoogleSignin.configure({
         scopes: ['https://www.googleapis.com/auth/drive.readonly'],
@@ -121,6 +127,7 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
         .then((res) => {
           setUserInfo2(res.data.success)
           setUserEmoji(res.data.success.emoji)
+          setUserName(res.data.success.name)
           setPushSetting(res.data.success.acceptPush, res.data.success.acceptRadius, res.data.success.acceptSync)
           console.log("순서 3")
           console.log(res.data.success.emoji)
@@ -280,6 +287,9 @@ function mapDispatchToProps(dispatch) {
     },
     setUserEmoji: (emoji) => {
       dispatch(actionCreators.setUserEmoji(emoji))
+    },
+    setUserName: (emoji) => {
+      dispatch(actionCreators.setUserName(emoji))
     },
     setPushSetting: (acceptPush, acceptRadius, acceptSync) => {
       dispatch(actionCreators.setPushSetting({acceptPush, acceptRadius, acceptSync}))

@@ -11,6 +11,7 @@ const defaultState = {
   SERVER_URL: 'https://k5a101.p.ssafy.io/api/v1/',
   userPK: 0,
   userEmoji: 'none',
+  userName: '',
   acceptPush: null,
   acceptRadius: null,
   acceptSync: null,
@@ -21,6 +22,7 @@ const login = createAction("LOGIN")
 const logout = createAction("LOGOUT")
 const setRadius = createAction("SETRADIUS")
 const setUserPK = createAction("SETUSERPK")
+const setUserName = createAction("SETUSERNAME")
 const setUserEmoji = createAction("SETUSEREMOJI")
 const setPushSetting = createAction("SETPUSHSETTING")
 
@@ -32,6 +34,10 @@ const UserReducer = createReducer(defaultState, {
     userPK: action.payload
     // 로그인 시 state 변경 로직
     // state.push({ text: action.payload, id: Date.now() });
+  }),
+  [setUserName]: (state, action) => ({
+    ...state,
+    userName: action.payload
   }),
   [setUserEmoji]: (state, action) => ({
     ...state,
@@ -54,6 +60,7 @@ const UserReducer = createReducer(defaultState, {
 export const actionCreators = {
   setUserPK,
   setUserEmoji,
+  setUserName,
   logout,
   setRadius,
   setPushSetting,

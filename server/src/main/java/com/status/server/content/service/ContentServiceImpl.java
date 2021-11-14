@@ -2,7 +2,11 @@ package com.status.server.content.service;
 
 import com.status.server.content.domain.*;
 import com.status.server.content.dto.ResponseContentDto;
+import com.status.server.content.dto.ResponseContentPlusDto;
 import com.status.server.content.dto.ResponseSurveyDto;
+import com.status.server.content.dto.ResponseSurveyPlusDto;
+import com.status.server.emotion.domain.EmotionRepository;
+import com.status.server.emotion.service.EmotionServiceImpl;
 import com.status.server.fcm.domain.FcmToken;
 import com.status.server.fcm.domain.FcmTokenRepository;
 import com.status.server.global.exception.NoAuthorityUserException;
@@ -31,6 +35,10 @@ public class ContentServiceImpl implements ContentService {
     private final RecordTimeRepository recordTimeRepository;
     private final SurveyContentAnswerRepository surveyContentAnswerRepository;
     private final FcmTokenRepository fcmTokenRepository;
+    private final ReportedContentRepository reportedContentRepository;
+    private final EmotionRepository emotionRepository;
+
+    private final EmotionServiceImpl emotionService;
 
 
     Logger logger = LoggerFactory.getLogger(ContentServiceImpl.class);
@@ -132,7 +140,7 @@ public class ContentServiceImpl implements ContentService {
     public String voteSurvey(Long userPK, Long contentPK, Long answerPK) throws NoUserException, NoContentException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         Content content = contentRepository.findById(contentPK).orElseThrow(() -> new NoContentException("해당하는 컨탠츠는 없습니다."));
-        if(user.getId() == content.getUser().getId()) return "본인은 투표할수 없습니다.";
+        if (user.getId() == content.getUser().getId()) return "본인은 투표할수 없습니다.";
         if (!surveyContentAnswerRepository.existsById(answerPK)) throw new NoContentException("해당하는 선택지가 없습니다.");
 
         String result = "성공적으로 투표 했습니다.";
@@ -167,24 +175,18 @@ public class ContentServiceImpl implements ContentService {
     @Transactional
     @Override
     public List<ResponseContentDto> statusContent(String userName) throws NoUserException, NoContentException {
-        User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(Type.STATUS, user.getId());
-//        if (contents.isEmpty())
-//            throw new NoContentException("해당하는 컨탠츠는 없습니다.");
-
-        return contents.stream().map((e) -> {
-            ResponseContentDto responseContentDto = new ResponseContentDto(e);
-            return responseContentDto;
-        }).collect(Collectors.toList());
+        return getContent(userName, Type.STATUS);
     }
 
     @Transactional
     @Override
     public List<ResponseContentDto> imageContent(String userName) throws NoUserException, NoContentException {
+        return getContent(userName, Type.IMAGE);
+    }
+
+    private List<ResponseContentDto> getContent(String userName, Type type) throws NoUserException {
         User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(Type.IMAGE, user.getId());
-//        if (contents.isEmpty())
-//            throw new NoContentException("해당하는 컨탠츠는 없습니다.");
+        List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(type, user.getId());
 
         return contents.stream().map((e) -> {
             ResponseContentDto responseContentDto = new ResponseContentDto(e);
@@ -222,7 +224,7 @@ public class ContentServiceImpl implements ContentService {
                 }
                 return null;
             }).collect(Collectors.toList());
-            responseSurveyDto.setAnswerList(tmp.stream().filter(t->t != null).collect(Collectors.toList()));
+            responseSurveyDto.setAnswerList(tmp.stream().filter(t -> t != null).collect(Collectors.toList()));
 
             return responseSurveyDto;
         }).collect(Collectors.toList());
@@ -231,28 +233,103 @@ public class ContentServiceImpl implements ContentService {
 
     @Transactional
     @Override
-    public String deleteContent(Long userPK, Long contentPK, Type type) throws NoContentException, NoUserException, NoAuthorityUserException {
+    public List<ResponseContentPlusDto> statusesContent(String userName) throws NoUserException, NoContentException {
+        return getContents(userName, Type.STATUS);
+    }
+
+    @Transactional
+    @Override
+    public List<ResponseContentPlusDto> imagesContent(String userName) throws NoUserException, NoContentException {
+        return getContents(userName, Type.IMAGE);
+    }
+
+    private List<ResponseContentPlusDto> getContents(String userName, Type type) throws NoUserException {
+        User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(type, user.getId());
+
+        return contents.stream().map((e) -> {
+            ResponseContentPlusDto responseContentPlusDto = new ResponseContentPlusDto(e);
+
+            responseContentPlusDto.setEmotionDtoList(emotionService.getEmotionsPlus(e.getId()));
+
+            return responseContentPlusDto;
+        }).collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    public List<ResponseSurveyPlusDto> surveysContent(String userName) throws NoUserException, NoContentException {
+        User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(Type.SURVEY, user.getId());
+        if (contents.isEmpty())
+//            throw new NoContentException("해당하는 컨탠츠는 없습니다.");
+            return new ArrayList<>();
+
+        List<ResponseSurveyPlusDto> list = contents.stream().map((e) -> {
+            ResponseSurveyPlusDto responseSurveyPlusDto = new ResponseSurveyPlusDto(e);
+            HashMap<String, Integer> coutingMap = responseSurveyPlusDto.getCount();
+            HashMap<String, Long> answerPKMap = responseSurveyPlusDto.getAnswerPK();
+
+            List<String> tmp = surveyContentAnswerRepository.findByContentId(e.getId()).stream().map((s) -> {
+                String target = s.getAnswer();
+                // answer 선택받은 횟수
+                if (coutingMap.containsKey(target)) {
+                    coutingMap.put(target, coutingMap.get(target) + 1);
+                } else {
+                    coutingMap.put(target, 1);
+                    answerPKMap.put(target, s.getId());
+                }
+                if (user.getId() == s.getUser().getId()) {
+                    coutingMap.put(target, coutingMap.get(target) - 1);
+                    logger.debug("test!!!!!!!!!!!!!! : {},     : {}", user.getId(), s.getUser().getId());
+                    return target;
+                }
+                return null;
+            }).collect(Collectors.toList());
+            responseSurveyPlusDto.setAnswerList(tmp.stream().filter(t -> t != null).collect(Collectors.toList()));
+
+            responseSurveyPlusDto.setEmotionPlusDtoList(emotionService.getEmotionsPlus(e.getId()));
+            return responseSurveyPlusDto;
+        }).collect(Collectors.toList());
+        return list;
+    }
+
+    @Transactional
+    @Override
+    public String deleteContent(Long userPK, Long contentPK) throws NoContentException, NoUserException, NoAuthorityUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         if (!contentRepository.existsById(contentPK)) throw new NoContentException("해당하는 컨탠츠는 없습니다.");
-        Content content = contentRepository.findByUserIdAndIdAndType(userPK,contentPK,type).orElseThrow(() -> new NoContentException("컨탠츠 삭제 실패했습니다."));
-        if(content.getUser().getId() != userPK)
+        Content content = contentRepository.findByUserIdAndId(userPK, contentPK).orElseThrow(() -> new NoContentException("컨탠츠 삭제 실패했습니다."));
+
+        if (content.getUser().getId() != userPK)
             throw new NoAuthorityUserException("해당 컨텐츠 삭재할 권한이 없습니다.");
+
+        emotionRepository.deleteAllByContentId(contentPK);
+
         surveyContentAnswerRepository.deleteByContentId(contentPK);
         contentRepository.deleteById(contentPK);
 
         RecordTime recordTime = user.getRecordTime();
         if (recordTime != null) {
             recordTime = user.getRecordTime();
-            if(content.getType()==Type.STATUS){
+            if (content.getType() == Type.STATUS) {
                 recordTime.setStatusAt(null);
-            }else if(content.getType()==Type.IMAGE){
+            } else if (content.getType() == Type.IMAGE) {
                 recordTime.setImageAt(null);
-            }else{
+            } else {
                 recordTime.setSurveyAt(null);
             }
         }
         recordTimeRepository.save(recordTime);
 
+        return "Success!";
+    }
+
+    @Override
+    public String reportContent(Long userPK, Long contentPK, String reason) throws NoContentException, NoUserException {
+        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+        Content content = contentRepository.findById(contentPK).orElseThrow(() -> new NoContentException("해당하는 컨탠츠는 없습니다."));
+        reportedContentRepository.save(ReportedContent.builder().user(user).content(content).reason(reason).build());
         return "Success!";
     }
 
