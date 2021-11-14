@@ -1,14 +1,21 @@
 import React from 'react';
 import { Text, View, TouchableOpacity } from 'react-native';
 import Modal from "react-native-modal";
+import Api from '../../utils/api'
 
-const DeleteModal = ({ isModalVisible, setModalVisible }) => {  
+const DeleteModal = ({ contentPK, userPK, isModalVisible, setModalVisible }) => {  
   const sendModalVisible = () => {
     setModalVisible(!isModalVisible)
   }
 
-  const sendReport = () => {
-    console.warn('Delete')
+  const deleteContent = () => {
+    Api.deleteContent(contentPK, userPK)
+      .then((res) => {
+        console.log(res.data.success)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     sendModalVisible()
   }
 
@@ -33,7 +40,7 @@ const DeleteModal = ({ isModalVisible, setModalVisible }) => {
           <TouchableOpacity style={{paddingLeft: 15, paddingRight: 15}} onPress={sendModalVisible}>
             <Text style={{fontSize: 16}}>아니오</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{paddingLeft: 15, paddingRight: 20}} onPress={sendReport}>
+          <TouchableOpacity style={{paddingLeft: 15, paddingRight: 20}} onPress={deleteContent}>
             <Text style={{fontSize: 16, color: 'red'}}>네</Text>
           </TouchableOpacity>
         </View>
@@ -43,4 +50,4 @@ const DeleteModal = ({ isModalVisible, setModalVisible }) => {
   
 };
 
-export default DeleteModal;
+export default DeleteModal

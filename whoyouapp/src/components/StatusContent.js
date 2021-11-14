@@ -1,57 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { Image, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
+import { AntDesign } from '@expo/vector-icons'
 import { SwiperFlatList } from 'react-native-swiper-flatlist'
 import LinearGradient from 'react-native-linear-gradient'
 import Api from '../utils/api'
 import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
+import images from '../assets/images'
 
 
 const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
 
-const dummyStatus = [
-  {
-    id: 1,
-    backgroundColor: 'skyblue',
-    content: '나는 오늘도 눈물을 흘린다.',
-    emojis: [{
-      emoji: 'amazing',
-      count: 100,
-    },],
-  },
-  {
-    id: 2,
-    backgroundColor: '#D7D7D7',
-    content: '나는 오늘도 눈물을 흘린다.',
-    emojis: [
-      {
-        emoji: 'amazing',
-        count: 222,
-      },
-      {
-        emoji: 'sad',
-        count: 111,
-      },
-    ],
-  },
-  {
-    id: 3,
-    backgroundColor: 'blue',
-    content: '나는 오늘도 눈물을 흘린다.',
-    emojis: [{
-      emoji: 'amazing',
-      count: 1123,
-    },],
-  }
-]
-
-const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight }) => {
+const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, isModalVisible, setModalVisible, setDeleteContent }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [statusData, setStatusData] = useState([])
-  const [isEmotions, setEmotions] = useState([])
-  const [giveEmotion, setGiveEmotion] = useState([])
-  const [statusEmoji, setStatusEmoji] = useState([])
+  const [isEmotions, setEmotions] = useState(false)
+  const [giveEmotion, setGiveEmotion] = useState('')
+  const [statusEmoji, setStatusEmoji] = useState({})
   const [isLoaded, setIsLoaded] = useState(false)
   const now = new Date()
 
@@ -61,30 +27,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
         console.log('유저 상태 받아오기', res.data.success)
         let data = res.data.success
         console.log('자몽이0')
-        data.map((content, idx) => {
-          data[idx]['id'] = idx
-          Api.getContentEmotion(data[idx].contentPk)
-            .then((result) => {
-              console.log('자몽이1', idx, result.data)
-              let chk = false
-              let isMe = ''
-              let temp = {}
-              for (let emojiData of result.data.success) {
-                if (emojiData.userPK === userPK) {
-                  isMe = emojiData.contentEmoji
-                }
-                temp[emojiData.contentEmoji] ? temp[emojiData.contentEmoji]++ : temp[emojiData.contentEmoji] = 1
-                chk = true
-              }
-              setStatusEmoji(emojis => [...emojis, temp])
-              setEmotions(chks => [...chks, chk])
-              setGiveEmotion(curr => [...curr, isMe])
-              setIsLoaded(true)
-            })
-            .catch((err) => {
-              console.warn(err)
-            })
-        })
+        getEmotion(data[0].contentPk)
         setStatusData(data)
         console.log('최종', statusData)
       })
@@ -93,32 +36,75 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
       })
   }, [])
 
-  const addEmotion = (emoji, contentId, userPK, idx) => {
+  const toggleModal = () => {
+    setDeleteContent(statusData[currentIndex].contentPk)
+    setModalVisible(!isModalVisible)
+  }
+
+  const getEmotion = (contentPK) => {
+    Api.getContentEmotion(contentPK)
+      .then((result) => {
+        console.log('자몽이1', result.data)
+        let chk = false
+        let isMe = ''
+        let emojis = {}
+        for (let emojiData of result.data.success) {
+          if (emojiData.userPK === userPK) {
+            isMe = emojiData.contentEmoji
+          }
+          emojis[emojiData.contentEmoji] ? emojis[emojiData.contentEmoji]++ : emojis[emojiData.contentEmoji] = 1
+          chk = true
+        }
+        setStatusEmoji(emojis)
+        setEmotions(chk)
+        setGiveEmotion(isMe)
+        setIsLoaded(true)
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
+  
+  const addEmotion = (emoji, contentId, userPK) => {
     Api.setContentEmotion(emoji, contentId, userPK)
       .then((res) => {
         console.log('emotion success')
         console.log(res.data)
-        // 공감 완료 표시
-        setStatusEmoji(emojis => {
-          const updated = [...emojis]
-          updated[idx][emoji] ? updated[idx][emoji]++ : updated[idx][emoji] = 1
-          return updated
-        })
-        setEmotions(chks => {
-          const updated = [...chks]
-          updated[idx] = true
-          return updated
-        })
-        setGiveEmotion(curr => {
-          const updated = [...curr]
-          updated[idx] = true
-          return updated
-        })
+        getEmotion(contentId)
+        // 공감 완료 표시 방법 2
+        // setImageEmoji(emojis => {
+        //   const updated = {...emojis}
+        //   updated[emoji] ? updated[emoji]++ : updated[emoji] = 1
+        //   return updated
+        // })
+        // setEmotions(true)
+        // setGiveEmotion(emoji)
       })  
       .catch((err) => {
         console.warn(err)
       })
   }
+
+  const deleteEmotion = () => {
+    Api.setContentEmotion(giveEmotion, statusData[currentIndex].contentPk, userPK)
+      .then((res) => {
+        console.log(res.data.success)
+        getEmotion(statusData[currentIndex].contentPk)
+        // 공감 취소 표시 방법 2 - 대신 해당 게시글에 이모지 존재 유무를 계산해야함
+        // setStatusEmoji(emojis => {
+        //   const updated = {...emojis}
+        //   updated[giveEmotion]--
+        //   return updated
+        // })
+        // setEmotions(false)
+        // setGiveEmotion('')
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    console.log('공감 취소')
+  }
+
 
   const humanize = (date) => {
     const moment = require("moment")
@@ -151,17 +137,51 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
 
   return (
     <View>
+      <View
+        style={{
+          width: deviceWidth,
+          height: 50,
+          backgroundColor: 'white',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingLeft: 13,
+          paddingRight: 20,
+          alignItems: 'center',
+          elevation: 10,
+        }}
+      >
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+          }}
+        >
+          <Image 
+            style={{
+              height: deviceWidth * 0.075,
+              width: deviceWidth * 0.075,
+            }}
+            source={images.menu.status}
+            resizeMode='contain' />
+          <Text>상태 메시지</Text>
+        </View>
+        <TouchableOpacity onPress={toggleModal}>
+          <AntDesign name={ownerName === userName ? "close" : "exclamationcircle"} size={18} color={ownerName === userName ? "black" : "#FF6A77"} />
+        </TouchableOpacity>
+      </View>
       <SwiperFlatList
         data={statusData}
         showPagination
         onChangeIndex={({ index }) => {
+          console.log('onchangeIndex', '자몽이2', index)
           setCurrentIndex(index)
           setIsEmojiSelect(false)
+          getEmotion(statusData[index].contentPk)
         }}
         renderItem={({ item }) => (
           <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
             <View
-              key={item.id}
+              key={item.contentPk}
               style={{
                 width: deviceWidth,
                 height: deviceWidth,
@@ -176,51 +196,14 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
           </TouchableWithoutFeedback>
         )}
       />
-      { isEmojiSelect && 
-        <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
-          <View style={{
-            position: 'absolute',
-            width: 300,
-            height: 70,
-            borderRadius: 10,
-            backgroundColor: 'white',
-            elevation: 4,
-            left: 50,
-            bottom: 50,
-            paddingLeft: 10,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-            {emojiArray.map((emotion, index) => (
-              <View key={index} style={{
-                flex:1, 
-                height: '50%',
-              }}>
-                <TouchableOpacity
-                  style={{
-                    flex:1, 
-                    width: '70%',
-                    height: '100%',
-                  }}
-                  onPress={() => {
-                    setIsEmojiSelect(false)
-                    console.log('statusData', statusData)
-                    console.log('statusEmoji', statusEmoji)
-                    addEmotion(emotion, statusData[currentIndex].contentPk, userPK, currentIndex)
-                    console.warn(emotion, statusData[currentIndex], index)
-                  }}
-                >
-                  <Image source={emojiImages.default.emoji[emotion]} style={{width: '100%', height: '100%'}}/>
-                </TouchableOpacity>
-              </View>
-            ))}     
-          </View>
-        </TouchableWithoutFeedback>
-      }
-      <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
+      
+      <TouchableWithoutFeedback onPress={() => {
+        setIsEmojiSelect(false)
+        console.log('첫 공감 누름!!')
+      }}>
         <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
-            {!isEmotions[currentIndex] &&
+            {!isEmotions &&
               <View>
                 <Text
                   style={{
@@ -230,7 +213,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
                   첫 공감을 남겨보세요
                 </Text>
               </View>}
-            {isEmotions[currentIndex] && Object.keys(statusEmoji[currentIndex]).map((item, index) => (
+            {isEmotions && Object.keys(statusEmoji).map((item, index) => (
               <View key={index} style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
                 <Image
                   style={{ width: 22, height: 22, marginRight: 5 }}
@@ -241,13 +224,53 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
                     fontSize: 12,
                   }}
                 >
-                  {convertCount(statusEmoji[currentIndex][item])}
+                  {convertCount(statusEmoji[item])}
                 </Text>
               </View>
             ))}
           </View>
         </View>
       </TouchableWithoutFeedback>
+      { isEmojiSelect && 
+        <View style={{
+          position: 'absolute',
+          width: 300,
+          height: 70,
+          borderRadius: 10,
+          backgroundColor: 'white',
+          elevation: 2,
+          left: 50,
+          bottom: 55,
+          paddingLeft: 10,
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}>
+          {emojiArray.map((emotion, index) => (
+            <TouchableOpacity
+              key={index}
+              style={{
+                elevation: 10,
+                flex: 1,
+                height: 35,
+                // height: '50%',
+              }}
+              onPress={() => {
+                setIsEmojiSelect(false)
+                console.log('statusData', statusData)
+                console.log('statusEmoji', statusEmoji)
+                addEmotion(emotion, statusData[currentIndex].contentPk, userPK)
+                console.warn(emotion, statusData[currentIndex], index)
+              }}
+            >
+            <Image
+              resizeMode="cover"
+              source={emojiImages.default.emoji[emotion]}
+              style={{ width: 35, height: 35 }}
+            />
+            </TouchableOpacity>
+          ))}     
+        </View>
+      }
       <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
         <View style={{
           flexDirection: 'row',
@@ -256,29 +279,33 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
           backgroundColor: 'white',
           elevation: 10 
         }}>
-          {isLoaded && giveEmotion[currentIndex] === '' &&
+          {isLoaded && giveEmotion === '' &&
             <TouchableOpacity style={{ marginLeft: 15, marginRight: 15 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
               <Text style={{ fontSize: 15 }}>{isEmojiSelect ? '닫기': '공감'}</Text>
             </TouchableOpacity>
           }
-          {isLoaded && giveEmotion[currentIndex] !== '' &&
+          {isLoaded && giveEmotion !== '' &&
             <>
-              <LinearGradient 
-                colors={['#AB79EF', '#FC98AB']}
-                style={{
-                  alignItems: 'center',
-                  borderRadius: 20,
-                  justifyContent: 'center',
-                  marginLeft: 15,
-                  marginRight: 15,
-                  padding: 2,
-                }}
+              <TouchableOpacity
+                onPress={() => deleteEmotion()}
               >
-                <Image
-                  style={{ width: 24, height: 24 }}
-                  source={emojiImages.default.emoji[giveEmotion[currentIndex]]}
-                />
-              </LinearGradient>
+                <LinearGradient 
+                  colors={['#AB79EF', '#FC98AB']}
+                  style={{
+                    alignItems: 'center',
+                    borderRadius: 20,
+                    justifyContent: 'center',
+                    marginLeft: 15,
+                    marginRight: 15,
+                    padding: 2,
+                  }}
+                >
+                  <Image
+                    style={{ width: 24, height: 24 }}
+                    source={emojiImages.default.emoji[giveEmotion]}
+                  />
+                </LinearGradient>
+              </TouchableOpacity>
             </>
           }
           {statusData.length !== 0
