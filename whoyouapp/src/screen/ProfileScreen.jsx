@@ -8,7 +8,6 @@ import * as emojiImages from '../assets/images'
 import ImageContent from '../components/ImageContent'
 import StatusContent from '../components/StatusContent'
 import SurveyContent from '../components/SurveyContent'
-import DeleteModal from '../components/modal/deleteModal'
 import images from '../assets/images'
   
 
@@ -17,15 +16,9 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
   const [isStatus, setIsStatus] = useState(true)
   const [isImage, setIsImage] = useState(true)
   const [isSurvey, setIsSurvey] = useState(true)
-  const [isModalVisible, setModalVisible] = useState(false)
-  const [deleteContent, setDeleteContent] = useState(null)
   
   const now = new Date()
   const scrollRef = useRef()
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible)
-  }
 
   const ProfileTitle = () => {
     return (
@@ -50,45 +43,106 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
     })
   }, [navigation])
 
-  const humanize = (date) => {
-    const moment = require("moment")
-    let r = Date.parse(now) - Date.parse(date) + 32400000
-    if (parseInt(r) > 2678400000) {
-      r = "1달 이전"
-    } else if (parseInt(r) > 86400000) {
-      r = parseInt(parseInt(r) / 86400000).toString() + "일 전"
-    } else if (parseInt(r) >= 3600000) {
-      r = parseInt(parseInt(r) / 3600000).toString() + "시간 전"
-    } else if (parseInt(r) >= 60000) {
-      r = parseInt(parseInt(r) / 60000).toString() + "분 전"
-    } else {
-      r = "방금 전"
-    }
-    return r;
-  }
-
   return (
     <>
       <ScrollView
         style={{backgroundColor: '#C7C7C7'}}
         ref={scrollRef}
       >
-        <View style={{ flex: 1 }}>
-          <DeleteModal
-            contentPK={deleteContent}
-            userPK={userPK}
-            isModalVisible={isModalVisible}
-            setModalVisible={setModalVisible}
-          />
-        </View>
-        {isStatus && (
+        {isStatus ? (
           <>
             <StatusContent 
               ownerName={ownerName}
-              isModalVisible={isModalVisible}
-              setModalVisible={setModalVisible}
-              setDeleteContent={setDeleteContent}
+              setIsStatus={setIsStatus}
             />
+          </>
+        )
+        : (
+          <>
+          <View
+            style={{
+              width: deviceWidth,
+              height: 50,
+              backgroundColor: 'white',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingLeft: 13,
+              paddingRight: 20,
+              alignItems: 'center',
+              elevation: 10,
+            }}
+          >
+            <View
+              style={{
+                alignItems: 'center',
+                flexDirection: 'row',
+              }}
+            >
+              <Image 
+                style={{
+                  height: deviceWidth * 0.075,
+                  width: deviceWidth * 0.075,
+                }}
+                source={images.menu.status}
+                resizeMode='contain' />
+              <Text>상태 메시지</Text>
+            </View>
+          </View>
+          <View
+            style={{
+              alignItems: 'center',
+              backgroundColor: '#FF6A77',
+              height: deviceWidth,
+              justifyContent: 'center',
+              width: deviceWidth,
+            }}
+          >
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 14,
+                fontWeight: 'bold'
+              }}
+            >
+              남긴 상태 메시지가 없습니다.
+            </Text>
+          </View>
+          <View 
+            style={{
+              alignItems:'center',
+              backgroundColor: 'white',
+              flexDirection: 'row', 
+              height: 40,
+              paddingLeft: 10
+            }}
+          >
+            <Image 
+              style={{
+                height: 22,
+                width: 22,
+              }}
+              source={images.emoji.sad}
+            />
+          </View>
+          <View 
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              height: 40,
+              backgroundColor: 'white',
+              elevation: 10 
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 15,
+                marginLeft: 15,
+              }}
+            >
+              공감...은 나중에
+            </Text>
+          </View>
+          <View style={{ height: 10, backgroundColor: "#D7D7D7"}}></View>
           </>
         )}
 
@@ -97,9 +151,6 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
             <ImageContent 
               ownerName={ownerName}
               setIsImage={setIsImage}
-              isModalVisible={isModalVisible}
-              setModalVisible={setModalVisible}
-              setDeleteContent={setDeleteContent}
             />
           </>
         )}
@@ -110,9 +161,6 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
             <SurveyContent 
               ownerName={ownerName}
               setIsSurvey={setIsSurvey}
-              isModalVisible={isModalVisible}
-              setModalVisible={setModalVisible}
-              setDeleteContent={setDeleteContent}
             />
           </>
         )}
