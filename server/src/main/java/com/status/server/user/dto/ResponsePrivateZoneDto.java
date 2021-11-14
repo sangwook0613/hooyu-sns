@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 @Setter
 public class ResponsePrivateZoneDto {
 
+    private Long pzPK;
+
     private String title;
 
     private BigDecimal latitude;
@@ -19,6 +21,7 @@ public class ResponsePrivateZoneDto {
     private BigDecimal longitude;
 
     public ResponsePrivateZoneDto(PrivateZone entity) {
+        this.pzPK = entity.getId();
         this.title = entity.getTitle();
         this.latitude = entity.getLatitude();
         this.longitude = entity.getLongitude();

@@ -13,5 +13,9 @@ public interface PrivateZoneRepository extends JpaRepository<PrivateZone, Long> 
 
     Optional<PrivateZone> findByUserId(Long userId);
     Optional<PrivateZone> findByUserIdAndTitleAndLatitudeAndLongitude(Long userPK, String title, BigDecimal lat, BigDecimal lon);
+
     List<PrivateZone> findAllByUserId(Long userPK);
+
+    void deleteByIdAndUserId(Long pzPK, Long userPK);
+    void deleteAllByIdAndUserId(Long userPK, Long pzPK);
 }
