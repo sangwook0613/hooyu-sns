@@ -1,9 +1,15 @@
 package com.status.server.user.dto;
 
 import com.status.server.user.domain.PrivateZone;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
+@NoArgsConstructor
+@Getter
+@Setter
 public class ResponsePrivateZoneDto {
 
     private String title;
