@@ -134,8 +134,8 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           if (data.length === 0) {
             setIsImage(false)
           } else {
-            getEmotion(data[0].contentPk)
-            getVoteCheck(data[0].contentPk)
+            getEmotion(data[0].contentPK)
+            getVoteCheck(data[0].contentPK)
             setSurveyData(data)
           }
         })
