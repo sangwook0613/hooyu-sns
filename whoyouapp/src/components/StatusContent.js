@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Image, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import { SwiperFlatList } from 'react-native-swiper-flatlist'
@@ -7,11 +7,12 @@ import Api from '../utils/api'
 import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
 import images from '../assets/images'
+import DeleteModal from '../components/modal/deleteModal'
 
 
 const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
 
-const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, isModalVisible, setModalVisible, setDeleteContent }) => {
+const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsStatus }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [statusData, setStatusData] = useState([])
@@ -19,17 +20,20 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const [giveEmotion, setGiveEmotion] = useState('')
   const [statusEmoji, setStatusEmoji] = useState({})
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isModalVisible, setModalVisible] = useState(false)
+  const [deleteContent, setDeleteContent] = useState(null)
   const now = new Date()
 
   useEffect(() => {
     Api.getUserStatus(ownerName)
       .then((res) => {
-        console.log('유저 상태 받아오기', res.data.success)
-        let data = res.data.success
-        console.log('자몽이0')
-        getEmotion(data[0].contentPk)
-        setStatusData(data)
-        console.log('최종', statusData)
+        if (res.data.success.length === 0) {
+          setIsStatus(false)
+        } else {
+          let data = res.data.success
+          getEmotion(data[0].contentPk)
+          setStatusData(data)
+        }
       })
       .catch((err) => {
         console.warn(err)
@@ -44,7 +48,6 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const getEmotion = (contentPK) => {
     Api.getContentEmotion(contentPK)
       .then((result) => {
-        console.log('자몽이1', result.data)
         let chk = false
         let isMe = ''
         let emojis = {}
@@ -68,8 +71,6 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const addEmotion = (emoji, contentId, userPK) => {
     Api.setContentEmotion(emoji, contentId, userPK)
       .then((res) => {
-        console.log('emotion success')
-        console.log(res.data)
         getEmotion(contentId)
         // 공감 완료 표시 방법 2
         // setImageEmoji(emojis => {
@@ -102,7 +103,6 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       .catch((err) => {
         console.log(err)
       })
-    console.log('공감 취소')
   }
 
 
@@ -135,8 +135,40 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
     }
   }
 
+  const swiperFlatList = useRef()
+
+  const reRenderStatus = () => {
+    Api.getUserStatus(ownerName)
+      .then((res) => {
+        if (res.data.success.length === 0) {
+          setIsStatus(false)
+        } else {
+          let data = res.data.success
+          getEmotion(currentIndex === data.length ? data[currentIndex - 1].contentPk : data[currentIndex].contentPk)
+          if (currentIndex === data.length) {
+            setCurrentIndex(currentIndex - 1)
+          }
+          setStatusData(data)
+          swiperFlatList.current.scrollToIndex({ index: currentIndex - 1 })
+        }
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
+
   return (
     <View>
+      <View style={{ flex: 1 }}>
+        <DeleteModal
+          contentPK={deleteContent}
+          userPK={userPK}
+          isModalVisible={isModalVisible}
+          setModalVisible={setModalVisible}
+          contentType={'status'}
+          reRender={reRenderStatus}
+        />
+      </View>
       <View
         style={{
           width: deviceWidth,
@@ -170,6 +202,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         </TouchableOpacity>
       </View>
       <SwiperFlatList
+        ref={swiperFlatList}
         data={statusData}
         showPagination
         onChangeIndex={({ index }) => {

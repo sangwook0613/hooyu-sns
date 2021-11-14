@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Image, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import { SwiperFlatList } from 'react-native-swiper-flatlist'
@@ -7,11 +7,12 @@ import Api from '../utils/api'
 import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
 import images from '../assets/images'
+import DeleteModal from '../components/modal/deleteModal'
 
 
 const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
 
-const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsImage, isModalVisible, setModalVisible, setDeleteContent }) => {
+const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsImage }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [imageData, setImageData] = useState([])
@@ -19,21 +20,20 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
   const [giveEmotion, setGiveEmotion] = useState('')
   const [imageEmoji, setImageEmoji] = useState({})
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isModalVisible, setModalVisible] = useState(false)
+  const [deleteContent, setDeleteContent] = useState(null)
   const now = new Date()
 
   
   useEffect(() => {
     Api.getUserImage(ownerName)//ownerName
       .then((res) => {
-        console.log('유저 이미지 불러오기')
-        console.log(res.data.success)
         if (res.data.success.length === 0) {
           setIsImage(false)
         } else {
           let data = res.data.success
           getEmotion(data[0].contentPk)
           setImageData(data)
-          console.log('최종', imageData)
         }
       })
       .catch((err) => {
@@ -49,7 +49,6 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
   const getEmotion = (contentPK) => {
     Api.getContentEmotion(contentPK)
       .then((result) => {
-        console.log('자몽이1', result.data)
         let chk = false
         let isMe = ''
         let emojis = {}
@@ -73,8 +72,6 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
   const addEmotion = (emoji, contentId, userPK) => {
     Api.setContentEmotion(emoji, contentId, userPK)
       .then((res) => {
-        console.log('emotion success')
-        console.log(res.data)
         getEmotion(contentId)
         // 공감 완료 표시 방법 2
         // setImageEmoji(emojis => {
@@ -93,7 +90,6 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
   const deleteEmotion = () => {
     Api.setContentEmotion(giveEmotion, imageData[currentIndex].contentPk, userPK)
       .then((res) => {
-        console.log(res.data.success)
         getEmotion(imageData[currentIndex].contentPk)
         // 공감 취소 표시 방법 2 - 대신 해당 게시글에 이모지 존재 유무를 계산해야함
         // setImageEmoji(emojis => {
@@ -107,7 +103,6 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
       .catch((err) => {
         console.log(err)
       })
-    console.log('공감 취소')
   }
 
   const humanize = (date) => {
@@ -139,8 +134,40 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
     }
   }
 
+  const swiperFlatList = useRef()
+
+  const reRenderImage = () => {
+    Api.getUserImage(ownerName)
+      .then((res) => {
+        if (res.data.success.length === 0) {
+          setIsImage(false)
+        } else {
+          let data = res.data.success
+          getEmotion(currentIndex === data.length ? data[currentIndex - 1].contentPk : data[currentIndex].contentPk)
+          if (currentIndex === data.length) {
+            setCurrentIndex(currentIndex - 1)
+          }
+          setImageData(data)
+          swiperFlatList.current.scrollToIndex({ index: currentIndex - 1 })
+        }
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
+
   return (
     <View>
+      <View style={{ flex: 1 }}>
+        <DeleteModal
+          contentPK={deleteContent}
+          userPK={userPK}
+          isModalVisible={isModalVisible}
+          setModalVisible={setModalVisible}
+          contentType={'image'}
+          reRender={reRenderImage}
+        />
+      </View>
       <View
         style={{
           width: deviceWidth,
@@ -175,6 +202,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
         </TouchableOpacity>
       </View>
       <SwiperFlatList
+        ref={swiperFlatList}
         data={imageData}
         onChangeIndex={({ index }) => {
           setCurrentIndex(index)
