@@ -2,6 +2,14 @@ import axios from './interceptor'
 
 export default {
 
+  deleteContent(contentPK, userPK) {
+    return axios({
+      url: 'content',
+      method: 'delete',
+      data: { contentPK: contentPK, userPK: userPK}
+    })
+  },
+
   loginGoogle(data) {
     return axios({
       url: 'login/google',
