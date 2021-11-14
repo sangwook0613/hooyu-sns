@@ -92,7 +92,7 @@ public class UserController {
     }
 
     @GetMapping("/private")
-    public ResponseEntity<SuccessResponseDto> getPrivateZone(@RequestBody Long userPK) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> getPrivateZone(@RequestParam(value = "userPK") Long userPK) throws NoUserException {
         logger.trace("User Controller 진입 getPrivateZone param {}", userPK);
         List<ResponsePrivateZoneDto> responsePrivateZoneDtoList = userService.getPrivateZone(userPK);
 
