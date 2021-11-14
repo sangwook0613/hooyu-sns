@@ -102,9 +102,9 @@ public class UserController {
     }
 
     @DeleteMapping("/deletePrivate")
-    public ResponseEntity<SuccessResponseDto> deletePrivateZone(@RequestBody @Valid PrivateZoneDto privateZoneDto) throws NoTargetException {
-        logger.trace("User Controller 진입 SetUpPrivateZone param {}", privateZoneDto);
-        String message = userService.deletePrivateZone(privateZoneDto.getUserPK(), privateZoneDto.getTitle(), privateZoneDto.getLat(), privateZoneDto.getLon());
+    public ResponseEntity<SuccessResponseDto> deletePrivateZone(@RequestBody @Valid RequestDeletePZDto requestDeletePZDto) throws NoTargetException, NoUserException {
+        logger.trace("User Controller 진입 SetUpPrivateZone param {}", requestDeletePZDto);
+        String message = userService.deletePrivateZone(requestDeletePZDto.getUserPK(), requestDeletePZDto.getPzPK());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 

@@ -31,7 +31,7 @@ public interface UserService {
 
     String setUpPrivateZone(Long userPK, String title, BigDecimal lat, BigDecimal lon) throws NoUserException;
     List<ResponsePrivateZoneDto> getPrivateZone(Long userPK) throws NoUserException;
-    String deletePrivateZone(Long userPK, String title, BigDecimal lat, BigDecimal lon) throws NoTargetException;
+    String deletePrivateZone(Long userPK, Long pzPK) throws NoTargetException, NoUserException;
 
     String setPushAlarmReceive(Long userPK, Boolean accept) throws NoUserException;
     String setPushAlarmSync(Long userPK, Boolean sync) throws NoUserException;

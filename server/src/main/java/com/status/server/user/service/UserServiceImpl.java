@@ -193,10 +193,11 @@ public class UserServiceImpl implements UserService {
         return privateZones;
     }
 
+    @Transactional
     @Override
-    public String deletePrivateZone(Long userPK, String title, BigDecimal lat, BigDecimal lon) throws NoTargetException {
-        PrivateZone pz = pzRepository.findByUserIdAndTitleAndLatitudeAndLongitude(userPK,title,lat,lon).orElseThrow(() -> new NoTargetException("해당하는 private-zone은 없습니다"));
-        pzRepository.delete(pz);
+    public String deletePrivateZone(Long userPK, Long pzPK) throws NoTargetException, NoUserException {
+        if (!userRepository.existsById(userPK)) throw new NoUserException("해당하는 사용자가 없습니다.");
+        pzRepository.deleteByIdAndUserId(pzPK,userPK);
         return "Success";
     }
 
