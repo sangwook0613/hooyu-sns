@@ -18,6 +18,7 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
   const [isImage, setIsImage] = useState(true)
   const [isSurvey, setIsSurvey] = useState(true)
   const [isModalVisible, setModalVisible] = useState(false)
+  const [deleteContent, setDeleteContent] = useState(null)
   
   const now = new Date()
   const scrollRef = useRef()
@@ -42,7 +43,7 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
     navigation.setOptions({
       headerTitle: (props) => <ProfileTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => navigation.navigate('Setting')}>
+        <TouchableOpacity style={{ padding: 10, }} onPress={() => navigation.navigate('Setting')}>
           <Text>설정</Text>
         </TouchableOpacity>
       )
@@ -74,125 +75,45 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
       >
         <View style={{ flex: 1 }}>
           <DeleteModal
-            contentId={1}
+            contentPK={deleteContent}
+            userPK={userPK}
             isModalVisible={isModalVisible}
             setModalVisible={setModalVisible}
           />
         </View>
         {isStatus && (
           <>
-            <View
-              style={{
-                width: deviceWidth,
-                height: 50,
-                backgroundColor: 'white',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingLeft: 15,
-                paddingRight: 20,
-                alignItems: 'center',
-                elevation: 10,
-              }}
-            >
-              <View
-                style={{
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}
-              >
-                <Image 
-                  style={{
-                    height: deviceWidth * 0.07,
-                    width: deviceWidth * 0.07,
-                  }}
-                  source={images.menu.status}
-                  resizeMode='contain' />
-                <Text>상태 메시지</Text>
-              </View>
-              <TouchableOpacity onPress={toggleModal}>
-                <AntDesign name="close" size={18} color="black" />
-              </TouchableOpacity>
-            </View>
-            <StatusContent ownerName={ownerName}/>
+            <StatusContent 
+              ownerName={ownerName}
+              isModalVisible={isModalVisible}
+              setModalVisible={setModalVisible}
+              setDeleteContent={setDeleteContent}
+            />
           </>
         )}
 
         {isImage && (
           <>
-            <View
-              style={{
-                width: deviceWidth,
-                height: 50,
-                backgroundColor: 'white',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingLeft: 20,
-                paddingRight: 20,
-                alignItems: 'center',
-                elevation: 10,
-              }}
-            >
-              <View
-                style={{
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}
-              >
-                <Image 
-                  style={{
-                    height: deviceWidth * 0.06,
-                    width: deviceWidth * 0.06,
-                    marginRight: 7,
-                  }}
-                  source={images.menu.image}
-                  resizeMode='contain' />
-                <Text>사진</Text>
-              </View>
-              <TouchableOpacity onPress={toggleModal}>
-                <AntDesign name="close" size={18} color="black" />
-              </TouchableOpacity>
-            </View>
-            <ImageContent ownerName={ownerName} setIsImage={setIsImage}/>
+            <ImageContent 
+              ownerName={ownerName}
+              setIsImage={setIsImage}
+              isModalVisible={isModalVisible}
+              setModalVisible={setModalVisible}
+              setDeleteContent={setDeleteContent}
+            />
           </>
         )}
 
         
         {isSurvey && (
           <>
-            <View
-              style={{
-                width: deviceWidth,
-                height: 50,
-                backgroundColor: 'white',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingLeft: 17,
-                paddingRight: 20,
-                alignItems: 'center',
-                elevation: 10,
-              }}
-            >
-              <View
-                style={{
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}
-              >
-                <Image 
-                  style={{
-                    height: deviceWidth * 0.06,
-                    width: deviceWidth * 0.06,
-                    marginRight: 5,
-                  }}
-                  source={images.menu.question}
-                  resizeMode='contain' />
-                <Text>질문</Text>
-              </View>
-              <TouchableOpacity onPress={toggleModal}>
-                <AntDesign name="close" size={18} color="black" />
-              </TouchableOpacity>
-            </View>
-            <SurveyContent ownerName={ownerName} setIsSurvey={setIsSurvey} />
+            <SurveyContent 
+              ownerName={ownerName}
+              setIsSurvey={setIsSurvey}
+              isModalVisible={isModalVisible}
+              setModalVisible={setModalVisible}
+              setDeleteContent={setDeleteContent}
+            />
           </>
         )}
       </ScrollView>

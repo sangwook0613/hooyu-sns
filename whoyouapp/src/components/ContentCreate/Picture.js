@@ -50,7 +50,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
       headerRight: () => (
         <View>
           { imageFile ? 
-            <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
+            <TouchableOpacity style={{ padding: 10 }} onPress={() => {
               createPicture()
               navigation.navigate('Main')
             }}>
@@ -60,7 +60,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
             <TouchableWithoutFeedback
               onPress={() => showToast()}
             >
-              <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+              <Text style={{color: 'gray', padding: 10 }}>등록</Text>
             </TouchableWithoutFeedback>
           }
 
@@ -94,7 +94,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   };
 
   const showToast = useCallback(() => {
-    toastRef.current.show('사진을 골라 주세요')
+    toastRef.current.show('사진을 선택해 주세요')
   })
 
   const imageGalleryLaunch = () => {
