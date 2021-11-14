@@ -4,19 +4,25 @@ import Geolocation from 'react-native-geolocation-service'
 import ListPrivateZone from '../../components/PrivateZone/ListPrivateZone'
 import NoPrivateZone from '../../components/PrivateZone/NoPrivateZone'
 import SettingPrivateZone from '../../components/PrivateZone/SettingPrivateZone'
+import { connect } from 'react-redux'
+import axios from 'axios'
+
 
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
 
-const PrivateZoneSetting = (props) => {
+const PrivateZoneSetting = ({ userPK, SERVER_URL }) => {
   const [isSettingPrivateZone, setIsSettingPrivateZone] = useState(false)
   const [privateZoneList, setPrivateZoneList] = useState([])
+
+  const [userLocation, setUserLocation] = useState({ latitude: 0, longitude: 0 })
 
   useEffect(() => {
     Geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
-      console.log(latitude, longitude)
+      setUserLocation({ latitude: latitude, longitude: longitude})
     })
+    // getPrivateZone()s
   }, [isSettingPrivateZone, privateZoneList])
 
   const goToSettingPrivateZone = () => {
@@ -30,6 +36,20 @@ const PrivateZoneSetting = (props) => {
     setIsSettingPrivateZone(false)
   }
 
+  // const getPrivateZone = () => {
+  //   console.log(SERVER_URL)
+  //   axios({
+  //     method: 'get',
+  //     url: SERVER_URL + 'user/private' + userPK,
+  //   })
+  //   .then((res) => {
+  //     console.log(res.data.success)
+  //   })
+  //   .catch((err) => {
+  //     console.log(err)
+  //   })
+  // }
+
   const deletePrivateZone = () => {
     console.log('delete')
     setPrivateZoneList([])
@@ -37,10 +57,10 @@ const PrivateZoneSetting = (props) => {
 
   const privateZoneComponent = () => {
     if (isSettingPrivateZone) {
-      return <SettingPrivateZone setPrivateZone={setPrivateZone}  />
+      return <SettingPrivateZone setPrivateZone={setPrivateZone} userLocation={userLocation} privateZoneList={privateZoneList} />
     } else {
       return privateZoneList.length ? 
-      <ListPrivateZone privateZoneList={privateZoneList} deletePrivateZone={deletePrivateZone} /> 
+      <ListPrivateZone privateZoneList={privateZoneList} deletePrivateZone={deletePrivateZone} userLocation={userLocation} /> 
       : 
       <NoPrivateZone goToSettingPrivateZone={goToSettingPrivateZone}/>
     }
@@ -69,4 +89,12 @@ const PrivateZoneSetting = (props) => {
   )
 }
 
-export default PrivateZoneSetting
+
+function mapStateToProps(state) {
+  return {
+    SERVER_URL: state.user.SERVER_URL,
+    userPK: state.user.userPK,
+  }
+}
+
+export default connect(mapStateToProps)(PrivateZoneSetting);
