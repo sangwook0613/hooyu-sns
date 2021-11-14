@@ -1,19 +1,73 @@
 import React, { useEffect, useState } from 'react'
 import { Dimensions, View, Text, TouchableOpacity } from 'react-native'
 import Geolocation from 'react-native-geolocation-service'
+import ListPrivateZone from '../../components/PrivateZone/ListPrivateZone'
+import NoPrivateZone from '../../components/PrivateZone/NoPrivateZone'
+import SettingPrivateZone from '../../components/PrivateZone/SettingPrivateZone'
+import { connect } from 'react-redux'
+import axios from 'axios'
+
 
 const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
 
-const PrivateZoneSetting = (props) => {
-  const [haveZone, setZone] = useState(true)
-  
+const PrivateZoneSetting = ({ userPK, SERVER_URL }) => {
+  const [isSettingPrivateZone, setIsSettingPrivateZone] = useState(false)
+  const [privateZoneList, setPrivateZoneList] = useState([])
+  const [gotList, setGotList] = useState(false)
+  const [userLocation, setUserLocation] = useState({ latitude: 0, longitude: 0 })
+
   useEffect(() => {
+    if (!gotList) {
+      getPrivateZone()
+      setGotList(true)
+      console.log('getList')
+    }
     Geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
-      console.log(latitude, longitude)
+      setUserLocation({ latitude: latitude, longitude: longitude})
     })
-  })
+    console.log(privateZoneList)
+  }, [isSettingPrivateZone, privateZoneList])
+  
+  const goToSettingPrivateZone = () => {
+    setIsSettingPrivateZone(true)
+  }
+
+
+  const getPrivateZone = () => {
+    console.log(userPK)
+    console.log(SERVER_URL + 'user/private/' + userPK)
+    axios({
+      method: 'get',
+      url: SERVER_URL + 'user/private/' + userPK,
+    })
+    .then((res) => {
+      setPrivateZoneList(res.data.success)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
+
+
+  const privateZoneComponent = () => {
+    if (isSettingPrivateZone) {
+      return <SettingPrivateZone 
+        userLocation={userLocation} 
+        privateZoneList={privateZoneList} 
+        onCreate={() => {
+          setIsSettingPrivateZone(false)
+          getPrivateZone()
+        }} 
+      />
+    } else {
+      return privateZoneList.length ? 
+      <ListPrivateZone privateZoneList={privateZoneList} onDelete={getPrivateZone} userLocation={userLocation} /> 
+      : 
+      <NoPrivateZone goToSettingPrivateZone={goToSettingPrivateZone}/>
+    }
+  }
 
   return (
     <View style={{flex: 1, backgroundColor: 'white'}}>
@@ -31,29 +85,19 @@ const PrivateZoneSetting = (props) => {
       >
         <View><Text style={{fontSize: 16, fontWeight: '700'}}>나의 프라이빗 존</Text></View>
       </View>
-      {haveZone && (
-        <>
-          <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-            <Text style={{paddingBottom: 70, fontSize: 16}}>프라이빗 존을 설정해보세요.</Text>
-          </View>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <TouchableOpacity
-              style={{
-                width: deviceWidth * 0.7,
-                height: 50,
-                backgroundColor: '#F38181',
-                borderRadius: 50,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Text style={{fontSize: 16, fontWeight: '700', color: 'white'}}>프라이빗 존 설정</Text>
-            </TouchableOpacity>
-          </View> 
-        </>
-      )}
+      {
+        privateZoneComponent()
+      }
     </View>
   )
 }
 
-export default PrivateZoneSetting
+
+function mapStateToProps(state) {
+  return {
+    SERVER_URL: state.user.SERVER_URL,
+    userPK: state.user.userPK,
+  }
+}
+
+export default connect(mapStateToProps)(PrivateZoneSetting);
