@@ -49,9 +49,9 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [statusData, setStatusData] = useState([])
-  const [isEmotions, setEmotions] = useState([])
-  const [giveEmotion, setGiveEmotion] = useState([])
-  const [statusEmoji, setStatusEmoji] = useState([])
+  const [isEmotions, setEmotions] = useState(false)
+  const [giveEmotion, setGiveEmotion] = useState('')
+  const [statusEmoji, setStatusEmoji] = useState({})
   const [isLoaded, setIsLoaded] = useState(false)
   const now = new Date()
 
@@ -61,30 +61,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
         console.log('유저 상태 받아오기', res.data.success)
         let data = res.data.success
         console.log('자몽이0')
-        data.map((content, idx) => {
-          data[idx]['id'] = idx
-          Api.getContentEmotion(data[idx].contentPk)
-            .then((result) => {
-              console.log('자몽이1', idx, result.data)
-              let chk = false
-              let isMe = ''
-              let temp = {}
-              for (let emojiData of result.data.success) {
-                if (emojiData.userPK === userPK) {
-                  isMe = emojiData.contentEmoji
-                }
-                temp[emojiData.contentEmoji] ? temp[emojiData.contentEmoji]++ : temp[emojiData.contentEmoji] = 1
-                chk = true
-              }
-              setStatusEmoji(emojis => [...emojis, temp])
-              setEmotions(chks => [...chks, chk])
-              setGiveEmotion(curr => [...curr, isMe])
-              setIsLoaded(true)
-            })
-            .catch((err) => {
-              console.warn(err)
-            })
-        })
+        getEmotion(data[0].contentPk)
         setStatusData(data)
         console.log('최종', statusData)
       })
@@ -93,28 +70,44 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
       })
   }, [])
 
-  const addEmotion = (emoji, contentId, userPK, idx) => {
+  const addEmotion = (emoji, contentId, userPK) => {
     Api.setContentEmotion(emoji, contentId, userPK)
       .then((res) => {
         console.log('emotion success')
         console.log(res.data)
         // 공감 완료 표시
         setStatusEmoji(emojis => {
-          const updated = [...emojis]
-          updated[idx][emoji] ? updated[idx][emoji]++ : updated[idx][emoji] = 1
+          const updated = {...emojis}
+          updated[emoji] ? updated[emoji]++ : updated[emoji] = 1
           return updated
         })
-        setEmotions(chks => {
-          const updated = [...chks]
-          updated[idx] = true
-          return updated
-        })
-        setGiveEmotion(curr => {
-          const updated = [...curr]
-          updated[idx] = true
-          return updated
-        })
+        setEmotions(true)
+        setGiveEmotion(emoji)
       })  
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
+
+  const getEmotion = (contentPK) => {
+    Api.getContentEmotion(contentPK)
+      .then((result) => {
+        console.log('자몽이1', result.data)
+        let chk = false
+        let isMe = ''
+        let emojis = {}
+        for (let emojiData of result.data.success) {
+          if (emojiData.userPK === userPK) {
+            isMe = emojiData.contentEmoji
+          }
+          emojis[emojiData.contentEmoji] ? emojis[emojiData.contentEmoji]++ : emojis[emojiData.contentEmoji] = 1
+          chk = true
+        }
+        setStatusEmoji(emojis)
+        setEmotions(chk)
+        setGiveEmotion(isMe)
+        setIsLoaded(true)
+      })
       .catch((err) => {
         console.warn(err)
       })
@@ -155,13 +148,15 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
         data={statusData}
         showPagination
         onChangeIndex={({ index }) => {
+          console.log('onchangeIndex', '자몽이2', index)
           setCurrentIndex(index)
           setIsEmojiSelect(false)
+          getEmotion(statusData[index].contentPk)
         }}
         renderItem={({ item }) => (
           <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
             <View
-              key={item.id}
+              key={item.contentPk}
               style={{
                 width: deviceWidth,
                 height: deviceWidth,
@@ -206,7 +201,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
                     setIsEmojiSelect(false)
                     console.log('statusData', statusData)
                     console.log('statusEmoji', statusEmoji)
-                    addEmotion(emotion, statusData[currentIndex].contentPk, userPK, currentIndex)
+                    addEmotion(emotion, statusData[currentIndex].contentPk, userPK)
                     console.warn(emotion, statusData[currentIndex], index)
                   }}
                 >
@@ -220,7 +215,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
       <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
         <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
-            {!isEmotions[currentIndex] &&
+            {!isEmotions &&
               <View>
                 <Text
                   style={{
@@ -230,7 +225,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
                   첫 공감을 남겨보세요
                 </Text>
               </View>}
-            {isEmotions[currentIndex] && Object.keys(statusEmoji[currentIndex]).map((item, index) => (
+            {isEmotions && Object.keys(statusEmoji).map((item, index) => (
               <View key={index} style={{flexDirection: 'row', alignItems:'center', marginLeft: 10}}>
                 <Image
                   style={{ width: 22, height: 22, marginRight: 5 }}
@@ -241,7 +236,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
                     fontSize: 12,
                   }}
                 >
-                  {convertCount(statusEmoji[currentIndex][item])}
+                  {convertCount(statusEmoji[item])}
                 </Text>
               </View>
             ))}
@@ -256,12 +251,12 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
           backgroundColor: 'white',
           elevation: 10 
         }}>
-          {isLoaded && giveEmotion[currentIndex] === '' &&
+          {isLoaded && giveEmotion === '' &&
             <TouchableOpacity style={{ marginLeft: 15, marginRight: 15 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
               <Text style={{ fontSize: 15 }}>{isEmojiSelect ? '닫기': '공감'}</Text>
             </TouchableOpacity>
           }
-          {isLoaded && giveEmotion[currentIndex] !== '' &&
+          {isLoaded && giveEmotion !== '' &&
             <>
               <LinearGradient 
                 colors={['#AB79EF', '#FC98AB']}
@@ -276,7 +271,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight 
               >
                 <Image
                   style={{ width: 24, height: 24 }}
-                  source={emojiImages.default.emoji[giveEmotion[currentIndex]]}
+                  source={emojiImages.default.emoji[giveEmotion]}
                 />
               </LinearGradient>
             </>
