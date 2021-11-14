@@ -1,137 +1,167 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Dimensions, Button, Text, Image, View, TouchableOpacity, ScrollView, FlatList } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
-import ImageContent from '../components/ImageContent';
-import StatusContent from '../components/StatusContent';
-import SurveyContent from '../components/SurveyContent';
-import DeleteModal from '../components/modal/deleteModal';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Dimensions, Button, Text, Image, View, TouchableOpacity, ScrollView, FlatList } from 'react-native'
+import { AntDesign } from '@expo/vector-icons'
+import Api from '../utils/api'
+import { connect } from 'react-redux'
+import { actionCreators } from '../store/reducers'
+import * as emojiImages from '../assets/images'
+import ImageContent from '../components/ImageContent'
+import StatusContent from '../components/StatusContent'
+import SurveyContent from '../components/SurveyContent'
+import images from '../assets/images'
   
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
 
-const ProfileScreen = ({ navigation, route }) => {
+const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUserName, deviceWidth, deviceHeight }) => {
+  const [ownerName, setOwnerName] = useState(route.params.nickname === userName ? userName : route.params.nickname)
   const [isStatus, setIsStatus] = useState(true)
   const [isImage, setIsImage] = useState(true)
   const [isSurvey, setIsSurvey] = useState(true)
-  const [isModalVisible, setModalVisible] = useState(false)
-  const scrollRef = useRef()
   
-  useEffect(() => {
-    setTimeout(() => {
-        const node = scrollRef.current
-        node.scrollTo({ y: 500, animated: true })
-    }, 400)
-  },[])
-
-  const toggleModal = () => {
-    setModalVisible(!isModalVisible)
-  }
+  const now = new Date()
+  const scrollRef = useRef()
 
   const ProfileTitle = () => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Image
-          style={{ width: 50, height: 50 }}
-          source={route.params.emoji}
+          style={{ width: 40, height: 40 }}
+          source={emojiImages.default.emoji[userEmoji]}
         />
-        <Text>{route.params.nickname}</Text>
+        <Text style={{ marginLeft: 10 }}>{userName}</Text>
       </View>
-    );
+    )
   }
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: (props) => <ProfileTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ marginRight: 10 }} onPress={() => navigation.navigate('Setting')}>
+        <TouchableOpacity style={{ padding: 10, }} onPress={() => navigation.navigate('Setting')}>
           <Text>설정</Text>
         </TouchableOpacity>
       )
-    });
-  }, [navigation]);
-
-  // setIsEmojiSelect(!isEmojiSelect)
-  // console.log(isEmojiSelect)
+    })
+  }, [navigation])
 
   return (
     <>
       <ScrollView
+        style={{backgroundColor: '#C7C7C7'}}
         ref={scrollRef}
       >
-        <View style={{ flex: 1 }}>
-          <DeleteModal
-            contentId={1}
-            isModalVisible={isModalVisible}
-            setModalVisible={setModalVisible}
-          />
-        </View>
-        {isStatus && (
+        {isStatus ? (
           <>
+            <StatusContent 
+              ownerName={ownerName}
+              setIsStatus={setIsStatus}
+            />
+          </>
+        )
+        : (
+          <>
+          <View
+            style={{
+              width: deviceWidth,
+              height: 50,
+              backgroundColor: 'white',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingLeft: 13,
+              paddingRight: 20,
+              alignItems: 'center',
+              elevation: 10,
+            }}
+          >
             <View
               style={{
-                width: deviceWidth,
-                height: 50,
-                backgroundColor: 'white',
+                alignItems: 'center',
                 flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingLeft: 20,
-                paddingRight: 20,
-                alignItems: 'center'
               }}
             >
-              <Text>상태창</Text>
-              <TouchableOpacity onPress={toggleModal}>
-                <AntDesign name="exclamationcircleo" size={24} color="black" />
-              </TouchableOpacity>
+              <Image 
+                style={{
+                  height: deviceWidth * 0.075,
+                  width: deviceWidth * 0.075,
+                }}
+                source={images.menu.status}
+                resizeMode='contain' />
+              <Text>상태 메시지</Text>
             </View>
-            <StatusContent />
+          </View>
+          <View
+            style={{
+              alignItems: 'center',
+              backgroundColor: '#FF6A77',
+              height: deviceWidth,
+              justifyContent: 'center',
+              width: deviceWidth,
+            }}
+          >
+            <Text
+              style={{
+                color: 'white',
+                fontSize: 14,
+                fontWeight: 'bold'
+              }}
+            >
+              남긴 상태 메시지가 없습니다.
+            </Text>
+          </View>
+          <View 
+            style={{
+              alignItems:'center',
+              backgroundColor: 'white',
+              flexDirection: 'row', 
+              height: 40,
+              paddingLeft: 10
+            }}
+          >
+            <Image 
+              style={{
+                height: 22,
+                width: 22,
+              }}
+              source={images.emoji.sad}
+            />
+          </View>
+          <View 
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              height: 40,
+              backgroundColor: 'white',
+              elevation: 10 
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 15,
+                marginLeft: 15,
+              }}
+            >
+              공감...은 나중에
+            </Text>
+          </View>
+          <View style={{ height: 10, backgroundColor: "#D7D7D7"}}></View>
           </>
         )}
 
         {isImage && (
           <>
-            <View
-              style={{
-                width: deviceWidth,
-                height: 50,
-                backgroundColor: 'white',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingLeft: 20,
-                paddingRight: 20,
-                alignItems: 'center'
-              }}
-            >
-              <Text>이미지</Text>
-              <TouchableOpacity onPress={toggleModal}>
-                <AntDesign name="exclamationcircleo" size={24} color="black" />
-              </TouchableOpacity>
-            </View>
-            <ImageContent />
+            <ImageContent 
+              ownerName={ownerName}
+              setIsImage={setIsImage}
+            />
           </>
         )}
 
         
         {isSurvey && (
           <>
-            <View
-              style={{
-                width: deviceWidth,
-                height: 50,
-                backgroundColor: 'white',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                paddingLeft: 20,
-                paddingRight: 20,
-                alignItems: 'center'
-              }}
-            >
-              <Text>설문</Text>
-              <TouchableOpacity onPress={toggleModal}>
-                <AntDesign name="exclamationcircleo" size={24} color="black" />
-              </TouchableOpacity>
-            </View>
-            <SurveyContent />
+            <SurveyContent 
+              ownerName={ownerName}
+              setIsSurvey={setIsSurvey}
+            />
           </>
         )}
       </ScrollView>
@@ -139,4 +169,22 @@ const ProfileScreen = ({ navigation, route }) => {
   )
 }
 
-export default ProfileScreen;
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth,
+    deviceHeight: state.user.deviceHeight,
+    userPK: state.user.userPK,
+    userName: state.user.userName,
+    userEmoji: state.user.userEmoji,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserName: (emoji) => {
+      dispatch(actionCreators.setUserName(emoji))
+    },
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen)

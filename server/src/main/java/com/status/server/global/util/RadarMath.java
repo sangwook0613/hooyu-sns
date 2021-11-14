@@ -39,19 +39,19 @@ public class RadarMath {
         if(bangwee < 90){
             double r = Math.toRadians(bangwee);
             x_dist = dist * Math.sin(r);
-            y_dist = dist* Math.cos(r);
+            y_dist = -dist* Math.cos(r);
         }else if(90 <= bangwee && bangwee <180){
             double r = Math.toRadians(bangwee-90);
             x_dist = dist * Math.cos(r);
             y_dist = dist* Math.sin(r);
         }else if(180 <= bangwee && bangwee <270){
             double r = Math.toRadians(bangwee-180);
-            x_dist = dist * Math.sin(r);
+            x_dist = -dist * Math.sin(r);
             y_dist = dist* Math.cos(r);
         }else{
             double r = Math.toRadians(bangwee-270);
-            x_dist = dist * Math.cos(r);
-            y_dist = dist* Math.sin(r);
+            x_dist = -dist * Math.cos(r);
+            y_dist = -dist* Math.sin(r);
         }
         return DistDto.builder().xDist(x_dist).yDist(y_dist).dist(dist).build();
     }

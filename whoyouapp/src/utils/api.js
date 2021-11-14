@@ -2,6 +2,14 @@ import axios from './interceptor'
 
 export default {
 
+  deleteContent(contentPK, userPK) {
+    return axios({
+      url: 'content',
+      method: 'delete',
+      data: { contentPK: contentPK, userPK: userPK}
+    })
+  },
+
   loginGoogle(data) {
     return axios({
       url: 'login/google',
@@ -86,6 +94,69 @@ export default {
     return axios({
       method: 'put',
       url: `user/killed?userPK=${pk}`
+    })
+  },
+
+  getUserStatus(userName) {
+    return axios({
+      method: 'get',
+      url: `content/status/${userName}`,
+    })
+  },
+
+  getUserImage(userName) {
+    return axios({
+      method: 'get',
+      url: `content/image/${userName}`,
+    })
+  },
+
+  getUserSurvey(userName) {
+    return axios({
+      method: 'get',
+      url: `content/survey/${userName}`,
+    })
+  },
+
+  getContentEmotion(contentPK) {
+    return axios({
+      method: 'get',
+      url: `emotion/${contentPK}`,
+    })
+  },
+  
+  setContentEmotion(emoji, contentPK, userPK) {
+    return axios({
+      method: 'post',
+      url: 'emotion/empathize',
+      data: {
+        contentEmoji: emoji,
+        contentPk: contentPK,
+        userPK: userPK,
+      }
+    })
+  },
+  
+  voteCheck(contentPK, userPK) {
+    return axios({
+      method: 'post',
+      url: 'content/vote/check',
+      data: {
+        contentPK,
+        userPK,
+      }
+    })
+  },
+
+  voteSurvey(answerPK, contentPK, userPK) {
+    return axios({
+      method: 'post',
+      url: 'content/vote/survey',
+      data: {
+        answerPK,
+        contentPK,
+        userPK,
+      }
     })
   },
 }

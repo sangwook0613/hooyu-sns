@@ -19,6 +19,9 @@ public class PrivateZone {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column
+    private String title;
+
     @Column(nullable = false, precision = 9, scale = 6)
     private BigDecimal latitude;
 
@@ -26,7 +29,8 @@ public class PrivateZone {
     private BigDecimal longitude;
 
     @Builder
-    public PrivateZone(BigDecimal lat, BigDecimal lon) {
+    public PrivateZone(String title, BigDecimal lat, BigDecimal lon) {
+        this.title = title;
         this.latitude = lat;
         this.longitude = lon;
     }

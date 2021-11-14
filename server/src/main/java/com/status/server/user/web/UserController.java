@@ -3,6 +3,7 @@ package com.status.server.user.web;
 import com.status.server.global.dto.SuccessResponseDto;
 import com.status.server.global.exception.DuplicateNameException;
 import com.status.server.global.exception.NoBrowserTokenException;
+import com.status.server.global.exception.NoTargetException;
 import com.status.server.global.exception.NoUserException;
 import com.status.server.global.service.ResponseGenerateService;
 import com.status.server.user.domain.User;
@@ -22,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
 @RestController
-public class UserController{
+public class UserController {
 
     private final UserServiceImpl userService;
     private final ResponseGenerateService responseGenerateService;
@@ -72,7 +73,7 @@ public class UserController{
     @PostMapping("/emojiSet")
     public ResponseEntity<SuccessResponseDto> changeEmoji(@RequestBody @Valid EmojiDto emojiDto) throws NoUserException {
         logger.trace("User Controller 진입 ChangeEmoji param {}", emojiDto);
-        String message = userService.changeEmoji(emojiDto.getUserPK(),emojiDto.getUserEmoji());
+        String message = userService.changeEmoji(emojiDto.getUserPK(), emojiDto.getUserEmoji());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
@@ -83,7 +84,27 @@ public class UserController{
     @PostMapping("/setPrivate")
     public ResponseEntity<SuccessResponseDto> setUpPrivateZone(@RequestBody @Valid PrivateZoneDto privateZoneDto) throws NoUserException {
         logger.trace("User Controller 진입 SetUpPrivateZone param {}", privateZoneDto);
-        String message = userService.setUpPrivateZone(privateZoneDto.getUserPK(), privateZoneDto.getLat(),privateZoneDto.getLon());
+        String message = userService.setUpPrivateZone(privateZoneDto.getUserPK(), privateZoneDto.getTitle(), privateZoneDto.getLat(), privateZoneDto.getLon());
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/private/{userPK}")
+    public ResponseEntity<SuccessResponseDto> getPrivateZone(@PathVariable Long userPK) throws NoUserException {
+        logger.trace("User Controller 진입 getPrivateZone param {}", userPK);
+        List<ResponsePrivateZoneDto> responsePrivateZoneDtoList = userService.getPrivateZone(userPK);
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(responsePrivateZoneDtoList);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/deletePrivate")
+    public ResponseEntity<SuccessResponseDto> deletePrivateZone(@RequestBody @Valid RequestDeletePZDto requestDeletePZDto) throws NoTargetException, NoUserException {
+        logger.trace("User Controller 진입 SetUpPrivateZone param {}", requestDeletePZDto);
+        String message = userService.deletePrivateZone(requestDeletePZDto.getUserPK(), requestDeletePZDto.getPzPK());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
@@ -94,7 +115,7 @@ public class UserController{
     @PostMapping("/push")
     public ResponseEntity<SuccessResponseDto> setPushAlarmReceive(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws Exception {
         logger.trace("User Controller 진입 SetPushAlarmReceive param {}", pushAlarmDto);
-        String message = userService.setAllPush(pushAlarmDto.getUserPK(),pushAlarmDto.getAccept(),pushAlarmDto.getSync(),pushAlarmDto.getRadius());
+        String message = userService.setAllPush(pushAlarmDto.getUserPK(), pushAlarmDto.getAccept(), pushAlarmDto.getSync(), pushAlarmDto.getRadius());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
@@ -136,7 +157,7 @@ public class UserController{
     public ResponseEntity<SuccessResponseDto> getListUserWithinRadius(@RequestBody RequestUserLocationDto requestUserLocationDto) throws NoUserException, NoBrowserTokenException, IOException {
         logger.trace("User Controller 진입 getUserWithinRadius param {}", requestUserLocationDto);
         List<ResponseUserLocationDto> list = userService.getUserList(requestUserLocationDto.getRequestRadiusDto().getUserPK(),
-                requestUserLocationDto.getRequestRadiusDto().getLat(),requestUserLocationDto.getRequestRadiusDto().getLon(),
+                requestUserLocationDto.getRequestRadiusDto().getLat(), requestUserLocationDto.getRequestRadiusDto().getLon(),
                 requestUserLocationDto.getRequestRadiusDto().getRadius(),
                 requestUserLocationDto.getList());
 
