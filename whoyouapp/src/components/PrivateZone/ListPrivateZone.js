@@ -2,17 +2,30 @@ import React, {useEffect, useRef, useState} from 'react';
 import { Text, TouchableOpacity, View, StyleSheet, ScrollView, TouchableWithoutFeedback, Dimensions, TextInput, Image, Animated } from 'react-native';
 import axios from 'axios'
 import { connect } from 'react-redux'
-
+import PrivateZoneModal from '../modal/PrivateZoneModal'
 
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
 
-const ListPrivateZone = ({ navigation, userPK, privateZoneList, deletePrivateZone }) => {
+const ListPrivateZone = ({ navigation, userPK, privateZoneList, deletePrivateZone, userLocation }) => {
   
+  const [isModalVisible, setIsModalVisible] = useState(false)
+
   const onDelete = () => {
     deletePrivateZone()
   }
 
+  const showMap = () => {
+    setIsModalVisible(true)
+  }
+
+  const onCloseModal = () => {
+    setIsModalVisible(false)
+  }
+
+  useEffect(() => {
+    console.log(isModalVisible)
+  }, [isModalVisible])
 
   return (
     <View style={{flex:1}}>
@@ -20,22 +33,23 @@ const ListPrivateZone = ({ navigation, userPK, privateZoneList, deletePrivateZon
         <View style={styles.zoneList}>
           <Text>{privateZoneList}</Text>
           <View style={styles.zoneListButtonView}>
-            <TouchableWithoutFeedback>
+            <TouchableWithoutFeedback onPress={() => showMap()} >
               <Text style={styles.zoneListButtonShow}>지도보기</Text>
             </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback onPress={onDelete} >
+            <TouchableWithoutFeedback onPress={() => onDelete()} >
               <Text style={styles.zoneListButtonDelete}>삭제</Text>
             </TouchableWithoutFeedback>
           </View>
         </View>
       </View>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'center' }}>
         <TouchableOpacity
           style={styles.mainButton}
         >
           <Text style={{fontSize: 16, fontWeight: '700', color: 'white'}}>프라이빗 존은 한개만 설정 가능합니다.</Text>
         </TouchableOpacity>
       </View> 
+      <PrivateZoneModal isModalVisible={isModalVisible} onCloseModal={onCloseModal} userLocation={userLocation} />
     </View>
   )
 }
@@ -50,13 +64,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   zoneListContainer: {
-    flex: 1, 
-    paddingTop: 50, 
-    paddingHorizontal: 30
+    flex: 2,
+    padding: 20 
   },
   zoneList: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    padding: 20
   },
   zoneListButtonView: {
     flexDirection: 'row',
