@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Image, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import LinearGradient from 'react-native-linear-gradient'
@@ -7,11 +7,12 @@ import Api from '../utils/api'
 import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
 import images from '../assets/images'
+import DeleteModal from '../components/modal/deleteModal'
 
 
 const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
 
-const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsSurvey, isModalVisible, setModalVisible, setDeleteContent }) => {
+const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsSurvey }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [surveyData, setSurveyData] = useState([])
@@ -20,16 +21,16 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const [surveyEmoji, setSurveyEmoji] = useState({})
   const [checkVote, setCheckVote] = useState('')
   const [isLoaded, setIsLoaded] = useState(false)
+  const [isModalVisible, setModalVisible] = useState(false)
+  const [deleteContent, setDeleteContent] = useState(null)
   const now = new Date()
 
   useEffect(() => {
     Api.getUserSurvey(ownerName)
       .then((res) => {
-        console.log('유저 설문 받아오기')
-        console.log('설문 예시', res.data.success[0])
         let data = res.data.success
         if (data.length === 0) {
-          setIsImage(false)
+          setIsSurvey(false)
         } else {
           getEmotion(data[0].contentPK)
           getVoteCheck(data[0].contentPK)
@@ -49,7 +50,6 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const getEmotion = (contentPK) => {
     Api.getContentEmotion(contentPK)
       .then((result) => {
-        console.log('자몽이1', result.data)
         let chk = false
         let isMe = ''
         let emojis = {}
@@ -73,8 +73,6 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const addEmotion = (emoji, contentId, userPK) => {
     Api.setContentEmotion(emoji, contentId, userPK)
       .then((res) => {
-        console.log('emotion success')
-        console.log(res.data)
         getEmotion(contentId)
         // 공감 완료 표시 방법 2
         // setImageEmoji(emojis => {
@@ -93,7 +91,6 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const deleteEmotion = () => {
     Api.setContentEmotion(giveEmotion, surveyData[currentIndex].contentPK, userPK)
       .then((res) => {
-        console.log(res.data.success)
         getEmotion(surveyData[currentIndex].contentPK)
         // 공감 취소 표시 방법 2 - 대신 해당 게시글에 이모지 존재 유무를 계산해야함
         // setImageEmoji(emojis => {
@@ -107,7 +104,6 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       .catch((err) => {
         console.log(err)
       })
-    console.log('공감 취소')
   }
 
   const getVoteCheck = (contentPK) => {
@@ -178,8 +174,41 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
     }
   }
 
+  const swiperFlatList = useRef()
+
+  const reRenderSurvey = () => {
+    Api.getUserSurvey(ownerName)
+      .then((res) => {
+        let data = res.data.success
+        if (data.length === 0) {
+          setIsSurvey(false)
+        } else {
+          getEmotion(currentIndex === data.length ? data[currentIndex - 1].contentPk : data[currentIndex].contentPk)
+          getVoteCheck(currentIndex === data.length ? data[currentIndex - 1].contentPk : data[currentIndex].contentPk)
+          if (currentIndex === data.length) {
+            setCurrentIndex(currentIndex - 1)
+          }
+          setSurveyData(data)
+          swiperFlatList.current.scrollToIndex({ index: currentIndex - 1 })
+        }
+      })
+      .catch((err) => {
+        console.warn(err)
+      })
+  }
+
   return (
     <View>
+      <View style={{ flex: 1 }}>
+        <DeleteModal
+          contentPK={deleteContent}
+          userPK={userPK}
+          isModalVisible={isModalVisible}
+          setModalVisible={setModalVisible}
+          contentType={'survey'}
+          reRender={reRenderSurvey}
+        />
+      </View>
       <View
         style={{
           width: deviceWidth,
@@ -214,6 +243,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         </TouchableOpacity>
       </View>
       <SwiperFlatList
+        ref={swiperFlatList}
         data={surveyData}
         onChangeIndex={({ index }) => {
           setCurrentIndex(index)

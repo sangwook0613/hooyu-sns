@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity } from 'react-native';
 import Modal from "react-native-modal";
 import Api from '../../utils/api'
 
-const DeleteModal = ({ contentPK, userPK, isModalVisible, setModalVisible }) => {  
+const DeleteModal = ({ contentPK, userPK, isModalVisible, setModalVisible, contentType, reRender }) => {  
   const sendModalVisible = () => {
     setModalVisible(!isModalVisible)
   }
@@ -12,10 +12,12 @@ const DeleteModal = ({ contentPK, userPK, isModalVisible, setModalVisible }) => 
     Api.deleteContent(contentPK, userPK)
       .then((res) => {
         console.log(res.data.success)
+        reRender()
       })
       .catch((err) => {
         console.log(err)
       })
+    console.log(contentType)
     sendModalVisible()
   }
 
