@@ -155,6 +155,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
               <TextInput style={{height: '100%'}}
                 placeholder={"질문을 입력해주세요"}
                 onChangeText={(text) => setTitle(text)}
+                maxLength={36}
               />
             </View>
           </View>
@@ -164,12 +165,14 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
               <TextInput style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}
                 onChangeText={(text) => onTextChange(0, text)}
+                maxLength={16}
               />
             </View>
             <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
               <TextInput style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}
                 onChangeText={(text) => onTextChange(1, text)}
+                maxLength={16}
               />
             </View>
             {
@@ -180,13 +183,12 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
                     placeholder={"옵션을 입력해주세요"}
                     onChangeText={(text) => onTextChange(index, text)}
                     value={options[index]}
+                    maxLength={16}
                   />
                   <TouchableOpacity 
                     onPress={()=> onOptionDelete(index)}
                   >
-                    <View style={styles.minusOption}>
-                      <Text style={{ fontSize: 16 }}>-</Text>
-                    </View>
+                    <Text style={{ fontSize: 30, marginEnd: 10, color: 'black' }}>-</Text>
                   </TouchableOpacity>
                 </View>
               ))
@@ -290,10 +292,10 @@ const styles = StyleSheet.create({
   },
   minusOption: {
     // position: 'absolute',
-    borderWidth: 2,
-    height: 25,
-    width: 25,
-    borderRadius: 15,
+    // borderWidth: 2,
+    // borderRadius: 15,
+    height: 30,
+    width: 30,
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center'
