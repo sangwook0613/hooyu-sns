@@ -97,7 +97,6 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const deleteEmotion = () => {
     Api.setContentEmotion(giveEmotion, statusData[currentIndex].contentPk, userPK)
       .then((res) => {
-        console.log(res.data.success)
         getEmotion(statusData[currentIndex].contentPk)
         // 공감 취소 표시 방법 2 - 대신 해당 게시글에 이모지 존재 유무를 계산해야함
         // setStatusEmoji(emojis => {
@@ -243,10 +242,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         )}
       />
       
-      <TouchableWithoutFeedback onPress={() => {
-        setIsEmojiSelect(false)
-        console.log('첫 공감 누름!!')
-      }}>
+      <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
         <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
             {!isEmotions &&
@@ -302,10 +298,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
               }}
               onPress={() => {
                 setIsEmojiSelect(false)
-                console.log('statusData', statusData)
-                console.log('statusEmoji', statusEmoji)
                 addEmotion(emotion, statusData[currentIndex].contentPk, userPK)
-                console.warn(emotion, statusData[currentIndex], index)
               }}
             >
             <Image
