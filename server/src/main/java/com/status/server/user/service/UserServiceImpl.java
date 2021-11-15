@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<ResponsePrivateZoneDto> getPrivateZone(Long userPK) throws NoUserException {
         if (!userRepository.existsById(userPK)) throw new NoUserException("해당하는 사용자가 없습니다.");
-        List<ResponsePrivateZoneDto> privateZones = pzRepository.findAllByUserId(userPK).stream().map((t)->{
+        List<ResponsePrivateZoneDto> privateZones = pzRepository.findAllByUserId(userPK).stream().map((t) -> {
             ResponsePrivateZoneDto privateZoneDto = new ResponsePrivateZoneDto(t);
             return privateZoneDto;
         }).collect(Collectors.toList());
@@ -197,7 +197,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public String deletePrivateZone(Long userPK, Long pzPK) throws NoTargetException, NoUserException {
         if (!userRepository.existsById(userPK)) throw new NoUserException("해당하는 사용자가 없습니다.");
-        pzRepository.deleteByIdAndUserId(pzPK,userPK);
+        pzRepository.deleteByIdAndUserId(pzPK, userPK);
         return "Success";
     }
 
@@ -343,7 +343,7 @@ public class UserServiceImpl implements UserService {
             boolean userInPrivateZone = false;
             List<PrivateZone> privateZoneList = targetUser.getPrivateZones();
             for (int j = 0; j < privateZoneList.size(); j++) {
-                PrivateZone targetPrivateZone = privateZoneList.get(i);
+                PrivateZone targetPrivateZone = privateZoneList.get(j);
                 DistDto targetInPrivateZone = radarMath.distance(targetPrivateZone.getLatitude(), targetPrivateZone.getLongitude(), target.getLatitude(), target.getLongitude());
                 //targetUser의 위치가 privateZone 100 안쪽에 있을때 true
                 if (targetInPrivateZone.getDist() < 100) {
