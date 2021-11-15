@@ -19,13 +19,17 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const [isEmotions, setEmotions] = useState(false)
   const [giveEmotion, setGiveEmotion] = useState('')
   const [surveyEmoji, setSurveyEmoji] = useState({})
-  const [checkVote, setCheckVote] = useState('')
+  // const [checkVote, setCheckVote] = useState('')
   const [isLoaded, setIsLoaded] = useState(false)
   const [isModalVisible, setModalVisible] = useState(false)
   const [deleteContent, setDeleteContent] = useState(null)
   const now = new Date()
 
   useEffect(() => {
+    updateSurveyData()
+  }, [])
+
+  const updateSurveyData = () => {
     Api.getUserSurvey(ownerName)
       .then((res) => {
         let data = res.data.success
@@ -34,14 +38,30 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           setIsSurvey(false)
         } else {
           getEmotion(data[0].contentPK)
-          getVoteCheck(data[0].contentPK)
-          setSurveyData(data)
+          // getVoteCheck(data[0].contentPK)
+          data.map((survey, idx) => {
+            console.log('이것은 콘솔', idx)
+            Api.voteCheck(survey.contentPK, userPK)
+              .then((res) => {
+                console.log('voteCheck', res.data, res.data.success)
+                if (res.data.success !== "투표하지 않았습니다.") {
+                  // setCheckVote(res.data.success)
+                  data[idx]['myVote'] = res.data.success
+                } else {
+                  data[idx]['myVote'] = ''
+                }
+              })
+              .catch((err) => {
+                console.warn(err)
+              })
+          })
         }
+        setSurveyData(data)
       })
       .catch((err) => {
         console.warn(err)
       })
-  }, [])
+  }
 
   const toggleModal = () => {
     setDeleteContent(surveyData[currentIndex].contentPK)
@@ -107,44 +127,30 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       })
   }
 
-  const getVoteCheck = (contentPK) => {
-    Api.voteCheck(contentPK, userPK)
-      .then((res) => {
-        console.log('voteCheck', res.data, res.data.success)
-        if (res.data.success !== "투표하지 않았습니다.") {
-          setCheckVote(res.data.success)
-        } else {
-          setCheckVote('')
-        }
-      })
-      .catch((err) => {
-        console.warn(err)
-      })
-  }
+  // const getVoteCheck = (contentPK) => {
+  //   Api.voteCheck(contentPK, userPK)
+  //     .then((res) => {
+  //       console.log('voteCheck', res.data, res.data.success)
+  //       if (res.data.success !== "투표하지 않았습니다.") {
+  //         setCheckVote(res.data.success)
+  //       } else {
+  //         setCheckVote('')
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.warn(err)
+  //     })
+  // }
 
   const voteToSurvey = (answerPK, contentPK) => {
     Api.voteSurvey(answerPK, contentPK, userPK)
       .then((res) => {
         console.log('투표완료!', res.data)
-        Api.getUserSurvey(ownerName)
-        .then((res) => {
-          console.log('유저 설문 받아오기')
-          let data = res.data.success
-          if (data.length === 0) {
-            setIsImage(false)
-          } else {
-            getEmotion(data[0].contentPK)
-            getVoteCheck(data[0].contentPK)
-            setSurveyData(data)
-          }
-        })
-        .catch((err) => {
-          console.warn(err)
-        })
+        updateSurveyData()
+      })
       .catch((err) => {
         console.warn(err)
       })
-    })
   }
 
 
@@ -187,13 +193,29 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           setIsSurvey(false)
         } else {
           getEmotion(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
-          getVoteCheck(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
+          data.map((survey, idx) => {
+            console.log('이것은 콘솔', idx)
+            Api.voteCheck(survey.contentPK, userPK)
+              .then((res) => {
+                console.log('voteCheck', res.data, res.data.success)
+                if (res.data.success !== "투표하지 않았습니다.") {
+                  // setCheckVote(res.data.success)
+                  data[idx]['myVote'] = res.data.success
+                } else {
+                  data[idx]['myVote'] = ''
+                }
+              })
+              .catch((err) => {
+                console.warn(err)
+              })
+          })
+          // getVoteCheck(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
           if (currentIndex === data.length) {
             setCurrentIndex(currentIndex - 1)
           }
-          setSurveyData(data)
-          swiperFlatList.current.scrollToIndex({ index: currentIndex === 0 ? currentIndex : currentIndex - 1 })
         }
+        setSurveyData(data)
+        swiperFlatList.current.scrollToIndex({ index: currentIndex === 0 ? currentIndex : currentIndex - 1 })
       })
       .catch((err) => {
         console.warn(err)
@@ -252,7 +274,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           setCurrentIndex(index)
           setIsEmojiSelect(false)
           getEmotion(surveyData[index].contentPK)
-          getVoteCheck(surveyData[index].contentPK)
+          // getVoteCheck(surveyData[index].contentPK)
         }}
         renderItem={({ item }) => (
           <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
@@ -267,7 +289,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                 alignItems:"center"
               }}
             >
-              {(ownerName === userName || checkVote !== '') &&
+              {(ownerName === userName || item.myVote !== '') &&
                 <>
                   <Text style={{color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50, paddingHorizontal: 20, textAlign: 'center'}}>{item.exon}</Text>
                   {item.answerList.map((ans, idx) => {
@@ -283,7 +305,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                           borderRadius: 3,
                           justifyContent: 'center',
                           marginTop: 7,
-                          padding: ownerName === userName || checkVote === ans ? 1 : 0
+                          padding: ownerName === userName || item.myVote === ans ? 1 : 0
                         }}
                       >
                         <View style={{
@@ -292,7 +314,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                           backgroundColor: '#0B1C26',
                           borderColor: 'white',
                           borderRadius: 3,
-                          borderWidth: ownerName === userName || checkVote === ans ? 0 : 1,
+                          borderWidth: ownerName === userName || item.myVote === ans ? 0 : 1,
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                           paddingHorizontal: 10,
@@ -303,13 +325,13 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                           <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'rgba(255, 255, 255, 0.8)'}}
                             onChangeText={(text) => onTextChange(0, text)}
                           >{num + "%"}</Text>
-                          <LinearGradient colors={[ownerName === userName || checkVote === ans ? "#AB79EF" : "#B4B4B4", ownerName === userName || checkVote === ans ? "#FC98AB" : "#FFFFFF"]}
+                          <LinearGradient colors={[ownerName === userName || item.myVote === ans ? "#AB79EF" : "#B4B4B4", ownerName === userName || item.myVote === ans ? "#FC98AB" : "#FFFFFF"]}
                             start={{ x: 0, y: 1 }}
                             end={{ x: 1, y: 1 }}
                             style={{
-                            width: deviceWidth * 0.75 * num / 100 - (ownerName === userName || checkVote === ans ? 0 : 2),
+                            width: deviceWidth * 0.75 * num / 100 - (ownerName === userName || item.myVote === ans ? 0 : 2),
                             position: 'absolute',
-                            opacity: ownerName === userName || checkVote === ans ? 0.8 : 0.5,
+                            opacity: ownerName === userName || item.myVote === ans ? 0.8 : 0.5,
                             top: 0,
                             left: 0,
                             bottom: 0,
@@ -320,7 +342,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                     )})}
                 </>
               }
-              {(ownerName !== userName && checkVote === '') &&
+              {(ownerName !== userName && item.myVote === '') &&
                 <>
                   <Text style={{ color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50, paddingHorizontal: 20, textAlign: 'center' }}>{item.exon}</Text>
                   {item.answerList.map((ans, idx) => {
@@ -331,7 +353,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                         key={item.answerPK[ans]} 
                         onPress={() => {
                           console.log(ans, surveyData[currentIndex].answerPK[ans])
-                          setCheckVote('')
+                          // setCheckVote('')
                           voteToSurvey(surveyData[currentIndex].answerPK[ans], surveyData[currentIndex].contentPK)
                         }}
                       >
@@ -414,10 +436,10 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
               }}
               onPress={() => {
                 setIsEmojiSelect(false)
-                console.log('surveyData', surveyData)
+                // console.log('surveyData', surveyData)
                 console.log('surveyEmoji', surveyEmoji)
                 addEmotion(emotion, surveyData[currentIndex].contentPK, userPK)
-                console.warn('checkehck', surveyData, checkVote)
+                // console.warn('checkehck', surveyData)
               }}
             >
               <Image
