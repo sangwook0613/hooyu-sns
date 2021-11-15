@@ -24,6 +24,7 @@ import * as emojiImages from '../assets/images'
 
 
 import api from '../utils/api'
+import { set } from 'lodash'
 
 const date = new Date()
 
@@ -55,6 +56,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   const [selectedUser, setSelectedUser] = useState(-1)
   const [selectedPrivateZoneUser, setSelectedPrivateZoneUser] = useState(-1)
   const [mainListSortMode, setMainListSortMode] = useState('distance')
+  const [isListOpened, setIsListOpened] = useState(false)
 
   const mainListRef = useRef()
   const shelterListRef = useRef()
@@ -216,8 +218,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       method: 'post',
       url: SERVER_URL + 'user/radar',
       data: {
-        list: [
-        ],
+        list: [...users, ...privateZoneUsers],
         requestRadiusDto: {
           lat: latitude,
           lon: longitude,
@@ -266,10 +267,12 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         onSwipeUp={() => {
           shelterListRef.current.close()
           mainListRef.current.open()
+          setIsListOpened(true)
         }}
         onSwipeDown={() => {
           mainListRef.current.close()
           shelterListRef.current.close()
+          setIsListOpened(false)
         }}
         config={{
           velocityThreshold: 0.1,
@@ -291,6 +294,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                   onPress={() => {
                     mainListRef.current.close()
                     shelterListRef.current.close()
+                    setIsListOpened(false)
                   }}
                 >
                   <Image source={morning} style={styles.morning} resizeMode="contain" />
@@ -304,6 +308,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                     onPress={() => {
                       mainListRef.current.close()
                       shelterListRef.current.close()
+                      setIsListOpened(false)
                     }}
                   >
                     <Image source={evening} style={styles.evening} resizeMode="contain" />
@@ -315,6 +320,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                     onPress={() => {
                       mainListRef.current.close()
                       shelterListRef.current.close()
+                      setIsListOpened(false)
                     }}
                   >
                     <Image source={night} style={styles.night} resizeMode="contain" />
@@ -340,16 +346,19 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 
 
           <View style={styles.raderArea}>
-            <View style={styles.radar__text}>
-              <Text style={styles.radar__text__title}>내 반경 안의 유저</Text>
-              <Text style={styles.radar__text__count}>{users.length}</Text>
-            </View>
+            {!isListOpened &&
+              <View style={styles.radar__text}>
+                <Text style={styles.radar__text__title}>내 반경 안의 유저</Text>
+                <Text style={styles.radar__text__count}>{users.length}</Text>
+              </View>
+            }
             <TouchableOpacity
-              style={styles.shelterArea}
+              style={[styles.shelterArea, {top: isListOpened ? deviceHeight * 0.173 - 30 : deviceHeight * 0.175}]}
               disabled={myRadius === 500 || myRadius === 2000 ? false : true}
               onPress={() => {
                 mainListRef.current.close()
                 shelterListRef.current.open()
+                setIsListOpened(true)
               }}
             >
               <View >
@@ -547,6 +556,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                     selectUser(index)
                     shelterListRef.current.close()
                     mainListRef.current.open()
+                    setIsListOpened(true)
                   }}
                 >
                   <Image
