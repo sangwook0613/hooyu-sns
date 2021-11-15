@@ -22,8 +22,7 @@ const ListPrivateZone = ({ navigation, userPK, privateZoneList, onDelete, SERVER
         'userPK': userPK
       }
     })
-    .then((res) => {
-      console.log(res.data.success)
+    .then(() => {
       onDelete()
     })
     .catch((err) => {
@@ -38,10 +37,6 @@ const ListPrivateZone = ({ navigation, userPK, privateZoneList, onDelete, SERVER
   const onCloseModal = () => {
     setIsModalVisible(false)
   }
-
-  useEffect(() => {
-    console.log(isModalVisible)
-  }, [isModalVisible])
 
   return (
     <View style={{flex:1}}>

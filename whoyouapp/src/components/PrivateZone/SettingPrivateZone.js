@@ -13,19 +13,15 @@ const SettingPrivateZone = ({ userLocation, privateZoneList, deviceWidth, SERVER
   const [privateZoneName, setPrivateZoneName] = useState('')
 
   const confirmPrivateZone = () => {
-    console.log(1)
     if (privateZoneName) {
-      console.log('hi')
       setPrivateZone()
     }
   }
 
   const setPrivateZone = () => {
-    console.log('setPrivateZone')
     const privateZoneTitles = privateZoneList.map((privateZone, idx) => {
       return privateZone.title
     })
-    console.log(privateZoneTitles)
     axios({
       method: 'post',
       url: SERVER_URL + 'user/setPrivate',
@@ -43,10 +39,6 @@ const SettingPrivateZone = ({ userLocation, privateZoneList, deviceWidth, SERVER
     .catch((err) => {
       console.log(err)
     })
-  }
-
-  const onLayout = e => {
-    console.log(e.nativeEvent.layout)
   }
 
   const mainButton = () => {
@@ -67,7 +59,7 @@ const SettingPrivateZone = ({ userLocation, privateZoneList, deviceWidth, SERVER
   return (
     <View style={{flex:1}}>
       <View style={{flex: 2, padding: 20}}>
-        <View style={{flex: 1, borderWidth: 2}} onLayout={onLayout}>
+        <View style={{flex: 1, borderWidth: 2}}>
           <MapView 
             style={{ flex : 1 }}
             provider={PROVIDER_GOOGLE}
@@ -87,8 +79,8 @@ const SettingPrivateZone = ({ userLocation, privateZoneList, deviceWidth, SERVER
               center={{latitude: userLocation.latitude, longitude: userLocation.longitude}}
               radius={100}
               strokeWidth={2}
-              strokeColor={'#000'}
-              fillColor={ 'rgba(0, 0, 0, 0.5)' }
+              strokeColor={'#FF6A77'}
+              fillColor={ '#FF6A7755' }
             />
           </MapView>
         </View>

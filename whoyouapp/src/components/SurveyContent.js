@@ -269,7 +269,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
             >
               {(ownerName === userName || checkVote !== '') &&
                 <>
-                  <Text style={{color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50}}>{item.exon}</Text>
+                  <Text style={{color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50, paddingHorizontal: 20, textAlign: 'center'}}>{item.exon}</Text>
                   {item.answerList.map((ans, idx) => {
                     const total = Object.values(item.count).reduce((a, b) => a + b)
                     const num = Number.isNaN(Math.round(item.count[ans]/total*100)) ? 0 : Math.round(item.count[ans]/total*100)
@@ -322,7 +322,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
               }
               {(ownerName !== userName && checkVote === '') &&
                 <>
-                  <Text style={{ color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50 }}>{item.exon}</Text>
+                  <Text style={{ color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50, paddingHorizontal: 20, textAlign: 'center' }}>{item.exon}</Text>
                   {item.answerList.map((ans, idx) => {
                     const total = Object.values(item.count).reduce((a, b) => a + b)
                     const num = Number.isNaN(Math.round(item.count[ans]/total*100)) ? 0 : Math.round(item.count[ans]/total*100)
@@ -339,7 +339,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                           width: deviceWidth * 0.75,
                           height: 40,
                           backgroundColor: '#0B1C26',
-                          // borderColor: 'rgba(255, 255, 255, 0.8)',
+                          borderColor: 'rgba(255, 255, 255, 0.8)',
                           borderRadius: 3,
                           borderWidth: 1,
                           flexDirection: 'row',
