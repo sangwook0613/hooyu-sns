@@ -11,7 +11,6 @@ const DeleteModal = ({ contentPK, userPK, isModalVisible, setModalVisible, reRen
   const deleteContent = () => {
     Api.deleteContent(contentPK, userPK)
       .then((res) => {
-        console.log(res.data.success)
         reRender()
       })
       .catch((err) => {

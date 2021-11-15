@@ -295,10 +295,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
               }}
               onPress={() => {
                 setIsEmojiSelect(false)
-                console.log('imageData', imageData)
-                console.log('imageEmoji', imageEmoji)
                 addEmotion(emotion, imageData[currentIndex].contentPk, userPK)
-                console.warn(emotion, imageData[currentIndex], index)
               }}
             >
               <Image

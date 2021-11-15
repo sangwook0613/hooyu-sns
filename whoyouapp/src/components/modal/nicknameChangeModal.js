@@ -38,7 +38,6 @@ const NicknameChangeModal = ({ isModalVisible, setModalVisible, userPK, setUserN
   const changeNickname = () => {
     Api.updateNickname(newNickname, userPK)
       .then((res) => {
-        console.log(res.data.success)
         setUserName(newNickname)
       })
       .catch((err) => {

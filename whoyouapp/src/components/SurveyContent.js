@@ -36,72 +36,17 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
     Api.getUserSurvey(ownerName)
       .then((res) => {
         let data = res.data.success
-        console.log(data)
         if (data.length === 0) {
           setIsSurvey(false)
         } else {
           getEmotion(data[currentIndex].contentPK)
-          // getVoteCheck(data[0].contentPK)
-          data.map((survey, idx) => {
-            console.log('이것은 콘솔', idx)
-            Api.voteCheck(survey.contentPK, userPK)
-              .then((res) => {
-                console.log('voteCheck', res.data, res.data.success)
-                if (res.data.success !== "투표하지 않았습니다.") {
-                  // setCheckVote(res.data.success)
-                  data[idx]['myVote'] = res.data.success
-                } else {
-                  data[idx]['myVote'] = ''
-                }
-              })
-              .catch((err) => {
-                console.warn(err)
-              })
-            })
-          }
-          setSurveyData(data)
-        console.log('체크케츸', data)
+        }
+        setSurveyData(data)
       })
       .catch((err) => {
         console.warn(err)
       })
   }
-
-
-  // const updateSurveyData = () => {
-  //   Api.getUserSurvey(ownerName)
-  //     .then(async (res) => {
-  //       let data = res.data.success
-  //       console.log(data)
-  //       if (data.length === 0) {
-  //         setIsSurvey(false)
-  //       } else {
-  //         getEmotion(data[currentIndex].contentPK)
-  //         // getVoteCheck(data[0].contentPK)
-  //         await Promise.all(data.map(async (survey, idx) => {
-  //           console.log('이것은 콘솔', idx)
-  //           await Api.voteCheck(survey.contentPK, userPK)
-  //             .then((res) => {
-  //               console.log('voteCheck', res.data, res.data.success)
-  //               if (res.data.success !== "투표하지 않았습니다.") {
-  //                 // setCheckVote(res.data.success)
-  //                 data[idx]['myVote'] = res.data.success
-  //               } else {
-  //                 data[idx]['myVote'] = ''
-  //               }
-  //             })
-  //             .catch((err) => {
-  //               console.warn(err)
-  //             })
-  //           }))
-  //         }
-  //       setSurveyData(data)
-  //       console.log('체크케츸', data)
-  //     })
-  //     .catch((err) => {
-  //       console.warn(err)
-  //     })
-  // }
 
   const deleteToggleModal = () => {
     setDeleteModalContent(surveyData[currentIndex].contentPK)
@@ -172,25 +117,9 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       })
   }
 
-  // const getVoteCheck = (contentPK) => {
-  //   Api.voteCheck(contentPK, userPK)
-  //     .then((res) => {
-  //       console.log('voteCheck', res.data, res.data.success)
-  //       if (res.data.success !== "투표하지 않았습니다.") {
-  //         setCheckVote(res.data.success)
-  //       } else {
-  //         setCheckVote('')
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       console.warn(err)
-  //     })
-  // }
-
   const voteToSurvey = (answerPK, contentPK) => {
     Api.voteSurvey(answerPK, contentPK, userPK)
       .then((res) => {
-        console.log('투표완료!', res.data)
         updateSurveyData()
       })
       .catch((err) => {
@@ -238,22 +167,6 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           setIsSurvey(false)
         } else {
           getEmotion(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
-          data.map((survey, idx) => {
-            console.log('이것은 콘솔', idx)
-            Api.voteCheck(survey.contentPK, userPK)
-              .then((res) => {
-                console.log('voteCheck', res.data, res.data.success)
-                if (res.data.success !== "투표하지 않았습니다.") {
-                  // setCheckVote(res.data.success)
-                  data[idx]['myVote'] = res.data.success
-                } else {
-                  data[idx]['myVote'] = ''
-                }
-              })
-              .catch((err) => {
-                console.warn(err)
-              })
-          })
           // getVoteCheck(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
           if (currentIndex === data.length) {
             setCurrentIndex(currentIndex - 1)
@@ -402,8 +315,6 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                       <TouchableWithoutFeedback
                         key={item.answerPK[ans]} 
                         onPress={() => {
-                          console.log(ans, surveyData[currentIndex].answerPK[ans])
-                          // setCheckVote('')
                           voteToSurvey(surveyData[currentIndex].answerPK[ans], surveyData[currentIndex].contentPK)
                         }}
                       >
@@ -455,7 +366,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                   style={{ width: 24, height: 24, marginRight: 5 }}
                   source={emojiImages.default.emoji[item]}
                   />
-                <Text>{surveyEmoji[item]}</Text>
+                <Text>{convertCount(surveyEmoji[item])}</Text>
               </View>
             ))}
           </View>
@@ -486,10 +397,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
               }}
               onPress={() => {
                 setIsEmojiSelect(false)
-                // console.log('surveyData', surveyData)
-                console.log('surveyEmoji', surveyEmoji)
-                // addEmotion(emotion, surveyData[currentIndex].contentPK, userPK)
-                console.warn('checkehck', surveyData)
+                addEmotion(emotion, surveyData[currentIndex].contentPK, userPK)
               }}
             >
               <Image
