@@ -26,7 +26,7 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selec
       const now = new Date()
       setNow(now.toString())
       Animated.timing(shelterList, {
-        toValue: deviceHeight * 0.6,
+        toValue: deviceHeight * 0.585,
         duration: 400,
         useNativeDriver: false,
       }).start()
@@ -204,7 +204,7 @@ const styleSheet = (deviceWidth, deviceHeight, mainColor1, mainColor4) => StyleS
   shelterList: {
     position: 'absolute',
     width: '100%',
-    height: deviceHeight * 0.4,
+    height: deviceHeight * 0.38,
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
