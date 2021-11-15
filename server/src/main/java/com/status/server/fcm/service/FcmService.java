@@ -48,11 +48,11 @@ public class FcmService {
         ResponseEntity<String> response = rest.exchange(API_URL, HttpMethod.POST, enti, String.class);
     }
 
-    private String makeMessage(String targetToken,String title,String message) throws JsonProcessingException {
+    private String makeMessage(String targetToken,String title,String body) throws JsonProcessingException {
         FcmMessageDto fcmMessageDto = FcmMessageDto.builder()
                 .data(FcmMessageDto.Data.builder()
                         .title(title)
-                        .message(message)
+                        .body(body)
                         .build()
                 )
                 .to(targetToken)

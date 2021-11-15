@@ -16,7 +16,7 @@ public class FcmMessageDto {
     @Getter
     public static class Data{
         private String title;
-        private String message;
+        private String body;
     }
 
 }
