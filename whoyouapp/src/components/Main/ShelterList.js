@@ -26,7 +26,7 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selec
       const now = new Date()
       setNow(now.toString())
       Animated.timing(shelterList, {
-        toValue: deviceHeight * 0.6,
+        toValue: deviceHeight * 0.585,
         duration: 400,
         useNativeDriver: false,
       }).start()
@@ -136,7 +136,7 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selec
                   >
                     <TouchableOpacity
                       style={styles.userMenuButton}
-                      onPress={() => {navigation.navigate('User', {username: user.name, content: 'status'})}}
+                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'status'})}}
                     >
                       <Text style={{
                         color: 'white',
@@ -157,7 +157,7 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selec
                   >
                     <TouchableOpacity
                       style={[styles.userMenuButton, {backgroundColor: user.contentTime.images === null ? '#B4B4B4' : mainColor1}]}
-                      onPress={() => {navigation.navigate('User', {username: user.name, content: 'image'})}}
+                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'image'})}}
                       disabled={user.contentTime.images === null ? true : false}
                     >
                       <Text style={{
@@ -179,7 +179,7 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selec
                   >
                     <TouchableOpacity
                       style={[styles.userMenuButton, {backgroundColor: user.contentTime.survey === null ? '#B4B4B4' : mainColor1}]}
-                      onPress={() => {navigation.navigate('User', {username: user.name, content: 'survey'})}}
+                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'survey'})}}
                       disabled={user.contentTime.survey === null ? true : false}
                     >
                       <Text style={{
@@ -204,7 +204,7 @@ const styleSheet = (deviceWidth, deviceHeight, mainColor1, mainColor4) => StyleS
   shelterList: {
     position: 'absolute',
     width: '100%',
-    height: deviceHeight * 0.4,
+    height: deviceHeight * 0.38,
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

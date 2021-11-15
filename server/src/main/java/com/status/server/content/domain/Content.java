@@ -6,6 +6,8 @@ import com.status.server.user.domain.User;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter @Setter
 @ToString
@@ -31,6 +33,9 @@ public class Content extends BaseTime {
     @Enumerated
     @Column(nullable = false)
     private Type type;
+
+    @OneToMany(mappedBy = "content")
+    List<SurveyContentAnswer> surveyContentAnswers = new ArrayList<>();
 
     @Builder
     public Content(User user, String exon, String color, Type type){

@@ -18,4 +18,5 @@ public interface PrivateZoneRepository extends JpaRepository<PrivateZone, Long> 
 
     void deleteByIdAndUserId(Long pzPK, Long userPK);
     void deleteAllByIdAndUserId(Long userPK, Long pzPK);
+    void deleteAllByUserId(Long userPK);
 }
