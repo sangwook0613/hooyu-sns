@@ -1,15 +1,49 @@
 import React from 'react';
 import { Text, View, TouchableOpacity, TextInput } from 'react-native';
 import Modal from "react-native-modal";
+import api from '../../utils/api'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { connect } from 'react-redux'
+import { useNavigation } from '@react-navigation/native'
+import { actionCreators } from '../../store/reducers'
 
-const UnregisterModal = ({ isModalVisible, setModalVisible }) => {  
+
+import {
+  GoogleSignin,
+} from '@react-native-google-signin/google-signin'
+
+const UnregisterModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK, userPK }) => {  
+  const navigation = useNavigation()
   const sendModalVisible = () => {
     setModalVisible(!isModalVisible)
   }
 
-  const sendReport = () => {
-    console.warn('Change Nickname')
-    sendModalVisible()
+  const sendReport = async () => {
+    console.warn('탈퇴!')
+    GoogleSignin.configure({
+      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+      webClientId: '5095342969-dcob776t7ckfeu2gddkb2j4ke2cprfst.apps.googleusercontent.com',
+    })
+    try {
+      await GoogleSignin.revokeAccess()
+      await GoogleSignin.signOut()
+
+      api.userDelete(userPK)
+        .then(async() => {
+          setModalVisible(!isModalVisible)
+          setUserEmoji(null)
+          setUserPK(0)
+          await AsyncStorage.removeItem('access_token')
+          await AsyncStorage.removeItem('refresh_token')
+          navigation.reset({ routes: [{ name: 'Login' }] })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    } catch (error) {
+      console.error(error)
+    }
+
   }
 
   return (
@@ -44,4 +78,21 @@ const UnregisterModal = ({ isModalVisible, setModalVisible }) => {
   
 };
 
-export default UnregisterModal;
+function mapStateToProps(state) {
+  return {
+    userPK: state.user.userPK,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserPK: (pk) => {
+      dispatch(actionCreators.setUserPK(pk))
+    },
+    setUserEmoji: (emoji) => {
+      dispatch(actionCreators.setUserEmoji(emoji))
+    },
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UnregisterModal)

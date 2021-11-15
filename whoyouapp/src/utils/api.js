@@ -168,4 +168,13 @@ export default {
       }
     })
   },
+
+  userDelete(pk) {
+    return axios({
+      method: 'delete',
+      url: `user/drop?userPK=${pk}`
+    })
+  },
+
+
 }
