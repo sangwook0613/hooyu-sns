@@ -148,7 +148,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
             setCurrentIndex(currentIndex - 1)
           }
           setImageData(data)
-          swiperFlatList.current.scrollToIndex({ index: currentIndex - 1 })
+          swiperFlatList.current.scrollToIndex({ index: currentIndex === 0 ? currentIndex : currentIndex - 1 })
         }
       })
       .catch((err) => {

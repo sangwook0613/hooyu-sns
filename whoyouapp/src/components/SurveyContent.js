@@ -113,6 +113,8 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         console.log('voteCheck', res.data, res.data.success)
         if (res.data.success !== "투표하지 않았습니다.") {
           setCheckVote(res.data.success)
+        } else {
+          setCheckVote('')
         }
       })
       .catch((err) => {
@@ -184,13 +186,13 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         if (data.length === 0) {
           setIsSurvey(false)
         } else {
-          getEmotion(currentIndex === data.length ? data[currentIndex - 1].contentPk : data[currentIndex].contentPk)
-          getVoteCheck(currentIndex === data.length ? data[currentIndex - 1].contentPk : data[currentIndex].contentPk)
+          getEmotion(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
+          getVoteCheck(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
           if (currentIndex === data.length) {
             setCurrentIndex(currentIndex - 1)
           }
           setSurveyData(data)
-          swiperFlatList.current.scrollToIndex({ index: currentIndex - 1 })
+          swiperFlatList.current.scrollToIndex({ index: currentIndex === 0 ? currentIndex : currentIndex - 1 })
         }
       })
       .catch((err) => {
@@ -250,6 +252,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           setCurrentIndex(index)
           setIsEmojiSelect(false)
           getEmotion(surveyData[index].contentPK)
+          getVoteCheck(surveyData[index].contentPK)
         }}
         renderItem={({ item }) => (
           <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
@@ -264,19 +267,23 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                 alignItems:"center"
               }}
             >
-              {checkVote === '' &&
+              {(ownerName === userName || checkVote !== '') &&
                 <>
-                  <Text style={{ color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50 }}>{item.exon}</Text>
+                  <Text style={{color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50, paddingHorizontal: 20, textAlign: 'center'}}>{item.exon}</Text>
                   {item.answerList.map((ans, idx) => {
                     const total = Object.values(item.count).reduce((a, b) => a + b)
                     const num = Number.isNaN(Math.round(item.count[ans]/total*100)) ? 0 : Math.round(item.count[ans]/total*100)
                     return (
-                      <TouchableWithoutFeedback
-                        key={item.answerPK[ans]} 
-                        onPress={() => {
-                          console.log(ans, surveyData[currentIndex].answerPK[ans])
-                          setCheckVote([])
-                          voteToSurvey(surveyData[currentIndex].answerPK[ans], surveyData[currentIndex].contentPK)
+                      <LinearGradient colors={["#AB79EF", "#FC98AB"]}
+                        // start={{ x: 0, y: 1 }}
+                        // end={{ x: 1, y: 1 }}
+                        key={item.answerPK[ans]}
+                        style={{
+                          alignItems: 'center',
+                          borderRadius: 3,
+                          justifyContent: 'center',
+                          marginTop: 7,
+                          padding: ownerName === userName || checkVote === ans ? 1 : 0
                         }}
                       >
                         <View style={{
@@ -285,60 +292,66 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                           backgroundColor: '#0B1C26',
                           borderColor: 'white',
                           borderRadius: 3,
-                          borderWidth: 1,
+                          borderWidth: ownerName === userName || checkVote === ans ? 0 : 1,
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                          marginTop: 7,
-                          opacity: 0.8,
                           paddingHorizontal: 10,
                         }}>
-                          <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'white'}}
+                          <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'rgba(255, 255, 255, 0.8)'}}
                             onChangeText={(text) => onTextChange(0, text)}
                           >{ans}</Text>
+                          <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'rgba(255, 255, 255, 0.8)'}}
+                            onChangeText={(text) => onTextChange(0, text)}
+                          >{num + "%"}</Text>
+                          <LinearGradient colors={[ownerName === userName || checkVote === ans ? "#AB79EF" : "#B4B4B4", ownerName === userName || checkVote === ans ? "#FC98AB" : "#FFFFFF"]}
+                            start={{ x: 0, y: 1 }}
+                            end={{ x: 1, y: 1 }}
+                            style={{
+                            width: deviceWidth * 0.75 * num / 100 - (ownerName === userName || checkVote === ans ? 0 : 2),
+                            position: 'absolute',
+                            opacity: ownerName === userName || checkVote === ans ? 0.8 : 0.5,
+                            top: 0,
+                            left: 0,
+                            bottom: 0,
+                          }}>
+                          </LinearGradient>
                         </View>
-                      </TouchableWithoutFeedback>
+                      </LinearGradient>
                     )})}
                 </>
               }
-              {checkVote !== '' &&
+              {(ownerName !== userName && checkVote === '') &&
                 <>
-                  <Text style={{color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50}}>{item.exon}</Text>
+                  <Text style={{ color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50, paddingHorizontal: 20, textAlign: 'center' }}>{item.exon}</Text>
                   {item.answerList.map((ans, idx) => {
                     const total = Object.values(item.count).reduce((a, b) => a + b)
                     const num = Number.isNaN(Math.round(item.count[ans]/total*100)) ? 0 : Math.round(item.count[ans]/total*100)
                     return (
-                      <View key={item.answerPK[ans]} style={{
-                        width: deviceWidth * 0.75,
-                        height: 40,
-                        backgroundColor: '#0B1C26',
-                        borderColor: 'white',
-                        borderRadius: 3,
-                        borderWidth: 1,
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        marginTop: 7,
-                        opacity: 0.8,
-                        paddingHorizontal: 10,
-                      }}>
-                        <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'white'}}
-                          onChangeText={(text) => onTextChange(0, text)}
-                        >{ans}</Text>
-                        <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'white'}}
-                          onChangeText={(text) => onTextChange(0, text)}
-                        >{num + "%"}</Text>
-                        <LinearGradient colors={["#AB79EF", "#FC98AB"]}
-                          start={{ x: 0, y: 1 }}
-                          end={{ x: 1, y: 1 }}
-                          style={{
-                          width: deviceWidth * 0.75 * num / 100 - 1,
-                          position: 'absolute',
-                          opacity: 0.8,
-                          top: 0,
-                          left: 0,
-                          bottom: 0,
+                      <TouchableWithoutFeedback
+                        key={item.answerPK[ans]} 
+                        onPress={() => {
+                          console.log(ans, surveyData[currentIndex].answerPK[ans])
+                          setCheckVote('')
+                          voteToSurvey(surveyData[currentIndex].answerPK[ans], surveyData[currentIndex].contentPK)
+                        }}
+                      >
+                        <View style={{
+                          width: deviceWidth * 0.75,
+                          height: 40,
+                          backgroundColor: '#0B1C26',
+                          borderColor: 'rgba(255, 255, 255, 0.8)',
+                          borderRadius: 3,
+                          borderWidth: 1,
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          marginTop: 7,
+                          paddingHorizontal: 10,
                         }}>
-                        </LinearGradient>
-                      </View>
+                          <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'rgba(255, 255, 255, 0.8)'}}
+                            onChangeText={(text) => onTextChange(0, text)}
+                          >{ans}</Text>
+                        </View>
+                      </TouchableWithoutFeedback>
                     )})}
                 </>
               }
