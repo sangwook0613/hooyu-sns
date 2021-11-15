@@ -4,6 +4,7 @@ import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedba
 import LinearGradient from 'react-native-linear-gradient'
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import shelter from '../assets/images/shelter.png'
 import morning from '../assets/images/morning.png'
@@ -76,15 +77,27 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       AppState.addEventListener('change', handleAppStateChange)
     }
     initialPermission()
-    return () => {
+    return async () => {
       console.log('메인에서 끊기')
       AppState.removeEventListener('change', handleAppStateChange)
-      api.setUserKilled(userPK)
-        .then(() => {
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+      AsyncStorage.getItem('access_token', async (err, result) => {
+        if (result) {
+          api.setUserKilled(userPK)
+            .then(() => {
+              console.log('메인에서 킬')
+            })
+            .catch((err) => {
+              console.log(err)
+            })
+        }
+        else {
+          console.log('로그아웃 :  테스크 삭제')
+          const isTaskStarted = await Location.hasStartedLocationUpdatesAsync(FOREGROUND_LOCATION_TASK)
+          if (isTaskStarted) {
+            await Location.stopLocationUpdatesAsync(FOREGROUND_LOCATION_TASK)
+          }
+        }
+      })
     }
   }, [])
 
@@ -212,44 +225,49 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 
   const getUsers = (latitude, longitude) => {
     console.log('실행됨')
-    axios({
-      method: 'post',
-      url: SERVER_URL + 'user/radar',
-      data: {
-        list: [
-        ],
-        requestRadiusDto: {
-          lat: latitude,
-          lon: longitude,
-          radius: myRadius,
-          userPK: userPK
-        }
+
+    AsyncStorage.getItem('access_token', async (err, result) => {
+      if (result) {
+        axios({
+          method: 'post',
+          url: SERVER_URL + 'user/radar',
+          data: {
+            list: [
+            ],
+            requestRadiusDto: {
+              lat: latitude,
+              lon: longitude,
+              radius: myRadius,
+              userPK: userPK
+            }
+          }
+        })
+          .then((res) => {
+            if (appState.current === 'active') {
+              const newUsers = res.data.success.filter(user => user.privateZone !== true)
+              if (mainListSortMode === 'distance') {
+                newUsers.sort(function (a, b) {
+                  return a.distDto.dist - b.distDto.dist
+                })
+              } else if (mainListSortMode === 'time') {
+                newUsers.sort(function (a, b) {
+                  return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
+                })
+              }
+              setUsers(newUsers)
+              const newPrivateZoneUsers = res.data.success.filter(user => user.privateZone === true)
+              newPrivateZoneUsers.sort(function (a, b) {
+                return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
+              })
+              setPrivateZoneUsers(newPrivateZoneUsers)
+            }
+            console.warn('get users : ', AppState.currentState)
+          })
+          .catch((err) => {
+            console.warn(err)
+          })
       }
     })
-      .then((res) => {
-        if (appState.current === 'active') {
-          const newUsers = res.data.success.filter(user => user.privateZone !== true)
-          if (mainListSortMode === 'distance') {
-            newUsers.sort(function (a, b) {
-              return a.distDto.dist - b.distDto.dist
-            })
-          } else if (mainListSortMode === 'time') {
-            newUsers.sort(function (a, b) {
-              return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
-            })
-          }
-          setUsers(newUsers)
-          const newPrivateZoneUsers = res.data.success.filter(user => user.privateZone === true)
-          newPrivateZoneUsers.sort(function (a, b) {
-            return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
-          })
-          setPrivateZoneUsers(newPrivateZoneUsers)
-        }
-        console.warn('get users : ', AppState.currentState)
-      })
-      .catch((err) => {
-        console.warn(err)
-      })
   }
 
   const selectUser = (idx) => {
@@ -396,7 +414,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
             >
 
               <View style={{ position: 'absolute', top: -25 }}>
-                <Direction radarWidth={radarWidth}/>
+                <Direction radarWidth={radarWidth} />
               </View>
 
               <View
@@ -737,7 +755,7 @@ function mapStateToProps(state) {
     SERVER_URL: state.user.SERVER_URL,
     userPK: state.user.userPK,
     userEmoji: state.user.userEmoji,
-    userName: state.user.userName
+    userName: state.user.userName,
   }
 }
 
@@ -745,7 +763,7 @@ function mapDispatchToProps(dispatch) {
   return {
     setMyRadius: (radius) => {
       dispatch(actionCreators.setRadius(radius))
-    }
+    },
   }
 }
 
