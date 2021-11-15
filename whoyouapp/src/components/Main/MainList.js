@@ -30,7 +30,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
       const now = new Date()
       setNow(now.toString())
       Animated.timing(mainList, {
-        toValue: deviceHeight * 0.585,
+        toValue: deviceHeight * 0.6,
         duration: 400,
         useNativeDriver: false,
       }).start()
@@ -241,7 +241,7 @@ const styleSheet = (deviceWidth, deviceHeight, mainColor1, mainColor4) => StyleS
   mainList: {
     position: 'absolute',
     width: '100%',
-    height: deviceHeight * 0.38,
+    height: deviceHeight * 0.4,
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
