@@ -75,8 +75,9 @@ public class JwtAuthFilter extends GenericFilterBean {
         chain.doFilter(request, response);
     }
 
-    public Authentication getAuthentication(User member) {
-        return new UsernamePasswordAuthenticationToken(member, "",
+    // 정상 토큰이면 해당 토큰으로 Authentication 을 가져와서 SecurityContext 에 저장
+    public Authentication getAuthentication(User user) {
+        return new UsernamePasswordAuthenticationToken(user.getId(), "",
                 Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
     }
 

@@ -22,6 +22,8 @@ public class ResponseSurveyDto {
     private String color;
     private LocalDateTime createAt;
 
+    private String myVote;
+
     private List<String> answerList;
 
     private HashMap<String, Integer> count;
@@ -32,6 +34,7 @@ public class ResponseSurveyDto {
         this.exon = entity.getExon();
         this.color = entity.getColor();
         this.createAt = entity.getCreatedAt();
+        this.myVote = "";
         this.answerList = new ArrayList<>();
         this.count = new HashMap<>();
         this.answerPK = new HashMap<>();

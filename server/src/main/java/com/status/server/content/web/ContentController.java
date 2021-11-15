@@ -131,7 +131,7 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/status/{userName}")
+    @GetMapping("/statuses/{userName}")
     public ResponseEntity<SuccessResponseDto> getStatusContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseContentPlusDto> list = contentService.statusesContent(userName);
@@ -141,7 +141,7 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/image/{userName}")
+    @GetMapping("/images/{userName}")
     public ResponseEntity<SuccessResponseDto> getImageContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseContentPlusDto> list = contentService.imagesContent(userName);
@@ -151,7 +151,7 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/survey/{userName}")
+    @GetMapping("/surveys/{userName}")
     public ResponseEntity<SuccessResponseDto> getSurveyContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseSurveyPlusDto> list = contentService.surveysContent(userName);
@@ -161,7 +161,7 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/statuses/{userName}")
+    @GetMapping("/status/{userName}")
     public ResponseEntity<SuccessResponseDto> getStatusesContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseContentDto> list = contentService.statusContent(userName);
@@ -171,7 +171,7 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/images/{userName}")
+    @GetMapping("/image/{userName}")
     public ResponseEntity<SuccessResponseDto> getImagesContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseContentDto> list = contentService.imageContent(userName);
@@ -181,7 +181,7 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/surveys/{userName}")
+    @GetMapping("/survey/{userName}")
     public ResponseEntity<SuccessResponseDto> getSurveysContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseSurveyDto> list = contentService.surveyContent(userName);
