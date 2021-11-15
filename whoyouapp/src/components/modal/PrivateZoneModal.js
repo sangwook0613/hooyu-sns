@@ -10,10 +10,6 @@ const PrivateZoneModal = ({ isModalVisible, onCloseModal, deviceWidth, deviceHei
     onCloseModal()
   }
 
-  useEffect(() => {
-    console.log(currentPrivateZone)
-  }, [])
-
   return (
     <Modal 
       isVisible={isModalVisible}
@@ -23,7 +19,7 @@ const PrivateZoneModal = ({ isModalVisible, onCloseModal, deviceWidth, deviceHei
         flex: 1, justifyContent: "center", alignItems: "center",
       }}
     >
-      <View style={{ width: deviceWidth*0.9, height: deviceHeight*0.5, borderWidth: 2, borderRadius: 10, backgroundColor: 'white', padding: 20}}>
+      <View style={{ width: deviceWidth*0.9, height: deviceHeight*0.5, borderRadius: 10, backgroundColor: 'white', padding: 20}}>
         <View style={{ flex: 1, justifyContent: 'center', borderWidth: 1, borderColor: '#ccc' }}>
           <MapView
             style={{ flex : 1 }}
@@ -44,8 +40,8 @@ const PrivateZoneModal = ({ isModalVisible, onCloseModal, deviceWidth, deviceHei
               center={{latitude: currentPrivateZone.latitude, longitude: currentPrivateZone.longitude}}
               radius={100}
               strokeWidth={2}
-              strokeColor={'#000'}
-              fillColor={ 'rgba(0, 0, 0, 0.5)' }
+              strokeColor={'#FF6A77'}
+              fillColor={ '#FF6A7755' }
             />
           </MapView>
         </View>
