@@ -3,8 +3,11 @@ import { Text, View, TouchableOpacity, TextInput } from 'react-native'
 import Modal from "react-native-modal"
 import Api from '../../utils/api'
 import { connect } from 'react-redux'
+import { useNavigation } from '@react-navigation/native'
+import { actionCreators } from '../../store/reducers'
 
-const NicknameChangeModal = ({ isModalVisible, setModalVisible, userPK  }) => {  
+const NicknameChangeModal = ({ isModalVisible, setModalVisible, userPK, setUserName }) => {
+  const navigation = useNavigation()
   const [newNickname, setNewNickname] = useState('')
 
   const sendModalVisible = () => {
@@ -15,6 +18,7 @@ const NicknameChangeModal = ({ isModalVisible, setModalVisible, userPK  }) => {
   const sendReport = () => {
     registerNickname()
     sendModalVisible()
+    navigation.reset({routes: [{name: 'Main'}]})
   }
 
   const registerNickname = () => {
@@ -35,6 +39,7 @@ const NicknameChangeModal = ({ isModalVisible, setModalVisible, userPK  }) => {
     Api.updateNickname(newNickname, userPK)
       .then((res) => {
         console.log(res.data.success)
+        setUserName(newNickname)
       })
       .catch((err) => {
         console.warn(err)
@@ -58,8 +63,8 @@ const NicknameChangeModal = ({ isModalVisible, setModalVisible, userPK  }) => {
         height: 240,
       }}>
         <Text style={{fontSize: 22, fontWeight: 'bold', marginBottom: 20}}>닉네임 변경</Text>
-        <Text style={{fontSize: 14, marginBottom: 2}}>변경할 닉네임을 입력해주세요.</Text>
-        <Text style={{fontSize: 14, marginBottom: 20, color: 'gray'}}>(한글 혹은 영어 포함 최대 10글자)</Text>
+        <Text style={{fontSize: 14, marginBottom: 2}}>변경할 닉네임을 입력해주세요. <Text style={{fontSize: 12, color: 'gray'}}>(최대 10글자)</Text></Text>
+        <Text style={{fontSize: 14, marginBottom: 20, color: 'gray'}}>설정 후 메인 화면으로 이동합니다.</Text>
         <TextInput
           style={{ borderBottomWidth: 2, paddingBottom: 4, fontSize: 16, }}
           placeholder={"옵션을 입력해주세요"}
@@ -87,4 +92,12 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(NicknameChangeModal)
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserName: (name) => {
+      dispatch(actionCreators.setUserName(name))
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NicknameChangeModal)
