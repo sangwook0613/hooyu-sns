@@ -6,9 +6,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.status.server.content.domain.RecordTime;
-import com.status.server.content.domain.RecordTimeRepository;
-import com.status.server.content.domain.Type;
+import com.status.server.content.domain.*;
 import com.status.server.content.dto.RequestContentTimeDto;
 import com.status.server.fcm.domain.FcmToken;
 import com.status.server.fcm.domain.FcmTokenRepository;
@@ -43,7 +41,6 @@ public class UserServiceImpl implements UserService {
     private final PrivateZoneRepository pzRepository;
     private final LocationRepository locationRepository;
     private final FcmTokenRepository fcmTokenRepository;
-
     private final RecordTimeRepository recordTimeRepository;
     private final TokenService tokenService;
     private final FcmService fcmService;
@@ -276,11 +273,11 @@ public class UserServiceImpl implements UserService {
                 countOfNew++;
             } else {
                 RequestContentTimeDto past = pushMap.get(target.getName());
-                if (past.getStatus().equals(target.getContentTime().getStatus())) {
+                if (past.getStatus() != null && past.getStatus().equals(target.getContentTime().getStatus())) {
                     targetContent = Type.STATUS;
-                } else if (past.getImages().equals(target.getContentTime().getImages())) {
+                } else if (past.getImages() != null && past.getImages().equals(target.getContentTime().getImages())) {
                     targetContent = Type.IMAGE;
-                } else if (past.getSurvey().equals(target.getContentTime().getSurvey())) {
+                } else if (past.getSurvey() != null && past.getSurvey().equals(target.getContentTime().getSurvey())) {
                     targetContent = Type.SURVEY;
                 }
             }
@@ -393,8 +390,17 @@ public class UserServiceImpl implements UserService {
 //        userRepository.save(user);
     }
 
-    public void deleteUser(Long userPK) throws Exception{
-
-    }
+//    @Transactional
+//    public String deleteUser(Long userPK) throws NoUserException{
+//        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+//        List<Content> list = contentRepository.findAllByUserId(userPK);
+//        for (Content content: list) {
+//            contentRepository.deleteAllById(content.getId());
+//        }
+//        surveyContentAnswerRepository.deleteAllByUserId(userPK);
+//        fcmTokenRepository.deleteByUserId(userPK);
+//        userRepository.delete(user);
+//        return "Success";
+//    }
 
 }

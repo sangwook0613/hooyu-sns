@@ -185,4 +185,14 @@ public class UserController {
 
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
+
+//    @DeleteMapping("/drop")
+//    public ResponseEntity<SuccessResponseDto> dropMembership(@RequestParam Long userPK) throws NoUserException {
+//        logger.trace("User Controller 진입 getListUserWithinRadius param {}", userPK);
+//        String message = userService.deleteUser(userPK);
+//
+//        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+//
+//        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+//    }
 }
