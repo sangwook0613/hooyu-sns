@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
 import images from '../assets/images'
 import DeleteModal from '../components/modal/deleteModal'
+import ReportModal from '../components/modal/reportModal'
 
 
 const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
@@ -19,13 +20,19 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const [isEmotions, setEmotions] = useState(false)
   const [giveEmotion, setGiveEmotion] = useState('')
   const [surveyEmoji, setSurveyEmoji] = useState({})
-  const [checkVote, setCheckVote] = useState('')
+  // const [checkVote, setCheckVote] = useState('')
   const [isLoaded, setIsLoaded] = useState(false)
-  const [isModalVisible, setModalVisible] = useState(false)
-  const [deleteContent, setDeleteContent] = useState(null)
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+  const [deleteModalContent, setDeleteModalContent] = useState(null)
+  const [isReportModalVisible, setReportModalVisible] = useState(false)
+  const [reportModalContent, setReportModalContent] = useState(null)
   const now = new Date()
 
   useEffect(() => {
+    updateSurveyData()
+  }, [])
+
+  const updateSurveyData = () => {
     Api.getUserSurvey(ownerName)
       .then((res) => {
         let data = res.data.success
@@ -33,19 +40,77 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         if (data.length === 0) {
           setIsSurvey(false)
         } else {
-          getEmotion(data[0].contentPK)
-          getVoteCheck(data[0].contentPK)
+          getEmotion(data[currentIndex].contentPK)
+          // getVoteCheck(data[0].contentPK)
+          data.map((survey, idx) => {
+            console.log('이것은 콘솔', idx)
+            Api.voteCheck(survey.contentPK, userPK)
+              .then((res) => {
+                console.log('voteCheck', res.data, res.data.success)
+                if (res.data.success !== "투표하지 않았습니다.") {
+                  // setCheckVote(res.data.success)
+                  data[idx]['myVote'] = res.data.success
+                } else {
+                  data[idx]['myVote'] = ''
+                }
+              })
+              .catch((err) => {
+                console.warn(err)
+              })
+            })
+          }
           setSurveyData(data)
-        }
+        console.log('체크케츸', data)
       })
       .catch((err) => {
         console.warn(err)
       })
-  }, [])
+  }
 
-  const toggleModal = () => {
-    setDeleteContent(surveyData[currentIndex].contentPK)
-    setModalVisible(!isModalVisible)
+
+  // const updateSurveyData = () => {
+  //   Api.getUserSurvey(ownerName)
+  //     .then(async (res) => {
+  //       let data = res.data.success
+  //       console.log(data)
+  //       if (data.length === 0) {
+  //         setIsSurvey(false)
+  //       } else {
+  //         getEmotion(data[currentIndex].contentPK)
+  //         // getVoteCheck(data[0].contentPK)
+  //         await Promise.all(data.map(async (survey, idx) => {
+  //           console.log('이것은 콘솔', idx)
+  //           await Api.voteCheck(survey.contentPK, userPK)
+  //             .then((res) => {
+  //               console.log('voteCheck', res.data, res.data.success)
+  //               if (res.data.success !== "투표하지 않았습니다.") {
+  //                 // setCheckVote(res.data.success)
+  //                 data[idx]['myVote'] = res.data.success
+  //               } else {
+  //                 data[idx]['myVote'] = ''
+  //               }
+  //             })
+  //             .catch((err) => {
+  //               console.warn(err)
+  //             })
+  //           }))
+  //         }
+  //       setSurveyData(data)
+  //       console.log('체크케츸', data)
+  //     })
+  //     .catch((err) => {
+  //       console.warn(err)
+  //     })
+  // }
+
+  const deleteToggleModal = () => {
+    setDeleteModalContent(surveyData[currentIndex].contentPK)
+    setDeleteModalVisible(!isDeleteModalVisible)
+  }
+
+  const reportToggleModal = () => {
+    setReportModalContent(surveyData[currentIndex].contentPK)
+    setReportModalVisible(!isReportModalVisible)
   }
 
   const getEmotion = (contentPK) => {
@@ -107,44 +172,30 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       })
   }
 
-  const getVoteCheck = (contentPK) => {
-    Api.voteCheck(contentPK, userPK)
-      .then((res) => {
-        console.log('voteCheck', res.data, res.data.success)
-        if (res.data.success !== "투표하지 않았습니다.") {
-          setCheckVote(res.data.success)
-        } else {
-          setCheckVote('')
-        }
-      })
-      .catch((err) => {
-        console.warn(err)
-      })
-  }
+  // const getVoteCheck = (contentPK) => {
+  //   Api.voteCheck(contentPK, userPK)
+  //     .then((res) => {
+  //       console.log('voteCheck', res.data, res.data.success)
+  //       if (res.data.success !== "투표하지 않았습니다.") {
+  //         setCheckVote(res.data.success)
+  //       } else {
+  //         setCheckVote('')
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.warn(err)
+  //     })
+  // }
 
   const voteToSurvey = (answerPK, contentPK) => {
     Api.voteSurvey(answerPK, contentPK, userPK)
       .then((res) => {
         console.log('투표완료!', res.data)
-        Api.getUserSurvey(ownerName)
-        .then((res) => {
-          console.log('유저 설문 받아오기')
-          let data = res.data.success
-          if (data.length === 0) {
-            setIsImage(false)
-          } else {
-            getEmotion(data[0].contentPK)
-            getVoteCheck(data[0].contentPK)
-            setSurveyData(data)
-          }
-        })
-        .catch((err) => {
-          console.warn(err)
-        })
+        updateSurveyData()
+      })
       .catch((err) => {
         console.warn(err)
       })
-    })
   }
 
 
@@ -187,13 +238,29 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           setIsSurvey(false)
         } else {
           getEmotion(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
-          getVoteCheck(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
+          data.map((survey, idx) => {
+            console.log('이것은 콘솔', idx)
+            Api.voteCheck(survey.contentPK, userPK)
+              .then((res) => {
+                console.log('voteCheck', res.data, res.data.success)
+                if (res.data.success !== "투표하지 않았습니다.") {
+                  // setCheckVote(res.data.success)
+                  data[idx]['myVote'] = res.data.success
+                } else {
+                  data[idx]['myVote'] = ''
+                }
+              })
+              .catch((err) => {
+                console.warn(err)
+              })
+          })
+          // getVoteCheck(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
           if (currentIndex === data.length) {
             setCurrentIndex(currentIndex - 1)
           }
-          setSurveyData(data)
-          swiperFlatList.current.scrollToIndex({ index: currentIndex === 0 ? currentIndex : currentIndex - 1 })
         }
+        setSurveyData(data)
+        swiperFlatList.current.scrollToIndex({ index: currentIndex === 0 ? currentIndex : currentIndex - 1 })
       })
       .catch((err) => {
         console.warn(err)
@@ -204,12 +271,17 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
     <View>
       <View style={{ flex: 1 }}>
         <DeleteModal
-          contentPK={deleteContent}
+          contentPK={deleteModalContent}
           userPK={userPK}
-          isModalVisible={isModalVisible}
-          setModalVisible={setModalVisible}
-          contentType={'survey'}
+          isModalVisible={isDeleteModalVisible}
+          setModalVisible={setDeleteModalVisible}
           reRender={reRenderSurvey}
+        />
+        <ReportModal
+          contentPK={reportModalContent}
+          userPK={userPK}
+          isModalVisible={isReportModalVisible}
+          setModalVisible={setReportModalVisible}
         />
       </View>
       <View
@@ -241,8 +313,8 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
             resizeMode='contain' />
           <Text>질문</Text>
         </View>
-        <TouchableOpacity onPress={toggleModal}>
-          <AntDesign name="close" size={18} color="black" />
+        <TouchableOpacity onPress={ownerName === userName ? deleteToggleModal : reportToggleModal}>
+          <AntDesign name={ownerName === userName ? "close" : "exclamationcircle"} size={18} color={ownerName === userName ? "black" : "#FF6A77"} />
         </TouchableOpacity>
       </View>
       <SwiperFlatList
@@ -252,7 +324,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           setCurrentIndex(index)
           setIsEmojiSelect(false)
           getEmotion(surveyData[index].contentPK)
-          getVoteCheck(surveyData[index].contentPK)
+          // getVoteCheck(surveyData[index].contentPK)
         }}
         renderItem={({ item }) => (
           <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
@@ -267,7 +339,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                 alignItems:"center"
               }}
             >
-              {(ownerName === userName || checkVote !== '') &&
+              {(ownerName === userName || item.myVote !== '') &&
                 <>
                   <Text style={{color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50, paddingHorizontal: 20, textAlign: 'center'}}>{item.exon}</Text>
                   {item.answerList.map((ans, idx) => {
@@ -283,7 +355,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                           borderRadius: 3,
                           justifyContent: 'center',
                           marginTop: 7,
-                          padding: ownerName === userName || checkVote === ans ? 1 : 0
+                          padding: ownerName === userName || item.myVote === ans ? 1 : 0
                         }}
                       >
                         <View style={{
@@ -292,7 +364,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                           backgroundColor: '#0B1C26',
                           borderColor: 'white',
                           borderRadius: 3,
-                          borderWidth: ownerName === userName || checkVote === ans ? 0 : 1,
+                          borderWidth: ownerName === userName || item.myVote === ans ? 0 : 1,
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                           paddingHorizontal: 10,
@@ -303,13 +375,13 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                           <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'rgba(255, 255, 255, 0.8)'}}
                             onChangeText={(text) => onTextChange(0, text)}
                           >{num + "%"}</Text>
-                          <LinearGradient colors={[ownerName === userName || checkVote === ans ? "#AB79EF" : "#B4B4B4", ownerName === userName || checkVote === ans ? "#FC98AB" : "#FFFFFF"]}
+                          <LinearGradient colors={[ownerName === userName || item.myVote === ans ? "#AB79EF" : "#B4B4B4", ownerName === userName || item.myVote === ans ? "#FC98AB" : "#FFFFFF"]}
                             start={{ x: 0, y: 1 }}
                             end={{ x: 1, y: 1 }}
                             style={{
-                            width: deviceWidth * 0.75 * num / 100 - (ownerName === userName || checkVote === ans ? 0 : 2),
+                            width: deviceWidth * 0.75 * num / 100 - (ownerName === userName || item.myVote === ans ? 0 : 2),
                             position: 'absolute',
-                            opacity: ownerName === userName || checkVote === ans ? 0.8 : 0.5,
+                            opacity: ownerName === userName || item.myVote === ans ? 0.8 : 0.5,
                             top: 0,
                             left: 0,
                             bottom: 0,
@@ -320,7 +392,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                     )})}
                 </>
               }
-              {(ownerName !== userName && checkVote === '') &&
+              {(ownerName !== userName && item.myVote === '') &&
                 <>
                   <Text style={{ color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50, paddingHorizontal: 20, textAlign: 'center' }}>{item.exon}</Text>
                   {item.answerList.map((ans, idx) => {
@@ -331,7 +403,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                         key={item.answerPK[ans]} 
                         onPress={() => {
                           console.log(ans, surveyData[currentIndex].answerPK[ans])
-                          setCheckVote('')
+                          // setCheckVote('')
                           voteToSurvey(surveyData[currentIndex].answerPK[ans], surveyData[currentIndex].contentPK)
                         }}
                       >
@@ -414,10 +486,10 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
               }}
               onPress={() => {
                 setIsEmojiSelect(false)
-                console.log('surveyData', surveyData)
+                // console.log('surveyData', surveyData)
                 console.log('surveyEmoji', surveyEmoji)
-                addEmotion(emotion, surveyData[currentIndex].contentPK, userPK)
-                console.warn('checkehck', surveyData, checkVote)
+                // addEmotion(emotion, surveyData[currentIndex].contentPK, userPK)
+                console.warn('checkehck', surveyData)
               }}
             >
               <Image
