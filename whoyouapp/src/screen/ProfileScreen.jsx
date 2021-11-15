@@ -67,15 +67,11 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
     navigation.setOptions({
       headerTitle: (props) => <ProfileTitle {...props} />,
       headerRight: () => (
-        (ownerName === userName) ? (
+        (ownerName === userName && (
           <TouchableOpacity style={{ padding: 10 }} onPress={() => navigation.navigate('Setting')}>
             <Text>설정</Text>
           </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={{ padding: 10 }}>
-            <Text>차단</Text>
-          </TouchableOpacity>
-        ))
+        )))
     })
   }, [navigation])
 

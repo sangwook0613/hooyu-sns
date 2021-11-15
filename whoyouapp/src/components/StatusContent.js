@@ -21,8 +21,10 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const [giveEmotion, setGiveEmotion] = useState('')
   const [statusEmoji, setStatusEmoji] = useState({})
   const [isLoaded, setIsLoaded] = useState(false)
-  const [isModalVisible, setModalVisible] = useState(false)
-  const [modalContent, setModalContent] = useState(null)
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+  const [deleteModalContent, setDeleteModalContent] = useState(null)
+  const [isReportModalVisible, setReportModalVisible] = useState(false)
+  const [reportModalContent, setReportModalContent] = useState(null)
   const now = new Date()
 
   useEffect(() => {
@@ -41,9 +43,14 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       })
   }, [])
 
-  const toggleModal = () => {
-    setModalContent(statusData[currentIndex].contentPk)
-    setModalVisible(!isModalVisible)
+  const deleteToggleModal = () => {
+    setDeleteModalContent(statusData[currentIndex].contentPk)
+    setDeleteModalVisible(!isDeleteModalVisible)
+  }
+
+  const reportToggleModal = () => {
+    setReportModalContent(statusData[currentIndex].contentPk)
+    setReportModalVisible(!isReportModalVisible)
   }
 
   const getEmotion = (contentPK) => {
@@ -162,17 +169,17 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
     <View>
       <View style={{ flex: 1 }}>
         <DeleteModal
-          contentPK={modalContent}
+          contentPK={deleteModalContent}
           userPK={userPK}
-          isModalVisible={isModalVisible}
-          setModalVisible={setModalVisible}
+          isModalVisible={isDeleteModalVisible}
+          setModalVisible={setDeleteModalVisible}
           reRender={reRenderStatus}
         />
         <ReportModal
-          contentPK={modalContent}
+          contentPK={reportModalContent}
           userPK={userPK}
-          isModalVisible={isModalVisible}
-          setModalVisible={setModalVisible}
+          isModalVisible={isReportModalVisible}
+          setModalVisible={setReportModalVisible}
         />
       </View>
       <View
@@ -203,7 +210,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
             resizeMode='contain' />
           <Text>상태 메시지</Text>
         </View>
-        <TouchableOpacity onPress={toggleModal}>
+        <TouchableOpacity onPress={ownerName === userName ? deleteToggleModal : reportToggleModal}>
           <AntDesign name={ownerName === userName ? "close" : "exclamationcircle"} size={18} color={ownerName === userName ? "black" : "#FF6A77"} />
         </TouchableOpacity>
       </View>

@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
 import images from '../assets/images'
 import DeleteModal from '../components/modal/deleteModal'
+import ReportModal from '../components/modal/reportModal'
 
 
 const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
@@ -21,8 +22,10 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const [surveyEmoji, setSurveyEmoji] = useState({})
   // const [checkVote, setCheckVote] = useState('')
   const [isLoaded, setIsLoaded] = useState(false)
-  const [isModalVisible, setModalVisible] = useState(false)
-  const [deleteContent, setDeleteContent] = useState(null)
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+  const [deleteModalContent, setDeleteModalContent] = useState(null)
+  const [isReportModalVisible, setReportModalVisible] = useState(false)
+  const [reportModalContent, setReportModalContent] = useState(null)
   const now = new Date()
 
   useEffect(() => {
@@ -37,7 +40,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         if (data.length === 0) {
           setIsSurvey(false)
         } else {
-          getEmotion(data[0].contentPK)
+          getEmotion(data[currentIndex].contentPK)
           // getVoteCheck(data[0].contentPK)
           data.map((survey, idx) => {
             console.log('이것은 콘솔', idx)
@@ -54,18 +57,60 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
               .catch((err) => {
                 console.warn(err)
               })
-          })
-        }
-        setSurveyData(data)
+            })
+          }
+          setSurveyData(data)
+        console.log('체크케츸', data)
       })
       .catch((err) => {
         console.warn(err)
       })
   }
 
-  const toggleModal = () => {
-    setDeleteContent(surveyData[currentIndex].contentPK)
-    setModalVisible(!isModalVisible)
+
+  // const updateSurveyData = () => {
+  //   Api.getUserSurvey(ownerName)
+  //     .then(async (res) => {
+  //       let data = res.data.success
+  //       console.log(data)
+  //       if (data.length === 0) {
+  //         setIsSurvey(false)
+  //       } else {
+  //         getEmotion(data[currentIndex].contentPK)
+  //         // getVoteCheck(data[0].contentPK)
+  //         await Promise.all(data.map(async (survey, idx) => {
+  //           console.log('이것은 콘솔', idx)
+  //           await Api.voteCheck(survey.contentPK, userPK)
+  //             .then((res) => {
+  //               console.log('voteCheck', res.data, res.data.success)
+  //               if (res.data.success !== "투표하지 않았습니다.") {
+  //                 // setCheckVote(res.data.success)
+  //                 data[idx]['myVote'] = res.data.success
+  //               } else {
+  //                 data[idx]['myVote'] = ''
+  //               }
+  //             })
+  //             .catch((err) => {
+  //               console.warn(err)
+  //             })
+  //           }))
+  //         }
+  //       setSurveyData(data)
+  //       console.log('체크케츸', data)
+  //     })
+  //     .catch((err) => {
+  //       console.warn(err)
+  //     })
+  // }
+
+  const deleteToggleModal = () => {
+    setDeleteModalContent(surveyData[currentIndex].contentPK)
+    setDeleteModalVisible(!isDeleteModalVisible)
+  }
+
+  const reportToggleModal = () => {
+    setReportModalContent(surveyData[currentIndex].contentPK)
+    setReportModalVisible(!isReportModalVisible)
   }
 
   const getEmotion = (contentPK) => {
@@ -226,12 +271,17 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
     <View>
       <View style={{ flex: 1 }}>
         <DeleteModal
-          contentPK={deleteContent}
+          contentPK={deleteModalContent}
           userPK={userPK}
-          isModalVisible={isModalVisible}
-          setModalVisible={setModalVisible}
-          contentType={'survey'}
+          isModalVisible={isDeleteModalVisible}
+          setModalVisible={setDeleteModalVisible}
           reRender={reRenderSurvey}
+        />
+        <ReportModal
+          contentPK={reportModalContent}
+          userPK={userPK}
+          isModalVisible={isReportModalVisible}
+          setModalVisible={setReportModalVisible}
         />
       </View>
       <View
@@ -263,8 +313,8 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
             resizeMode='contain' />
           <Text>질문</Text>
         </View>
-        <TouchableOpacity onPress={toggleModal}>
-          <AntDesign name="close" size={18} color="black" />
+        <TouchableOpacity onPress={ownerName === userName ? deleteToggleModal : reportToggleModal}>
+          <AntDesign name={ownerName === userName ? "close" : "exclamationcircle"} size={18} color={ownerName === userName ? "black" : "#FF6A77"} />
         </TouchableOpacity>
       </View>
       <SwiperFlatList
@@ -438,8 +488,8 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                 setIsEmojiSelect(false)
                 // console.log('surveyData', surveyData)
                 console.log('surveyEmoji', surveyEmoji)
-                addEmotion(emotion, surveyData[currentIndex].contentPK, userPK)
-                // console.warn('checkehck', surveyData)
+                // addEmotion(emotion, surveyData[currentIndex].contentPK, userPK)
+                console.warn('checkehck', surveyData)
               }}
             >
               <Image
