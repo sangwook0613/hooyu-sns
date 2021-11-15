@@ -29,6 +29,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
     Api.getUserSurvey(ownerName)
       .then((res) => {
         let data = res.data.success
+        console.log(data)
         if (data.length === 0) {
           setIsSurvey(false)
         } else {
@@ -265,7 +266,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
             >
               {checkVote === '' &&
                 <>
-                  <Text style={{ color: 'white', fontSize: 24, marginBottom: 50 }}>{item.exon}</Text>
+                  <Text style={{ color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50 }}>{item.exon}</Text>
                   {item.answerList.map((ans, idx) => {
                     const total = Object.values(item.count).reduce((a, b) => a + b)
                     const num = Number.isNaN(Math.round(item.count[ans]/total*100)) ? 0 : Math.round(item.count[ans]/total*100)
@@ -283,13 +284,15 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                           height: 40,
                           backgroundColor: '#0B1C26',
                           borderColor: 'white',
+                          borderRadius: 3,
                           borderWidth: 1,
                           flexDirection: 'row',
                           justifyContent: 'space-between',
-                          marginTop: 10,
+                          marginTop: 7,
+                          opacity: 0.8,
                           paddingHorizontal: 10,
                         }}>
-                          <Text style={{zIndex: 1, height: '100%', fontSize: 20, textAlignVertical: 'center', paddingLeft: 10, color: 'white'}}
+                          <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'white'}}
                             onChangeText={(text) => onTextChange(0, text)}
                           >{ans}</Text>
                         </View>
@@ -299,7 +302,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
               }
               {checkVote !== '' &&
                 <>
-                  <Text style={{color: 'white', fontSize: 24, marginBottom: 50}}>{item.exon}</Text>
+                  <Text style={{color: 'white', fontSize: 20, opacity: 0.8, marginBottom: 50}}>{item.exon}</Text>
                   {item.answerList.map((ans, idx) => {
                     const total = Object.values(item.count).reduce((a, b) => a + b)
                     const num = Number.isNaN(Math.round(item.count[ans]/total*100)) ? 0 : Math.round(item.count[ans]/total*100)
@@ -309,23 +312,25 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                         height: 40,
                         backgroundColor: '#0B1C26',
                         borderColor: 'white',
+                        borderRadius: 3,
                         borderWidth: 1,
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        marginTop: 10,
+                        marginTop: 7,
+                        opacity: 0.8,
                         paddingHorizontal: 10,
                       }}>
-                        <Text style={{zIndex: 1, height: '100%', fontSize: 20, textAlignVertical: 'center', paddingLeft: 10, color: 'white'}}
+                        <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'white'}}
                           onChangeText={(text) => onTextChange(0, text)}
                         >{ans}</Text>
-                        <Text style={{zIndex: 1, height: '100%', fontSize: 20, textAlignVertical: 'center', paddingLeft: 10, color: 'white'}}
+                        <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'white'}}
                           onChangeText={(text) => onTextChange(0, text)}
                         >{num + "%"}</Text>
                         <LinearGradient colors={["#AB79EF", "#FC98AB"]}
                           start={{ x: 0, y: 1 }}
                           end={{ x: 1, y: 1 }}
                           style={{
-                          width: deviceWidth * 0.735 * num / 100,
+                          width: deviceWidth * 0.75 * num / 100 - 1,
                           position: 'absolute',
                           opacity: 0.8,
                           top: 0,
@@ -338,7 +343,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                 </>
               }
               <View style={{justifyContent: 'flex-start', width: '75%'}}>
-                <Text style={{ color: 'white', fontSize: 16, marginTop: 10 }}>
+                <Text style={{ color: 'white', fontSize: 13, opacity: 0.7, marginLeft: 8, marginTop: 15 }}>
                   {Object.values(item.count).reduce((a, b) => a + b) + '명 참여중'}
                 </Text>
               </View>
