@@ -1,11 +1,15 @@
 package com.status.server.global.util;
 
 import com.status.server.global.dto.DistDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 public class RadarMath {
+
+    Logger logger = LoggerFactory.getLogger(RadarMath.class);
 
     private BigDecimal PI = new BigDecimal(Math.PI);
 
@@ -13,6 +17,8 @@ public class RadarMath {
         return deg.multiply(PI).divide(new BigDecimal(180), 6, RoundingMode.HALF_UP);
     }
     private BigDecimal radianToDegree(BigDecimal deg){
+        BigDecimal tmp = deg.multiply(new BigDecimal(180));
+        tmp = deg.multiply(new BigDecimal(180)).divide(PI, 6, RoundingMode.HALF_UP);
         return deg.multiply(new BigDecimal(180)).divide(PI, 6, RoundingMode.HALF_UP);
     }
 
@@ -32,6 +38,8 @@ public class RadarMath {
 
         double bangwee = (Math.atan2(y,x) * 180 / Math.PI + 360) % 360;
 
+        if(dist>=1.0) dist = 1.0;
+        if(dist<=-1.0) dist = -1.0;
         dist = Math.acos(dist);
         dist = radianToDegree(new BigDecimal(dist)).doubleValue();
         dist = dist*60*1.1515*1609.344;
