@@ -45,11 +45,6 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
   }
 
   const onTextChange = (index, text) => {
-    if (title && options[0] && options[1]) {
-      setIsSurveyValid(true)
-    } else {
-      setIsSurveyValid(false)
-    }
     setOptions(options.map((option, index2) => {
       return index !== index2 ? option: text
     }))
@@ -75,7 +70,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
             </TouchableOpacity>
             :
             <TouchableWithoutFeedback
-              onPress={() => showToast()}
+            onPress={() => showToast()}
             >
               <Text style={{color: 'gray', padding: 10 }}>등록</Text>
             </TouchableWithoutFeedback>
@@ -84,8 +79,12 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
         </View>
       )
     });
-    setOptions(options)
-    if (title && options[0] && options[1]) {
+    var optionArray = new Array()
+    for (let i=0; i<options.length; i++) {
+      if (!optionArray.includes(options[i]))
+      optionArray.push(options[i])
+    }
+    if (title && options[0] && options[1] && options.length == optionArray.length) {
       setIsSurveyValid(true)
     } else {
       setIsSurveyValid(false)
@@ -95,8 +94,10 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
   const showToast = useCallback(() => {
     if (!title) {
       toastRef.current.show('질문을 입력해 주세요')
-    } else {
+    } else if (options[0] == '' || options[1] == '') {
       toastRef.current.show('선택지 2개는 필수입니다')
+    } else {
+      toastRef.current.show('같은 선택지가 있습니다')
     }
   })
 
