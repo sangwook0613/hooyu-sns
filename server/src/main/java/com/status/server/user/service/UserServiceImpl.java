@@ -8,6 +8,8 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.status.server.content.domain.*;
 import com.status.server.content.dto.RequestContentTimeDto;
+import com.status.server.content.service.ContentServiceImpl;
+import com.status.server.emotion.domain.EmotionRepository;
 import com.status.server.fcm.domain.FcmToken;
 import com.status.server.fcm.domain.FcmTokenRepository;
 import com.status.server.fcm.service.FcmService;
@@ -42,6 +44,13 @@ public class UserServiceImpl implements UserService {
     private final LocationRepository locationRepository;
     private final FcmTokenRepository fcmTokenRepository;
     private final RecordTimeRepository recordTimeRepository;
+
+    private final ReportedContentRepository reportedContentRepository;
+    private final EmotionRepository emotionRepository;
+    private final SurveyContentAnswerRepository surveyContentAnswerRepository;
+    private final ContentRepository contentRepository;
+    private final ContentServiceImpl contentService;
+
     private final TokenService tokenService;
     private final FcmService fcmService;
 
@@ -273,11 +282,11 @@ public class UserServiceImpl implements UserService {
                 countOfNew++;
             } else {
                 RequestContentTimeDto past = pushMap.get(target.getName());
-                if (past.getStatus() != null && past.getStatus().equals(target.getContentTime().getStatus())) {
+                if (past.getStatus() != null && !past.getStatus().equals(target.getContentTime().getStatus())) {
                     targetContent = Type.STATUS;
-                } else if (past.getImages() != null && past.getImages().equals(target.getContentTime().getImages())) {
+                } else if (past.getImages() != null && !past.getImages().equals(target.getContentTime().getImages())) {
                     targetContent = Type.IMAGE;
-                } else if (past.getSurvey() != null && past.getSurvey().equals(target.getContentTime().getSurvey())) {
+                } else if (past.getSurvey() != null && !past.getSurvey().equals(target.getContentTime().getSurvey())) {
                     targetContent = Type.SURVEY;
                 }
             }
@@ -390,17 +399,25 @@ public class UserServiceImpl implements UserService {
 //        userRepository.save(user);
     }
 
-//    @Transactional
-//    public String deleteUser(Long userPK) throws NoUserException{
-//        User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-//        List<Content> list = contentRepository.findAllByUserId(userPK);
-//        for (Content content: list) {
-//            contentRepository.deleteAllById(content.getId());
-//        }
-//        surveyContentAnswerRepository.deleteAllByUserId(userPK);
-//        fcmTokenRepository.deleteByUserId(userPK);
-//        userRepository.delete(user);
-//        return "Success";
-//    }
+    @Transactional
+    public String deleteUser(Long userPK) throws NoUserException, NoAuthorityUserException, NoContentException {
+        if(!userRepository.existsById(userPK)) throw new NoUserException("해당하는 사용자가 없습니다.");
+
+        List<Content> contents = contentRepository.findAllByUserId(userPK);
+        for (int i = 0; i < contents.size(); i++) {
+            Content target = contents.get(i);
+            contentService.deleteContent(userPK, target.getId());
+        }
+
+        reportedContentRepository.deleteAllByUserId(userPK);
+        surveyContentAnswerRepository.deleteAllByUserId(userPK);
+        emotionRepository.deleteAllByUserId(userPK);
+
+        fcmTokenRepository.deleteByUserId(userPK);
+        locationRepository.deleteByUserId(userPK);
+        pzRepository.deleteAllByUserId(userPK);
+        userRepository.deleteById(userPK);
+        return "Success";
+    }
 
 }
