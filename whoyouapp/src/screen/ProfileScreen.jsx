@@ -47,7 +47,6 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
       const node = scrollRef.current
       node.scrollTo({ y: moveTo[checkList][route.params.content], animated: true })
     }, 400)
-    console.log(checkList, route.params.content, route.params.nickname)
   }
 
   const ProfileTitle = () => {
