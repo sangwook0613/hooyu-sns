@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
 import images from '../assets/images'
 import DeleteModal from '../components/modal/deleteModal'
+import ReportModal from '../components/modal/reportModal'
 
 
 const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
@@ -21,7 +22,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const [statusEmoji, setStatusEmoji] = useState({})
   const [isLoaded, setIsLoaded] = useState(false)
   const [isModalVisible, setModalVisible] = useState(false)
-  const [deleteContent, setDeleteContent] = useState(null)
+  const [modalContent, setModalContent] = useState(null)
   const now = new Date()
 
   useEffect(() => {
@@ -41,7 +42,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   }, [])
 
   const toggleModal = () => {
-    setDeleteContent(statusData[currentIndex].contentPk)
+    setModalContent(statusData[currentIndex].contentPk)
     setModalVisible(!isModalVisible)
   }
 
@@ -161,12 +162,17 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
     <View>
       <View style={{ flex: 1 }}>
         <DeleteModal
-          contentPK={deleteContent}
+          contentPK={modalContent}
           userPK={userPK}
           isModalVisible={isModalVisible}
           setModalVisible={setModalVisible}
-          contentType={'status'}
           reRender={reRenderStatus}
+        />
+        <ReportModal
+          contentPK={modalContent}
+          userPK={userPK}
+          isModalVisible={isModalVisible}
+          setModalVisible={setModalVisible}
         />
       </View>
       <View

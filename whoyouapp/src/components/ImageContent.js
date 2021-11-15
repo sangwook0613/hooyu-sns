@@ -198,7 +198,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
           <Text>사진</Text>
         </View>
         <TouchableOpacity onPress={toggleModal}>
-          <AntDesign name="close" size={18} color="black" />
+          <AntDesign name={ownerName === userName ? "close" : "exclamationcircle"} size={18} color={ownerName === userName ? "black" : "#FF6A77"} />
         </TouchableOpacity>
       </View>
       <SwiperFlatList

@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
-import Modal from "react-native-modal";
-import Checkbox from 'expo-checkbox';
+import React, { useState } from 'react'
+import { Text, View, TouchableOpacity } from 'react-native'
+import Modal from "react-native-modal"
+import Checkbox from 'expo-checkbox'
+import Api from '../../utils/api'
 
-const ReportModal = ({ isModalVisible, setModalVisible }) => {
+const ReportModal = ({ contentPK, userPK, isModalVisible, setModalVisible }) => {
+  const [checkIndex, setCheckIndex] = useState(-1)
   const [isCheckedOne, setCheckedOne] = useState(false)
   const [isCheckedTwo, setCheckedTwo] = useState(false)
   const [isCheckedThree, setCheckedThree] = useState(false)
@@ -12,28 +14,52 @@ const ReportModal = ({ isModalVisible, setModalVisible }) => {
       id: 1,
       title: '광고성 게시물',
       isChecked: isCheckedOne,
-      setChecked: setCheckedOne,
+      setChecked: () => {
+        setCheckIndex(0)
+        setCheckedOne(!isCheckedOne)
+        setCheckedTwo(false)
+        setCheckedThree(false)
+      },
     },
     {
       id: 2,
       title: '유해 게시물',
       isChecked: isCheckedTwo,
-      setChecked: setCheckedTwo,
+      setChecked: () => {
+        setCheckIndex(1)
+        setCheckedOne(false)
+        setCheckedTwo(!isCheckedTwo)
+        setCheckedThree(false)
+      },
     },
     {
       id: 3,
       title: '성적 게시물',
       isChecked: isCheckedThree,
-      setChecked: setCheckedThree,
+      setChecked: () => {
+        setCheckIndex(2)
+        setCheckedOne(false)
+        setCheckedTwo(false)
+        setCheckedThree(!isCheckedThree)
+      },
     }
   ]
   
   const sendModalVisible = () => {
     setModalVisible(!isModalVisible)
+    setCheckedOne(false)
+    setCheckedTwo(false)
+    setCheckedThree(false)
   }
 
   const sendReport = () => {
-    console.warn('Send Report')
+    Api.reportContent(contentPK, reportItems[checkIndex].title, userPK)
+      .then((res) => {
+        console.log('신고 성공!', res.data.success)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
     sendModalVisible()
   }
 
@@ -85,6 +111,6 @@ const ReportModal = ({ isModalVisible, setModalVisible }) => {
     </Modal>
   )
   
-};
+}
 
-export default ReportModal;
+export default ReportModal
