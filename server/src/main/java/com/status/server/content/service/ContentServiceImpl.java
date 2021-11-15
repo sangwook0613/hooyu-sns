@@ -309,15 +309,29 @@ public class ContentServiceImpl implements ContentService {
         surveyContentAnswerRepository.deleteByContentId(contentPK);
         contentRepository.deleteById(contentPK);
 
+        List<Content> list;
         RecordTime recordTime = user.getRecordTime();
         if (recordTime != null) {
             recordTime = user.getRecordTime();
             if (content.getType() == Type.STATUS) {
-                recordTime.setStatusAt(null);
+                list = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(Type.STATUS, userPK);
+                if (list.size() == 0)
+                    recordTime.setStatusAt(null);
+                else
+                    recordTime.setStatusAt(list.get(0).getCreatedAt());
             } else if (content.getType() == Type.IMAGE) {
-                recordTime.setImageAt(null);
+
+                list = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(Type.IMAGE, userPK);
+                if (list.size() == 0)
+                    recordTime.setImageAt(null);
+                else
+                    recordTime.setImageAt(list.get(0).getCreatedAt());
             } else {
-                recordTime.setSurveyAt(null);
+                list = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(Type.SURVEY, userPK);
+                if (list.size() == 0)
+                    recordTime.setSurveyAt(null);
+                else
+                    recordTime.setSurveyAt(list.get(0).getCreatedAt());
             }
         }
         recordTimeRepository.save(recordTime);
