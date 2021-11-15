@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux'
 import { createAction, createReducer } from "@reduxjs/toolkit"
-import { Dimensions } from 'react-native'
+import { Dimensions, StatusBar } from 'react-native'
 
 
 // 기본 State 정리
 const defaultState = {
   deviceWidth: Dimensions.get('window').width,
-  deviceHeight: Dimensions.get('window').height,
+  deviceHeight: StatusBar.currentHeight > 24 ? Dimensions.get('window').height : Dimensions.get('window').height - StatusBar.currentHeight,
   myRadius: 2000,
   SERVER_URL: 'https://k5a101.p.ssafy.io/api/v1/',
   userPK: 0,
