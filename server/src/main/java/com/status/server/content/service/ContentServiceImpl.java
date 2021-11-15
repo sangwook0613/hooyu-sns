@@ -12,6 +12,7 @@ import com.status.server.fcm.domain.FcmTokenRepository;
 import com.status.server.global.exception.NoAuthorityUserException;
 import com.status.server.global.exception.NoContentException;
 import com.status.server.global.exception.NoUserException;
+import com.status.server.global.util.SecurityUtil;
 import com.status.server.user.domain.User;
 import com.status.server.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,6 @@ public class ContentServiceImpl implements ContentService {
     private final EmotionRepository emotionRepository;
 
     private final EmotionServiceImpl emotionService;
-
 
     Logger logger = LoggerFactory.getLogger(ContentServiceImpl.class);
 
@@ -172,6 +172,17 @@ public class ContentServiceImpl implements ContentService {
         return result;
     }
 
+    public String votedcheck(Long userPK, Long contentPK){
+
+        String result = "";
+        if (surveyContentAnswerRepository.existsByUserIdAndContentId(userPK, contentPK)) {
+            List<SurveyContentAnswer> list = surveyContentAnswerRepository.findByUserIdAndContentId(userPK, contentPK);
+            if (list.size() == 1)
+                result = list.get(0).getAnswer();
+        }
+        return result;
+    }
+
     @Transactional
     @Override
     public List<ResponseContentDto> statusContent(String userName) throws NoUserException, NoContentException {
@@ -205,6 +216,9 @@ public class ContentServiceImpl implements ContentService {
 
         List<ResponseSurveyDto> list = contents.stream().map((e) -> {
             ResponseSurveyDto responseSurveyDto = new ResponseSurveyDto(e);
+
+            responseSurveyDto.setMyVote(votedcheck(SecurityUtil.getCurrentUserId(), e.getId()));
+
             HashMap<String, Integer> coutingMap = responseSurveyDto.getCount();
             HashMap<String, Long> answerPKMap = responseSurveyDto.getAnswerPK();
 
