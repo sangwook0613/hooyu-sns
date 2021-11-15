@@ -173,7 +173,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
                   >
                     <TouchableOpacity
                       style={styles.userMenuButton}
-                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'status'})}}
+                      onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'status', emoji: user.emoji})}}
                     >
                       <Text style={{
                         color: 'white',
@@ -194,7 +194,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
                   >
                     <TouchableOpacity
                       style={[styles.userMenuButton, {backgroundColor: user.contentTime.images === null ? '#B4B4B4' : mainColor1}]}
-                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'image'})}}
+                      onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'image', emoji: user.emoji})}}
                       disabled={user.contentTime.images === null ? true : false}
                     >
                       <Text style={{
@@ -216,7 +216,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
                   >
                     <TouchableOpacity
                       style={[styles.userMenuButton, {backgroundColor: user.contentTime.survey === null ? '#B4B4B4' : mainColor1}]}
-                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'survey'})}}
+                      onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'survey', emoji: user.emoji})}}
                       disabled={user.contentTime.survey === null ? true : false}
                     >
                       <Text style={{
