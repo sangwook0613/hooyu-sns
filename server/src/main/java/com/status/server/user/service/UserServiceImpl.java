@@ -282,11 +282,11 @@ public class UserServiceImpl implements UserService {
                 countOfNew++;
             } else {
                 RequestContentTimeDto past = pushMap.get(target.getName());
-                if (past.getStatus() != null && !past.getStatus().equals(target.getContentTime().getStatus())) {
+                if (target.getContentTime().getStatus() != null && (past.getStatus() == null || !target.getContentTime().getStatus().isAfter(past.getStatus()))) {
                     targetContent = Type.STATUS;
-                } else if (past.getImages() != null && !past.getImages().equals(target.getContentTime().getImages())) {
+                } else if (past.getImages() != null && (past.getImages() == null || target.getContentTime().getImages().isAfter(past.getImages()))) {
                     targetContent = Type.IMAGE;
-                } else if (past.getSurvey() != null && !past.getSurvey().equals(target.getContentTime().getSurvey())) {
+                } else if (past.getSurvey() != null && (past.getSurvey() == null || target.getContentTime().getSurvey().isAfter(past.getSurvey()))) {
                     targetContent = Type.SURVEY;
                 }
             }
