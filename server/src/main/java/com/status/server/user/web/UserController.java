@@ -1,10 +1,7 @@
 package com.status.server.user.web;
 
 import com.status.server.global.dto.SuccessResponseDto;
-import com.status.server.global.exception.DuplicateNameException;
-import com.status.server.global.exception.NoBrowserTokenException;
-import com.status.server.global.exception.NoTargetException;
-import com.status.server.global.exception.NoUserException;
+import com.status.server.global.exception.*;
 import com.status.server.global.service.ResponseGenerateService;
 import com.status.server.user.domain.User;
 import com.status.server.user.dto.*;
@@ -186,13 +183,13 @@ public class UserController {
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-//    @DeleteMapping("/drop")
-//    public ResponseEntity<SuccessResponseDto> dropMembership(@RequestParam Long userPK) throws NoUserException {
-//        logger.trace("User Controller 진입 getListUserWithinRadius param {}", userPK);
-//        String message = userService.deleteUser(userPK);
-//
-//        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
-//
-//        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
-//    }
+    @DeleteMapping("/drop")
+    public ResponseEntity<SuccessResponseDto> dropMembership(@RequestParam Long userPK) throws NoUserException, NoAuthorityUserException, NoContentException {
+        logger.trace("User Controller 진입 getListUserWithinRadius param {}", userPK);
+        String message = userService.deleteUser(userPK);
+
+        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
+
+        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+    }
 }
