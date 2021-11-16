@@ -129,6 +129,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getUserInfo(Long userPK) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         UserResponseDto userResponseDto = new UserResponseDto(user);
+        logger.debug("getUserInfo log : {}",userPK);
         logger.debug("Service In");
         logger.debug("user : {}", user);
         return userResponseDto;
