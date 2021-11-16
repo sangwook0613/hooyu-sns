@@ -33,13 +33,20 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
   const [userInfo2, setUserInfo2] = useState(null);
   const [gettingLoginStatus, setGettingLoginStatus] = useState(true)
 
+  const [userPK1, setUserPK1] = useState(0)
+  const [userEmoji1, setUserEmoji1] = useState(null)
+
+
   const navigation = useNavigation()
 
   useEffect( async () => {
     const front = await Location.getForegroundPermissionsAsync()
     const back = await Location.getBackgroundPermissionsAsync()
-
-    if (userPK !== 0 && userEmoji) {
+    console.log('실행실행')
+    console.log(userEmoji1)
+    console.log(userPK1)
+    console.log("확인")
+    if (userPK1 !== 0 && userEmoji1) {
       if (!front.granted && !back.granted) {
         navigation.reset({ routes: [{ name: 'InfoAgree' }] })
         // navigate('InfoAgree')
@@ -48,7 +55,7 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
         navigation.reset({ routes: [{ name: 'Main' }] })
         // navigate('Main')
       }
-    } else if (userPK !== 0 && !userEmoji) {
+    } else if (userPK1 !== 0 && !userEmoji1) {
       navigation.reset({ routes: [{ name: 'NicknameTutorial' }] })
       // navigate('NicknameTutorial')
     } else {
@@ -58,7 +65,7 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
       });
       isSignedIn()
     }
-  }, [userEmoji])
+  }, [userPK1 ,userEmoji1])
 
 
   // 이미 로그인 되어있는 상태인지 체크
@@ -107,7 +114,7 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
       // 여기서 백엔드한테 보내고, 응답으로 유저 정보를 받는다.
       const userInfo = await GoogleSignin.signInSilently()
       const accessToken = await AsyncStorage.getItem('access_token')
-      console.log('userpk', jwt_decode(accessToken).pk)
+      console.log('userpk', jwt_decode(accessToken))
       const pk = jwt_decode(accessToken).pk
 
       await messaging().getToken()
@@ -125,8 +132,12 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
       await setUserPK(jwt_decode(accessToken).pk)
       Api.getUser(jwt_decode(accessToken).pk)
         .then((res) => {
+          console.log('겟유저')
+          console.log(res.data.success)
           setUserInfo2(res.data.success)
           setUserEmoji(res.data.success.emoji)
+          setUserEmoji1(res.data.success.emoji)
+          setUserPK1(res.data.success.id)
           setUserName(res.data.success.name)
           setPushSetting(res.data.success.acceptPush, res.data.success.acceptRadius, res.data.success.acceptSync)
           console.log("순서 3")
@@ -163,6 +174,7 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
           console.log("순서 0")
           console.log(res.data.success.id)
           setUserPK(res.data.success.id)
+          // setUserPK1(res.data.success.id)
           console.log("순서 1")
         }).catch((err) => {
           console.log(err)
@@ -184,22 +196,6 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
       }
     }
     isSignedIn()
-  };
-
-  const signOut = async () => {
-    setGettingLoginStatus(true)
-
-    // 토큰 지우기
-    try {
-      await GoogleSignin.revokeAccess()
-      await GoogleSignin.signOut()
-      await AsyncStorage.setItem('access_token', '')
-      await AsyncStorage.setItem('refresh_token', '')
-      setUserInfo(null)
-    } catch (error) {
-      console.error(error)
-    }
-    setGettingLoginStatus(false)
   };
 
   if (gettingLoginStatus) {
