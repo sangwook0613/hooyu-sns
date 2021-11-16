@@ -58,14 +58,28 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       .then((result) => {
         let chk = false
         let isMe = ''
-        let emojis = {}
+        let emojis = {
+          'like': 0,
+          'smile': 0,
+          'love': 0,
+          'amazing': 0,
+          'sad': 0,
+          'angry': 0
+        }
         for (let emojiData of result.data.success) {
           if (emojiData.userPK === userPK) {
             isMe = emojiData.contentEmoji
           }
-          emojis[emojiData.contentEmoji] ? emojis[emojiData.contentEmoji]++ : emojis[emojiData.contentEmoji] = 1
+          emojis[emojiData.contentEmoji]++
           chk = true
         }
+
+        for (const key in emojis) {
+          if (emojis[key] === 0) {
+            delete emojis[key]
+          }
+        }
+
         setStatusEmoji(emojis)
         setEmotions(chk)
         setGiveEmotion(isMe)
