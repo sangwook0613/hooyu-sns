@@ -250,7 +250,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                 alignItems:"center"
               }}
             >
-              <Text style={{fontSize: 20}}>{item.exon}</Text>
+              <Text style={{fontSize: 18}}>{item.exon}</Text>
             </View>
           </TouchableWithoutFeedback>
         )}

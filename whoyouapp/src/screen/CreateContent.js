@@ -6,8 +6,8 @@ import Picture from '../components/ContentCreate/Picture'
 import Survey from '../components/ContentCreate/Survey'
 import { connect } from 'react-redux'
 
-const menuArray = ['이모지', '프로필 메시지', '사진', '설문']
-const menuLocation = [0, 100, 185, 254]
+const menuArray = ['이모지', '상태 메시지', '사진', '설문']
+const menuLocation = [0, 93, 172, 260]
 
 const CreateContent = ({ navigation, route, deviceHeight, deviceWidth }) => {
   const styles = styleSheet(deviceWidth)
