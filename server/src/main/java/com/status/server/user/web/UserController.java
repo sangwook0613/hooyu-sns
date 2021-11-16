@@ -47,7 +47,7 @@ public class UserController {
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @PostMapping("/duplicated/{userName}")
+    @GetMapping("/duplicated/{userName}")
     public ResponseEntity<SuccessResponseDto> duplicateCheckName(@PathVariable String userName) throws NoUserException {
         logger.trace("User Controller 진입  duplicateCheckName param {}", userName);
         String message = userService.duplicateCheckName(userName);
