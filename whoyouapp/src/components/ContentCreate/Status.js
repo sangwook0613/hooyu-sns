@@ -8,7 +8,6 @@ import * as emojiImages from '../../assets/images'
 import Toast from 'react-native-easy-toast';
 
 
-const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
 const clientWidth = Dimensions.get('screen').width
 const clientHeight = Dimensions.get('screen').height
 
@@ -91,8 +90,6 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
     }
   }
 
-  
-
   const createEmoji = () => {
     setUserEmoji(emoji)
     axios({
@@ -130,8 +127,6 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
     })
   }
 
-
-
   return (
     <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
       <View style={backgroundStyle(color)} ref={statusBackground}>
@@ -139,9 +134,11 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
           <Text></Text>
         </View>
           <View style={styles.statusBox} >
-            <TextInput style={{ textAlign: 'center'}}
+            <TextInput 
+              style={{ fontSize: 18, padding: 30, textAlign: 'center'}}
               placeholder={"상태를 입력해주세요"}
               onChangeText={(text) => setStatus(text)}
+              multiline={true}
               />
           </View>
         <View style={styles.scrollViewBox} >
@@ -273,8 +270,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 300,
     height: 100,
-    borderWidth: 1,
-    borderColor: "#aaa",
+    top: 1,
     borderRadius: 10,
     backgroundColor: 'white',
     elevation: 4,
