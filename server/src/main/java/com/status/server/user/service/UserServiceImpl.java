@@ -285,9 +285,9 @@ public class UserServiceImpl implements UserService {
                 RequestContentTimeDto past = pushMap.get(target.getName());
                 if (target.getContentTime().getStatus() != null && (past.getStatus() == null || !target.getContentTime().getStatus().isAfter(past.getStatus()))) {
                     targetContent = Type.STATUS;
-                } else if (past.getImages() != null && (past.getImages() == null || target.getContentTime().getImages().isAfter(past.getImages()))) {
+                } else if (target.getContentTime().getImages() != null && (past.getImages() == null || target.getContentTime().getImages().isAfter(past.getImages()))) {
                     targetContent = Type.IMAGE;
-                } else if (past.getSurvey() != null && (past.getSurvey() == null || target.getContentTime().getSurvey().isAfter(past.getSurvey()))) {
+                } else if (target.getContentTime().getSurvey() != null && (past.getSurvey() == null || target.getContentTime().getSurvey().isAfter(past.getSurvey()))) {
                     targetContent = Type.SURVEY;
                 }
             }
