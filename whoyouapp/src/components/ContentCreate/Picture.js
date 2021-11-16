@@ -1,33 +1,29 @@
-import React, {useEffect, useRef, useState, useCallback} from 'react';
-import { Text, TouchableOpacity, View, Animated, StyleSheet, PermissionsAndroid, Dimensions, Image } from 'react-native';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
+import React, {useEffect, useRef, useState, useCallback} from 'react'
+import { Text, TouchableOpacity, View, Animated, StyleSheet, PermissionsAndroid, Dimensions, Image } from 'react-native'
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
+import LinearGradient from 'react-native-linear-gradient'
 import imageUpload from '../../assets/createcontent/uploadImage.png'
-import * as ImagePicker from 'react-native-image-picker';
+import * as ImagePicker from 'react-native-image-picker'
 import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
 import * as emojiImages from '../../assets/images'
-import Toast from 'react-native-easy-toast';
-
-
-const clientWidth = Dimensions.get('screen').width
-const clientHeight = Dimensions.get('screen').height
+import Toast from 'react-native-easy-toast'
 
 const emojiArray = [
   ['smile', 'amazing', 'sad', 'crying', 'sense', 'angry'], 
   ['pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep']
 ]
 
-const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
+const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji, deviceWidth, deviceHeight }) => {
   
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [emoji, setEmoji] = useState(userEmoji)
   const [imageFile, setImageFile] = useState('')
   const [sendForm, setSendForm] = useState('')
 
-  const floatValue = useRef(new Animated.Value(0)).current;
-  const toastRef = useRef();
+  const floatValue = useRef(new Animated.Value(0)).current
+  const toastRef = useRef()
 
   const PictureTitle = () => {
     return (
@@ -41,7 +37,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         </TouchableOpacity>
         <Text style={{ marginLeft: 10, color: '#aaa'}}>이모지 선택</Text>
       </View>
-    );
+    )
   }
 
   React.useEffect(() => {
@@ -66,7 +62,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
 
         </View>
       )
-    });
+    })
     floatUp()
     floatValue.addListener(({value}) => {
       if (value == 1) {
@@ -75,23 +71,23 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         floatUp()
       }
     })
-  }, [navigation, emoji, imageFile, sendForm]);
+  }, [navigation, emoji, imageFile, sendForm])
 
   const floatUp = () => {
     Animated.timing(floatValue, {
       toValue: 1,
       duration: 1500,
       useNativeDriver: false
-    }).start();
-  };
+    }).start()
+  }
 
   const floatDown = () => {
     Animated.timing(floatValue, {
       toValue: 0,
       duration: 1500,
       useNativeDriver: false
-    }).start();
-  };
+    }).start()
+  }
 
   const showToast = useCallback(() => {
     toastRef.current.show('사진을 선택해 주세요')
@@ -104,20 +100,20 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         path: 'images',
       },
       mediaType: 'photo'
-    };
+    }
   
     ImagePicker.launchImageLibrary(options, (res) => {
       if (res.didCancel) {
-        console.log('User cancelled image picker');
+        console.log('User cancelled image picker')
       } else if (res.error) {
-        console.log('ImagePicker Error: ', res.error);
+        console.log('ImagePicker Error: ', res.error)
       } else if (res.customButton) {
-        console.log('User tapped custom button: ', res.customButton);
-        alert(res.customButton);
+        console.log('User tapped custom button: ', res.customButton)
+        alert(res.customButton)
       } else {
         setImageFile(res.assets[0])
       }
-    });
+    })
   }  
 
   const requestGalleryPermission = async () => {
@@ -160,7 +156,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   }
 
   const createPicture = () => {
-    const formData = new FormData();
+    const formData = new FormData()
 
     formData.append('upload', {
       uri: imageFile.uri,
@@ -197,13 +193,13 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   return (
     <LinearGradient colors={["#AB79EF", "#FC98AB"]} style={styles.mainView}>
       <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}} style={{flex: 1}}>
-        <View style={{width: clientWidth, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{width: deviceWidth, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           {
             imageFile ? 
             <View>
               <View style={{ elevation: 15}}>
                 <Image
-                  style={{ width: clientWidth-80, height: clientWidth-80 }}
+                  style={{ width: deviceWidth-80, height: deviceWidth-80 }}
                   source={{ uri: imageFile.uri }}
                 />
               </View>
@@ -271,7 +267,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         </View>
       }
       <Toast ref={toastRef}
-        positionValue={clientHeight * 0.4}
+        positionValue={deviceHeight * 0.4}
         fadeInDuration={200}
         fadeOutDuration={1000}
         style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
@@ -309,7 +305,7 @@ const styles = StyleSheet.create({
     height: '100%',
     padding: 5
   },
-});
+})
 
 function mapStateToProps(state) {
   return {
@@ -328,4 +324,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Picture);
+export default connect(mapStateToProps, mapDispatchToProps)(Picture)

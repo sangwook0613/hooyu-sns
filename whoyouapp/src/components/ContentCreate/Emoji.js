@@ -1,34 +1,32 @@
-import React, {useEffect, useRef, useState} from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, TouchableWithoutFeedback, Dimensions, TextInput, Image, Animated } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import React, {useEffect, useRef, useState} from 'react'
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, TouchableWithoutFeedback, Dimensions, TextInput, Image, Animated } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
 import * as emojiImages from '../../assets/images'
 import { AntDesign } from "@expo/vector-icons"
-import { map } from 'lodash';
+import { map } from 'lodash'
 
 
-const clientWidth = Dimensions.get('screen').width
-const clientHeight = Dimensions.get('screen').height
-const radius = clientWidth * 1/3
-const emojiMoveLeft = [0, 0, radius*1/2, radius*Math.sqrt(3)/2, radius, radius*Math.sqrt(3)/2, radius*1/2, 0, -radius*1/2, -radius*Math.sqrt(3)/2, -radius, -radius*Math.sqrt(3)/2, -radius*1/2 ]
-const emojiMoveTop = [0, -radius, -radius*Math.sqrt(3)/2, -radius*1/2, 0, radius*1/2, radius*Math.sqrt(3)/2, radius, radius*Math.sqrt(3)/2, radius*1/2, 0, -radius*1/2, -radius*Math.sqrt(3)/2 ]
 
 const emojiArray = [
   'smile', 'amazing', 'sad', 'crying', 'sense', 'angry', 'pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep'
 ]
 
-const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
+const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji, deviceWidth, deviceHeight }) => {
+  const radius = deviceWidth * 1/3
+  const emojiMoveLeft = [0, 0, radius*1/2, radius*Math.sqrt(3)/2, radius, radius*Math.sqrt(3)/2, radius*1/2, 0, -radius*1/2, -radius*Math.sqrt(3)/2, -radius, -radius*Math.sqrt(3)/2, -radius*1/2 ]
+  const emojiMoveTop = [0, -radius, -radius*Math.sqrt(3)/2, -radius*1/2, 0, radius*1/2, radius*Math.sqrt(3)/2, radius, radius*Math.sqrt(3)/2, radius*1/2, 0, -radius*1/2, -radius*Math.sqrt(3)/2 ]
   
   const open = useRef(new Animated.Value(0)).current
   const [emoji, setEmoji] = useState(userEmoji)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
 
-  const floatValue = useRef(new Animated.Value(0)).current;
+  const floatValue = useRef(new Animated.Value(0)).current
 
   const range = (n) => {
-    let arr = [];
+    let arr = []
     for (let i = 0; i < n; i++) {
       arr.push(i/n)
     }
@@ -51,16 +49,16 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
       toValue: 1,
       duration: 1500,
       useNativeDriver: false
-    }).start();
-  };
+    }).start()
+  }
 
   const floatDown = () => {
     Animated.timing(floatValue, {
       toValue: 0,
       duration: 1500,
       useNativeDriver: false
-    }).start();
-  };
+    }).start()
+  }
 
 
   const EmojiTitle = () => {
@@ -68,7 +66,7 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
       <View>
         
       </View>
-    );
+    )
   }
 
   useEffect(() => {
@@ -84,7 +82,7 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
           <Text>게시</Text>
         </TouchableOpacity>
       )
-    });
+    })
     floatUp()
     floatValue.addListener(({value}) => {
       if (value == 1) {
@@ -93,7 +91,7 @@ const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
         floatUp()
       }
     })
-  }, [navigation, emoji]);
+  }, [navigation, emoji])
 
   const createEmoji = () => {
     console.log(emoji)
@@ -224,7 +222,7 @@ const styles = StyleSheet.create({
     top: -25,
     elevation: 5,
   }
-});
+})
 
 
 function mapStateToProps(state) {
@@ -244,4 +242,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Emoji);
+export default connect(mapStateToProps, mapDispatchToProps)(Emoji)
