@@ -158,7 +158,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
             </View>
           </View>
           <View style={styles.surveyContentView}>
-            <Text style={{ marginLeft: 3 }}>옵션</Text>
+            <Text style={{ color: "#000000CC", marginLeft: 3 }}>옵션</Text>
             <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
               <TextInput style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}
