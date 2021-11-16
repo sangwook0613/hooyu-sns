@@ -172,13 +172,13 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
     } catch (error) {
       console.log('Message', JSON.stringify(error))
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        alert('로그인이 중단되었음니다.')
+        alert('로그인이 중단되었습니다.')
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        alert('로그인이 진행중임.')
+        alert('로그인 중입니다.')
       } else if (
         error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE
       ) {
-        alert('서비스를 이용할 수 없음.')
+        alert('죄송합니다. 서비스를 이용할 수 없습니다.\n잠시 후 재시도 해주세요.')
       } else {
         alert(error.message)
       }

@@ -29,10 +29,7 @@ export default {
   isDuplicatedNickname(inputValue) {
     return axios({
       url: `user/duplicated/${inputValue}`,
-      method: 'post',
-      data: {
-        userName: inputValue  
-      }
+      method: 'get'
     })
   },
 
@@ -42,7 +39,7 @@ export default {
       method: 'post',
       data: {
         userName: inputValue,
-        userPK: pk,
+        userPK: pk
       }
     })
   },
