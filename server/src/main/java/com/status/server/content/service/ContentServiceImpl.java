@@ -318,6 +318,8 @@ public class ContentServiceImpl implements ContentService {
         if (content.getUser().getId() != userPK)
             throw new NoAuthorityUserException("해당 컨텐츠 삭재할 권한이 없습니다.");
 
+        reportedContentRepository.deleteAllByContentId(contentPK);
+
         emotionRepository.deleteAllByContentId(contentPK);
 
         surveyContentAnswerRepository.deleteByContentId(contentPK);
