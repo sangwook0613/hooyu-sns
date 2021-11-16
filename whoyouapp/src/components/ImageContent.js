@@ -8,9 +8,10 @@ import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
 import images from '../assets/images'
 import DeleteModal from '../components/modal/deleteModal'
+import ReportModal from '../components/modal/reportModal'
 
 
-const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
+const emojiArray = ['like', 'smile', 'love', 'amazing', 'sad', 'angry']
 
 const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsImage }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -20,8 +21,10 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
   const [giveEmotion, setGiveEmotion] = useState('')
   const [imageEmoji, setImageEmoji] = useState({})
   const [isLoaded, setIsLoaded] = useState(false)
-  const [isModalVisible, setModalVisible] = useState(false)
-  const [deleteContent, setDeleteContent] = useState(null)
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+  const [deleteModalContent, setDeleteModalContent] = useState(null)
+  const [isReportModalVisible, setReportModalVisible] = useState(false)
+  const [reportModalContent, setReportModalContent] = useState(null)
   const now = new Date()
 
   
@@ -41,9 +44,14 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
       })
   }, [])
 
-  const toggleModal = () => {
-    setDeleteContent(imageData[currentIndex].contentPk)
-    setModalVisible(!isModalVisible)
+  const deleteToggleModal = () => {
+    setDeleteModalContent(imageData[currentIndex].contentPk)
+    setDeleteModalVisible(!isDeleteModalVisible)
+  }
+
+  const reportToggleModal = () => {
+    setReportModalContent(imageData[currentIndex].contentPk)
+    setReportModalVisible(!isReportModalVisible)
   }
 
   const getEmotion = (contentPK) => {
@@ -51,14 +59,28 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
       .then((result) => {
         let chk = false
         let isMe = ''
-        let emojis = {}
+        let emojis = {
+          'like': 0,
+          'smile': 0,
+          'love': 0,
+          'amazing': 0,
+          'sad': 0,
+          'angry': 0
+        }
         for (let emojiData of result.data.success) {
           if (emojiData.userPK === userPK) {
             isMe = emojiData.contentEmoji
           }
-          emojis[emojiData.contentEmoji] ? emojis[emojiData.contentEmoji]++ : emojis[emojiData.contentEmoji] = 1
+          emojis[emojiData.contentEmoji]++
           chk = true
         }
+        
+        for (const key in emojis) {
+          if (emojis[key] === 0) {
+            delete emojis[key]
+          }
+        }
+
         setImageEmoji(emojis)
         setEmotions(chk)
         setGiveEmotion(isMe)
@@ -160,12 +182,17 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
     <View>
       <View style={{ flex: 1 }}>
         <DeleteModal
-          contentPK={deleteContent}
+          contentPK={deleteModalContent}
           userPK={userPK}
-          isModalVisible={isModalVisible}
-          setModalVisible={setModalVisible}
-          contentType={'image'}
+          isModalVisible={isDeleteModalVisible}
+          setModalVisible={setDeleteModalVisible}
           reRender={reRenderImage}
+        />
+        <ReportModal
+          contentPK={reportModalContent}
+          userPK={userPK}
+          isModalVisible={isReportModalVisible}
+          setModalVisible={setReportModalVisible}
         />
       </View>
       <View
@@ -197,8 +224,8 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
             resizeMode='contain' />
           <Text>사진</Text>
         </View>
-        <TouchableOpacity onPress={toggleModal}>
-          <AntDesign name="close" size={18} color="black" />
+        <TouchableOpacity onPress={ownerName === userName ? deleteToggleModal : reportToggleModal}>
+          <AntDesign name={ownerName === userName ? "close" : "exclamationcircle"} size={18} color={ownerName === userName ? "black" : "#FF6A77"} />
         </TouchableOpacity>
       </View>
       <SwiperFlatList
@@ -282,10 +309,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
               }}
               onPress={() => {
                 setIsEmojiSelect(false)
-                console.log('imageData', imageData)
-                console.log('imageEmoji', imageEmoji)
                 addEmotion(emotion, imageData[currentIndex].contentPk, userPK)
-                console.warn(emotion, imageData[currentIndex], index)
               }}
             >
               <Image

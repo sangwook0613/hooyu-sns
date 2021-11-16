@@ -35,7 +35,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
         <TouchableOpacity onPress={() => setIsEmojiSelect(true)}
         >
           <Image
-            style={{ width: 40, height: 40 }}
+            style={{ width: 34, height: 34 }}
             source={emojiImages.default.emoji[emoji]}
           />
         </TouchableOpacity>
@@ -150,7 +150,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.surveyTitleView}>
-            <Text>무엇이 궁금하신가요?</Text>
+            <Text style={{ color: "#000000CC", marginLeft: 3 }}>무엇이 궁금하신가요?</Text>
             <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
               <TextInput style={{height: '100%'}}
                 placeholder={"질문을 입력해주세요"}
@@ -160,7 +160,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
             </View>
           </View>
           <View style={styles.surveyContentView}>
-            <Text>옵션</Text>
+            <Text style={{ color: "#000000CC", marginLeft: 3 }}>옵션</Text>
             <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
               <TextInput style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}

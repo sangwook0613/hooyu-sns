@@ -10,6 +10,7 @@ export default {
     })
   },
 
+  
   loginGoogle(data) {
     return axios({
       url: 'login/google',
@@ -24,14 +25,11 @@ export default {
       method: 'get'
     })
   },
-
+  
   isDuplicatedNickname(inputValue) {
     return axios({
       url: `user/duplicated/${inputValue}`,
-      method: 'post',
-      data: {
-        userName: inputValue  
-      }
+      method: 'get'
     })
   },
 
@@ -41,11 +39,11 @@ export default {
       method: 'post',
       data: {
         userName: inputValue,
-        userPK: pk,
+        userPK: pk
       }
     })
   },
-
+  
   setPushSetting(accept, radius, sync, pk) {
     return axios({
       url: `user/push`,
@@ -58,7 +56,7 @@ export default {
       }
     })
   },
-
+  
   setFCMToken(pk, token) {
     return axios({
       url: `browser/in`,
@@ -69,7 +67,7 @@ export default {
       }
     })
   },
-
+  
   setPushAlarmReceive(accept, radius, sync, pk) {
     return axios({
       method: 'post',
@@ -82,7 +80,7 @@ export default {
       }
     })
   },
-
+  
   setUserAlived(pk) {
     return axios({
       method: 'put',
@@ -94,6 +92,14 @@ export default {
     return axios({
       method: 'put',
       url: `user/killed?userPK=${pk}`
+    })
+  },
+
+  reportContent(contentPK, reason, userPK) {
+    return axios({
+      method: 'post',
+      url: 'content/report',
+      data: { contentPK, reason, userPK, }
     })
   },
 
@@ -159,4 +165,13 @@ export default {
       }
     })
   },
+
+  userDelete(pk) {
+    return axios({
+      method: 'delete',
+      url: `user/drop?userPK=${pk}`
+    })
+  },
+
+
 }

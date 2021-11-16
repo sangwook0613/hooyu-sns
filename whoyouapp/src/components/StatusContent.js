@@ -8,9 +8,10 @@ import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
 import images from '../assets/images'
 import DeleteModal from '../components/modal/deleteModal'
+import ReportModal from '../components/modal/reportModal'
 
 
-const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
+const emojiArray = ['like', 'smile', 'love', 'amazing', 'sad', 'angry']
 
 const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsStatus }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -20,8 +21,10 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const [giveEmotion, setGiveEmotion] = useState('')
   const [statusEmoji, setStatusEmoji] = useState({})
   const [isLoaded, setIsLoaded] = useState(false)
-  const [isModalVisible, setModalVisible] = useState(false)
-  const [deleteContent, setDeleteContent] = useState(null)
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
+  const [deleteModalContent, setDeleteModalContent] = useState(null)
+  const [isReportModalVisible, setReportModalVisible] = useState(false)
+  const [reportModalContent, setReportModalContent] = useState(null)
   const now = new Date()
 
   useEffect(() => {
@@ -40,9 +43,14 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       })
   }, [])
 
-  const toggleModal = () => {
-    setDeleteContent(statusData[currentIndex].contentPk)
-    setModalVisible(!isModalVisible)
+  const deleteToggleModal = () => {
+    setDeleteModalContent(statusData[currentIndex].contentPk)
+    setDeleteModalVisible(!isDeleteModalVisible)
+  }
+
+  const reportToggleModal = () => {
+    setReportModalContent(statusData[currentIndex].contentPk)
+    setReportModalVisible(!isReportModalVisible)
   }
 
   const getEmotion = (contentPK) => {
@@ -50,14 +58,28 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       .then((result) => {
         let chk = false
         let isMe = ''
-        let emojis = {}
+        let emojis = {
+          'like': 0,
+          'smile': 0,
+          'love': 0,
+          'amazing': 0,
+          'sad': 0,
+          'angry': 0
+        }
         for (let emojiData of result.data.success) {
           if (emojiData.userPK === userPK) {
             isMe = emojiData.contentEmoji
           }
-          emojis[emojiData.contentEmoji] ? emojis[emojiData.contentEmoji]++ : emojis[emojiData.contentEmoji] = 1
+          emojis[emojiData.contentEmoji]++
           chk = true
         }
+
+        for (const key in emojis) {
+          if (emojis[key] === 0) {
+            delete emojis[key]
+          }
+        }
+
         setStatusEmoji(emojis)
         setEmotions(chk)
         setGiveEmotion(isMe)
@@ -89,7 +111,6 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const deleteEmotion = () => {
     Api.setContentEmotion(giveEmotion, statusData[currentIndex].contentPk, userPK)
       .then((res) => {
-        console.log(res.data.success)
         getEmotion(statusData[currentIndex].contentPk)
         // 공감 취소 표시 방법 2 - 대신 해당 게시글에 이모지 존재 유무를 계산해야함
         // setStatusEmoji(emojis => {
@@ -161,12 +182,17 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
     <View>
       <View style={{ flex: 1 }}>
         <DeleteModal
-          contentPK={deleteContent}
+          contentPK={deleteModalContent}
           userPK={userPK}
-          isModalVisible={isModalVisible}
-          setModalVisible={setModalVisible}
-          contentType={'status'}
+          isModalVisible={isDeleteModalVisible}
+          setModalVisible={setDeleteModalVisible}
           reRender={reRenderStatus}
+        />
+        <ReportModal
+          contentPK={reportModalContent}
+          userPK={userPK}
+          isModalVisible={isReportModalVisible}
+          setModalVisible={setReportModalVisible}
         />
       </View>
       <View
@@ -197,7 +223,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
             resizeMode='contain' />
           <Text>상태 메시지</Text>
         </View>
-        <TouchableOpacity onPress={toggleModal}>
+        <TouchableOpacity onPress={ownerName === userName ? deleteToggleModal : reportToggleModal}>
           <AntDesign name={ownerName === userName ? "close" : "exclamationcircle"} size={18} color={ownerName === userName ? "black" : "#FF6A77"} />
         </TouchableOpacity>
       </View>
@@ -224,16 +250,13 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                 alignItems:"center"
               }}
             >
-              <Text style={{fontSize: 18}}>{item.exon}</Text>
+              <Text style={{fontSize: 20}}>{item.exon}</Text>
             </View>
           </TouchableWithoutFeedback>
         )}
       />
       
-      <TouchableWithoutFeedback onPress={() => {
-        setIsEmojiSelect(false)
-        console.log('첫 공감 누름!!')
-      }}>
+      <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
         <View style={{flexDirection: 'row', height: 40, backgroundColor: 'white'}}>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
             {!isEmotions &&
@@ -289,10 +312,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
               }}
               onPress={() => {
                 setIsEmojiSelect(false)
-                console.log('statusData', statusData)
-                console.log('statusEmoji', statusEmoji)
                 addEmotion(emotion, statusData[currentIndex].contentPk, userPK)
-                console.warn(emotion, statusData[currentIndex], index)
               }}
             >
             <Image
