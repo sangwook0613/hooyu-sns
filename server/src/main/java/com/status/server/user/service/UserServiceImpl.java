@@ -283,7 +283,7 @@ public class UserServiceImpl implements UserService {
                 countOfNew++;
             } else {
                 RequestContentTimeDto past = pushMap.get(target.getName());
-                if (target.getContentTime().getStatus() != null && (past.getStatus() == null || !target.getContentTime().getStatus().isAfter(past.getStatus()))) {
+                if (target.getContentTime().getStatus() != null && (past.getStatus() == null || target.getContentTime().getStatus().isAfter(past.getStatus()))) {
                     targetContent = Type.STATUS;
                 } else if (target.getContentTime().getImages() != null && (past.getImages() == null || target.getContentTime().getImages().isAfter(past.getImages()))) {
                     targetContent = Type.IMAGE;
