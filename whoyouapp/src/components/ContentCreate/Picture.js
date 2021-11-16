@@ -124,7 +124,8 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
     if (Platform.OS === 'ios') {
       Alert.alert(
         '서비스 이용 알림',
-        '안드로이드에서만 지원됩니다.'
+        '안드로이드에서만 지원됩니다.',
+        [{text: '확인'}]
       )
     }
 
@@ -139,7 +140,8 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
       } else {
         Alert.alert(
           '서비스 이용 알림',
-          '갤러리 접근 권한을 얻지 못했습니다.'
+          '갤러리 접근 권한을 얻지 못했습니다.',
+          [{text: '확인'}]
         )
         // return false
       }
