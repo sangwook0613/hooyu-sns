@@ -88,7 +88,7 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
   return (
     <>
       <ScrollView
-        style={{backgroundColor: '#C7C7C7'}}
+        style={{backgroundColor: '#D7D7D7'}}
         ref={scrollRef}
       >
         {isStatus ? (
@@ -197,13 +197,36 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
           </>
         )}
 
-        
         {isSurvey && (
           <>
             <SurveyContent 
               ownerName={ownerName}
               setIsSurvey={setIsSurvey}
             />
+          </>
+        )}
+
+        {!isImage && !isSurvey && (
+          <>
+            <View
+              style={{
+                alignItems: 'center',
+                backgroundColor: 'white',
+                elevation: 3,
+                height: 160,
+                justifyContent: 'center',
+                width: deviceWidth,
+              }}
+            >
+              <Image
+                resizeMode='contain'
+                source={ images.profileLogo }
+                style={{
+                  width: deviceWidth * 0.7
+                }}
+              />
+            </View>
+            <View style={{ height: 10, backgroundColor: "#D7D7D7"}}></View>
           </>
         )}
       </ScrollView>

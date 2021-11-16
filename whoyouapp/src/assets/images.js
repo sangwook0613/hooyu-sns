@@ -20,7 +20,9 @@ const images = {
     status: require('./images/menu_status.png'),
     image: require('./images/menu_image.png'),
     question: require('./images/menu_question.png'),
-  }
+  },
+  sympathy: require('./images/sympathy.png'),
+  profileLogo: require('./images/profile_logo.png')
 };
 
 export default images
