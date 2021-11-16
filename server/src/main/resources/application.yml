@@ -6,7 +6,11 @@ spring:
     include:
       - oauth
       - aws
-
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+      file-size-threshold:
   datasource:
 #  ?autoReconnect=true&useUnicode=true&characterEncoding=utf8mb4&serverTimezone=KST
 #    url: jdbc:mariadb://k5a101.p.ssafy.io:3308/whoyou
