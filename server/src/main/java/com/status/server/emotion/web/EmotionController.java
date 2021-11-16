@@ -7,6 +7,7 @@ import com.status.server.global.exception.NoContentException;
 import com.status.server.global.exception.NoEmotionException;
 import com.status.server.global.exception.NoUserException;
 import com.status.server.global.service.ResponseGenerateService;
+import com.status.server.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public class EmotionController {
     public ResponseEntity<SuccessResponseDto> getEmotions(@RequestBody EmotionDto emotionDto) throws NoContentException, NoEmotionException, NoUserException {
         logger.trace("EmotionController 진입  getEmotions param {}", emotionDto);
 
-        String message = emotionService.toEmotion(emotionDto.getUserPK(),emotionDto.getContentPk(),emotionDto.getContentEmoji());
+        String message = emotionService.toEmotion(SecurityUtil.getCurrentUserId(),emotionDto.getContentPk(),emotionDto.getContentEmoji());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
