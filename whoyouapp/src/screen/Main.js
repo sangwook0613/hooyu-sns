@@ -234,8 +234,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
           method: 'post',
           url: SERVER_URL + 'user/radar',
           data: {
-            list: [
-            ],
+            list: [...users, ...privateZoneUsers],
             requestRadiusDto: {
               lat: latitude,
               lon: longitude,
@@ -367,7 +366,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
           <View style={styles.raderArea}>
             {!isListOpened &&
               <View style={styles.radar__text}>
-                <Text style={styles.radar__text__title}>내 반경 안의 유저</Text>
+                <Text style={styles.radar__text__title}>내 주위의 후유어</Text>
                 <Text style={styles.radar__text__count}>{users.length}</Text>
               </View>
             }

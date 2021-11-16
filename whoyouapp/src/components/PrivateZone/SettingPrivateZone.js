@@ -59,7 +59,7 @@ const SettingPrivateZone = ({ userLocation, privateZoneList, deviceWidth, SERVER
   return (
     <View style={{flex:1}}>
       <View style={{flex: 2, padding: 20}}>
-        <View style={{flex: 1, borderWidth: 2}}>
+        <View style={{flex: 1, borderWidth: 1, borderColor: '#aaa'}}>
           <MapView 
             style={{ flex : 1 }}
             provider={PROVIDER_GOOGLE}
@@ -105,7 +105,7 @@ const SettingPrivateZone = ({ userLocation, privateZoneList, deviceWidth, SERVER
 
 const styleSheet = (deviceWidth) => StyleSheet.create({
   privateZoneNameInput: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#aaa',
     marginTop: 10,
     height: 40,

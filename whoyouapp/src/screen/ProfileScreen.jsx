@@ -53,7 +53,7 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Image
-          style={{ width: 40, height: 40 }}
+          style={{ width: 34, height: 34 }}
           source={ownerName === userName ? emojiImages.default.emoji[userEmoji] : emojiImages.default.emoji[route.params.emoji]}
         />
         <Text style={{ marginLeft: 10 }}>{ownerName}</Text>
@@ -127,7 +127,7 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 }}
                 source={images.menu.status}
                 resizeMode='contain' />
-              <Text>상태 메시지</Text>
+              <Text style={{ fontSize: 15 }}>상태 메시지</Text>
             </View>
           </View>
           <View

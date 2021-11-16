@@ -11,7 +11,7 @@ import DeleteModal from '../components/modal/deleteModal'
 import ReportModal from '../components/modal/reportModal'
 
 
-const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
+const emojiArray = ['like', 'smile', 'love', 'amazing', 'sad', 'angry']
 
 const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsSurvey }) => {
   const [currentIndex, setCurrentIndex] = useState(0)

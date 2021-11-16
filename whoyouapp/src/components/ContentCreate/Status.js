@@ -35,7 +35,7 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
         <TouchableOpacity onPress={() => setIsEmojiSelect(isEmojiSelect+1)}
         >
           <Image
-            style={{ width: 40, height: 40 }}
+            style={{ width: 34, height: 34 }}
             source={emojiImages.default.emoji[emoji]}
           />
         </TouchableOpacity>
