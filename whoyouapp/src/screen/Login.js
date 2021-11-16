@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react'
-import { Button, Dimensions } from 'react-native'
 import images from '../assets/images'
-import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import jwt_decode from "jwt-decode";
 import Api from "../utils/api"
@@ -14,11 +12,9 @@ import { useNavigation } from '@react-navigation/native'
 import {
   SafeAreaView,
   StyleSheet,
-  Text,
   View,
   Image,
   ActivityIndicator,
-  TouchableOpacity,
 } from 'react-native'
 import {
   GoogleSignin,
@@ -42,10 +38,10 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
   useEffect( async () => {
     const front = await Location.getForegroundPermissionsAsync()
     const back = await Location.getBackgroundPermissionsAsync()
-    console.log('실행실행')
-    console.log(userEmoji1)
-    console.log(userPK1)
-    console.log("확인")
+    // console.log('실행실행')
+    // console.log(userEmoji1)
+    // console.log(userPK1)
+    // console.log("확인")
     if (userPK1 !== 0 && userEmoji1) {
       if (!front.granted && !back.granted) {
         navigation.reset({ routes: [{ name: 'InfoAgree' }] })
@@ -77,14 +73,14 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
 
     const accessToken = await AsyncStorage.getItem('access_token')
     const refreshToken = await AsyncStorage.getItem('refresh_token')
-    console.log("순서 2")
-    console.log(accessToken)
+    // console.log("순서 2")
+    // console.log(accessToken)
     // refresh 토큰 유효기간 체크
     if (accessToken) {
       await getCurrentUserInfo()
       setTimeout(() => {
-        console.log("user : ", userInfo2)
-        console.log("순서 4")
+        // console.log("user : ", userInfo2)
+        // console.log("순서 4")
         setGettingLoginStatus(false)
         // if (userInfo2 && userInfo2.emoji) {
         //   navigate('Main')
@@ -114,7 +110,7 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
       // 여기서 백엔드한테 보내고, 응답으로 유저 정보를 받는다.
       const userInfo = await GoogleSignin.signInSilently()
       const accessToken = await AsyncStorage.getItem('access_token')
-      console.log('userpk', jwt_decode(accessToken))
+      // console.log('userpk', jwt_decode(accessToken))
       const pk = jwt_decode(accessToken).pk
 
       await messaging().getToken()
@@ -132,16 +128,16 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
       await setUserPK(jwt_decode(accessToken).pk)
       Api.getUser(jwt_decode(accessToken).pk)
         .then((res) => {
-          console.log('겟유저')
-          console.log(res.data.success)
+          // console.log('겟유저')
+          // console.log(res.data.success)
           setUserInfo2(res.data.success)
           setUserEmoji(res.data.success.emoji)
           setUserEmoji1(res.data.success.emoji)
           setUserPK1(res.data.success.id)
           setUserName(res.data.success.name)
           setPushSetting(res.data.success.acceptPush, res.data.success.acceptRadius, res.data.success.acceptSync)
-          console.log("순서 3")
-          console.log(res.data.success.emoji)
+          // console.log("순서 3")
+          // console.log(res.data.success.emoji)
         })
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_REQUIRED) {
@@ -171,11 +167,11 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
           await AsyncStorage.setItem('refresh_token', res.headers['refresh_token'])
           // console.log("access token : ", await AsyncStorage.getItem('access_token'))
           // console.log("refresh token : ",await AsyncStorage.getItem('refresh_token'))
-          console.log("순서 0")
-          console.log(res.data.success.id)
+          // console.log("순서 0")
+          // console.log(res.data.success.id)
           setUserPK(res.data.success.id)
           // setUserPK1(res.data.success.id)
-          console.log("순서 1")
+          // console.log("순서 1")
         }).catch((err) => {
           console.log(err)
         })
