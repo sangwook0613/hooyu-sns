@@ -45,11 +45,6 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
   }
 
   const onTextChange = (index, text) => {
-    if (title && options[0] && options[1]) {
-      setIsSurveyValid(true)
-    } else {
-      setIsSurveyValid(false)
-    }
     setOptions(options.map((option, index2) => {
       return index !== index2 ? option: text
     }))
@@ -75,7 +70,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
             </TouchableOpacity>
             :
             <TouchableWithoutFeedback
-              onPress={() => showToast()}
+            onPress={() => showToast()}
             >
               <Text style={{color: 'gray', padding: 10 }}>등록</Text>
             </TouchableWithoutFeedback>
@@ -84,8 +79,12 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
         </View>
       )
     });
-    setOptions(options)
-    if (title && options[0] && options[1]) {
+    var optionArray = new Array()
+    for (let i=0; i<options.length; i++) {
+      if (!optionArray.includes(options[i]))
+      optionArray.push(options[i])
+    }
+    if (title && options[0] && options[1] && options.length == optionArray.length) {
       setIsSurveyValid(true)
     } else {
       setIsSurveyValid(false)
@@ -95,8 +94,10 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
   const showToast = useCallback(() => {
     if (!title) {
       toastRef.current.show('질문을 입력해 주세요')
+    } else if (options[0] == '' || options[1] == '') {
+      toastRef.current.show('선택지 2개는 필수입니다')
     } else {
-      toastRef.current.show('옵션 2개는 필수입니다')
+      toastRef.current.show('같은 선택지가 있습니다')
     }
   })
 
@@ -154,6 +155,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
               <TextInput style={{height: '100%'}}
                 placeholder={"질문을 입력해주세요"}
                 onChangeText={(text) => setTitle(text)}
+                maxLength={36}
               />
             </View>
           </View>
@@ -163,12 +165,14 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
               <TextInput style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}
                 onChangeText={(text) => onTextChange(0, text)}
+                maxLength={16}
               />
             </View>
             <View style={{width: clientWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
               <TextInput style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}
                 onChangeText={(text) => onTextChange(1, text)}
+                maxLength={16}
               />
             </View>
             {
@@ -179,13 +183,12 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
                     placeholder={"옵션을 입력해주세요"}
                     onChangeText={(text) => onTextChange(index, text)}
                     value={options[index]}
+                    maxLength={16}
                   />
                   <TouchableOpacity 
                     onPress={()=> onOptionDelete(index)}
                   >
-                    <View style={styles.minusOption}>
-                      <Text style={{ fontSize: 16 }}>-</Text>
-                    </View>
+                    <Text style={{ fontSize: 30, marginEnd: 10, color: 'black' }}>-</Text>
                   </TouchableOpacity>
                 </View>
               ))
@@ -289,10 +292,10 @@ const styles = StyleSheet.create({
   },
   minusOption: {
     // position: 'absolute',
-    borderWidth: 2,
-    height: 25,
-    width: 25,
-    borderRadius: 15,
+    // borderWidth: 2,
+    // borderRadius: 15,
+    height: 30,
+    width: 30,
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center'
