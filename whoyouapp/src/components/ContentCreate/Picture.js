@@ -118,7 +118,11 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
 
   const requestGalleryPermission = async () => {
     if (Platform.OS === 'ios') {
-      alert('안드로이드에서만 지원됩니다.')
+      Alert.alert(
+        '서비스 이용 알림',
+        '안드로이드에서만 지원됩니다.',
+        [{text: '확인'}]
+      )
     }
 
     if (Platform.OS === 'android') {
@@ -130,7 +134,11 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
       ) {
         imageGalleryLaunch()
       } else {
-        alert('갤러리 접근 권한을 얻지 못했습니다.')
+        Alert.alert(
+          '서비스 이용 알림',
+          '갤러리 접근 권한을 얻지 못했습니다.',
+          [{text: '확인'}]
+        )
         // return false
       }
     }
@@ -287,8 +295,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 300,
     height: 100,
-    borderWidth: 1,
-    borderColor: "#B4B4B4",
+    top: 1,
     borderRadius: 10,
     backgroundColor: 'white',
     elevation: 4,

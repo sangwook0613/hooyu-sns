@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
 import Api from '../utils/api'
 import { connect } from 'react-redux'
+import Toast from 'react-native-easy-toast'
 
 
 const NicknameTutorial = ({ navigation: { navigate }, deviceWidth, deviceHeight, SERVER_URL}) => {
-
   const styles = styleSheet(deviceWidth, deviceHeight)
-
   const [inputValue, setInputValue] = useState('')
+  const toastRef = useRef()
 
   const registerNickname = () => {
     Api.isDuplicatedNickname(inputValue)
     .then((res) => {
       if (res.data.success !== 'Success') {
-        alert('중복된 닉네임입니다.')
+        toastRef.current.show('중복된 닉네임입니다.')
       } else {
         navigate('EmojiTutorial', {nickname: inputValue})
       }
@@ -74,6 +74,12 @@ const NicknameTutorial = ({ navigation: { navigate }, deviceWidth, deviceHeight,
           </Text>
         </TouchableOpacity>
       </View>
+      <Toast ref={toastRef}
+        positionValue={deviceHeight * 0.4}
+        fadeInDuration={200}
+        fadeOutDuration={1000}
+        style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
+      />
     </View>
   )
 }

@@ -93,9 +93,9 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
     if (!title) {
       toastRef.current.show('질문을 입력해 주세요')
     } else if (options[0] == '' || options[1] == '') {
-      toastRef.current.show('선택지 2개는 필수입니다')
+      toastRef.current.show('옵션 2개는 필수입니다')
     } else {
-      toastRef.current.show('같은 선택지가 있습니다')
+      toastRef.current.show('같은 옵션이 있습니다')
     }
   })
 
@@ -262,8 +262,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 300,
     height: 100,
-    borderWidth: 1,
-    borderColor: "#B4B4B4",
+    top: 1,
     borderRadius: 10,
     backgroundColor: 'white',
     elevation: 4,

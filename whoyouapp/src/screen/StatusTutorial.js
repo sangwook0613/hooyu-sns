@@ -1,16 +1,22 @@
-import axios from 'axios';
-import React, { useState } from 'react';
-import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
+import axios from 'axios'
+import React, { useState } from 'react'
+import { Alert, Text, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native'
 import { connect } from 'react-redux'
+import { actionCreators } from '../store/reducers'
 
 
-const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, SERVER_URL, userPK}) => {
+const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, SERVER_URL, userPK, setUserName, setUserEmoji}) => {
 
   const styles = styleSheet(deviceWidth, deviceHeight)
 
   const [inputValue, setInputValue] = useState('')
 
   const registerStatus = () => {
+    Alert.alert(
+      '가입 성공',
+      `${route.params.nickname}님 환영합니다!🎉`,
+      [{text: '네!'}]
+    )
     userSetting()
   }
 
@@ -28,6 +34,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
       }
     })
     .then(() => {
+      setUserName(route.params.nickname)
       setEmoji()
     })
     .catch((err) => {
@@ -45,6 +52,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
       }
     })
     .then(() => {
+      setUserEmoji(route.params.emoji)
       setStatus()
     })
     .catch((err) => {
@@ -102,7 +110,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
             autoCapitalize={'none'}
             value={inputValue}
             onChangeText={(e) => setInputValue(e)}
-            maxLength={10}
+            maxLength={20}
             placeholder='상태 입력'
           />
         </View>
@@ -163,4 +171,15 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(StatusTutorial)
+function mapDispatchToProps(dispatch) {
+  return {
+    setUserEmoji: (emoji) => {
+      dispatch(actionCreators.setUserEmoji(emoji))
+    },
+    setUserName: (userName) => {
+      dispatch(actionCreators.setUserName(userName))
+    },
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(StatusTutorial)
