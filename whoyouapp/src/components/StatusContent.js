@@ -11,7 +11,7 @@ import DeleteModal from '../components/modal/deleteModal'
 import ReportModal from '../components/modal/reportModal'
 
 
-const emojiArray = ['smile', 'amazing', 'sad', 'love', 'sense', 'angry']
+const emojiArray = ['like', 'smile', 'love', 'amazing', 'sad', 'angry']
 
 const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsStatus }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -236,7 +236,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                 alignItems:"center"
               }}
             >
-              <Text style={{fontSize: 18}}>{item.exon}</Text>
+              <Text style={{fontSize: 20}}>{item.exon}</Text>
             </View>
           </TouchableWithoutFeedback>
         )}
