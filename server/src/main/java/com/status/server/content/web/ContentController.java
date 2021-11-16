@@ -9,6 +9,7 @@ import com.status.server.global.exception.NoAuthorityUserException;
 import com.status.server.global.exception.NoContentException;
 import com.status.server.global.exception.NoUserException;
 import com.status.server.global.service.ResponseGenerateService;
+import com.status.server.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class ContentController{
         logger.trace("ContentController 진입  createContent param {}", requestContentDto);
 
         String message = contentService.createStatusContent(
-                requestContentDto.getUserPK(),
+                SecurityUtil.getCurrentUserId(),
                 requestContentDto.getExon(),
                 requestContentDto.getColor(),
                 Type.STATUS
@@ -65,7 +66,7 @@ public class ContentController{
         logger.trace("ContentController 진입  createContent param {}", requestContentDto);
 
         String message = contentService.createImageContent(
-                requestContentDto.getUserPK(),
+                SecurityUtil.getCurrentUserId(),
                 requestContentDto.getExon(),
                 requestContentDto.getColor(),
                 Type.IMAGE
@@ -82,7 +83,7 @@ public class ContentController{
 
         RequestContentDto requestContentDto = requestSurveyAnswerDto.getRequestContentDto();
         String message = contentService.createSurveyContent(
-                requestContentDto.getUserPK(),
+                SecurityUtil.getCurrentUserId(),
                 requestContentDto.getExon(),
                 requestContentDto.getColor(),
                 Type.SURVEY,
@@ -99,7 +100,7 @@ public class ContentController{
         logger.trace("ContentController 진입  vote param {}", voteSurveyDto);
 
         String message = contentService.voteSurvey(
-                voteSurveyDto.getUserPK(),
+                SecurityUtil.getCurrentUserId(),
                 voteSurveyDto.getContentPK(),
                 voteSurveyDto.getAnswerPK()
         );
@@ -113,7 +114,7 @@ public class ContentController{
     public ResponseEntity<SuccessResponseDto> voteSurvey(@RequestBody VotedDto votedDto) throws NoUserException, NoContentException {
 
         logger.debug("vote Controller 들어왔어요");
-        String message = contentService.votedSurvey(votedDto.getUserPK(), votedDto.getContentPK());
+        String message = contentService.votedSurvey(SecurityUtil.getCurrentUserId(), votedDto.getContentPK());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
         logger.debug("vote 결과 message : {}", message);
@@ -124,14 +125,14 @@ public class ContentController{
     @PostMapping("/report")
     public ResponseEntity<SuccessResponseDto> reportContent(@RequestBody RequestReportDto requestReportDto) throws NoUserException, NoContentException {
 
-        String message = contentService.reportContent(requestReportDto.getUserPK(),requestReportDto.getContentPK(),requestReportDto.getReason());
+        String message = contentService.reportContent(SecurityUtil.getCurrentUserId(),requestReportDto.getContentPK(),requestReportDto.getReason());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
 
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/status/{userName}")
+    @GetMapping("/statuses/{userName}")
     public ResponseEntity<SuccessResponseDto> getStatusContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseContentPlusDto> list = contentService.statusesContent(userName);
@@ -141,7 +142,7 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/image/{userName}")
+    @GetMapping("/images/{userName}")
     public ResponseEntity<SuccessResponseDto> getImageContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseContentPlusDto> list = contentService.imagesContent(userName);
@@ -151,7 +152,7 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/survey/{userName}")
+    @GetMapping("/surveys/{userName}")
     public ResponseEntity<SuccessResponseDto> getSurveyContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseSurveyPlusDto> list = contentService.surveysContent(userName);
@@ -161,7 +162,7 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/statuses/{userName}")
+    @GetMapping("/status/{userName}")
     public ResponseEntity<SuccessResponseDto> getStatusesContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseContentDto> list = contentService.statusContent(userName);
@@ -171,7 +172,7 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/images/{userName}")
+    @GetMapping("/image/{userName}")
     public ResponseEntity<SuccessResponseDto> getImagesContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseContentDto> list = contentService.imageContent(userName);
@@ -181,7 +182,7 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/surveys/{userName}")
+    @GetMapping("/survey/{userName}")
     public ResponseEntity<SuccessResponseDto> getSurveysContent(@PathVariable String userName) throws NoUserException, NoContentException {
 
         List<ResponseSurveyDto> list = contentService.surveyContent(userName);
@@ -240,7 +241,7 @@ public class ContentController{
         logger.trace("ContentController 진입  createContent param {}", requestDeleteContentDto);
 
         String message = contentService.deleteContent(
-                requestDeleteContentDto.getUserPK(),
+                SecurityUtil.getCurrentUserId(),
                 requestDeleteContentDto.getContentPK()
         );
 

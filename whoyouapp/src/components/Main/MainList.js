@@ -4,6 +4,7 @@ import LinearGradient from 'react-native-linear-gradient'
 import { useNavigation } from '@react-navigation/native'
 import images from '../../assets/images'
 
+
 const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUser, selectedUser, setUsers, mainListSortMode, setMainListSortMode }, ref) => {
   const navigation = useNavigation()
   const mainList = useRef(new Animated.Value(deviceHeight)).current
@@ -30,7 +31,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
       const now = new Date()
       setNow(now.toString())
       Animated.timing(mainList, {
-        toValue: deviceHeight * 0.585,
+        toValue: deviceHeight * 0.6,
         duration: 400,
         useNativeDriver: false,
       }).start()
@@ -173,7 +174,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
                   >
                     <TouchableOpacity
                       style={styles.userMenuButton}
-                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'status'})}}
+                      onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'status', emoji: user.emoji})}}
                     >
                       <Text style={{
                         color: 'white',
@@ -194,7 +195,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
                   >
                     <TouchableOpacity
                       style={[styles.userMenuButton, {backgroundColor: user.contentTime.images === null ? '#B4B4B4' : mainColor1}]}
-                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'image'})}}
+                      onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'image', emoji: user.emoji})}}
                       disabled={user.contentTime.images === null ? true : false}
                     >
                       <Text style={{
@@ -216,7 +217,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
                   >
                     <TouchableOpacity
                       style={[styles.userMenuButton, {backgroundColor: user.contentTime.survey === null ? '#B4B4B4' : mainColor1}]}
-                      onPress={() => {navigation.navigate('User', {nickname: user.name, content: 'survey'})}}
+                      onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'survey', emoji: user.emoji})}}
                       disabled={user.contentTime.survey === null ? true : false}
                     >
                       <Text style={{
@@ -241,7 +242,7 @@ const styleSheet = (deviceWidth, deviceHeight, mainColor1, mainColor4) => StyleS
   mainList: {
     position: 'absolute',
     width: '100%',
-    height: deviceHeight * 0.38,
+    height: deviceHeight * 0.4,
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

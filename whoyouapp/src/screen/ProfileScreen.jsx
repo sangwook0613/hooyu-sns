@@ -19,29 +19,71 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
   
   const now = new Date()
   const scrollRef = useRef()
+  const moveTo = [
+    // 그냥 프로필을 눌러서 들어온 경우
+    {
+      status: 0,
+      image: 0,
+      survey: 0,
+    },
+    // 이미지 or 설문만 있는 경우
+    // 제목 공간 + 이미지 크기 + 공감 받은 이모지 공간 + 공감 버튼 공간 + 여백
+    {
+      status: 0,
+      image: 50 + deviceWidth + 40 + 40 + 10,
+      survey: 50 + deviceWidth + 40 + 40 + 10,
+    },
+    // 둘다 있는 경우
+    {
+      status: 0,
+      image: 50 + deviceWidth + 40 + 40 + 10,
+      survey: (50 + deviceWidth + 40 + 40 + 10)*2,
+    },
+  ]
+
+  const getPointToScroll = () => {
+    const checkList = isImage + isSurvey
+    setTimeout(() => {
+      const node = scrollRef.current
+      node.scrollTo({ y: moveTo[checkList][route.params.content], animated: true })
+    }, 400)
+  }
 
   const ProfileTitle = () => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Image
-          style={{ width: 40, height: 40 }}
-          source={emojiImages.default.emoji[userEmoji]}
+          style={{ width: 34, height: 34 }}
+          source={ownerName === userName ? emojiImages.default.emoji[userEmoji] : emojiImages.default.emoji[route.params.emoji]}
         />
-        <Text style={{ marginLeft: 10 }}>{userName}</Text>
+        <Text style={{ marginLeft: 10 }}>{ownerName}</Text>
       </View>
     )
   }
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    getPointToScroll()
     navigation.setOptions({
       headerTitle: (props) => <ProfileTitle {...props} />,
       headerRight: () => (
-        <TouchableOpacity style={{ padding: 10, }} onPress={() => navigation.navigate('Setting')}>
-          <Text>설정</Text>
-        </TouchableOpacity>
-      )
+        (ownerName === userName && (
+          <TouchableOpacity style={{ padding: 10 }} onPress={() => navigation.navigate('Setting')}>
+            <Text>설정</Text>
+          </TouchableOpacity>
+        )))
     })
   }, [navigation])
+
+  // useLayoutEffect(() => {
+  //   navigation.setOptions({
+  //     headerTitle: (props) => <ProfileTitle {...props} />,
+  //     headerRight: () => (
+  //       <TouchableOpacity style={{ padding: 10, }} onPress={() => navigation.navigate('Setting')}>
+  //         <Text>설정</Text>
+  //       </TouchableOpacity>
+  //     )
+  //   })
+  // }, [navigation])
 
   return (
     <>
@@ -85,7 +127,7 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
                 }}
                 source={images.menu.status}
                 resizeMode='contain' />
-              <Text>상태 메시지</Text>
+              <Text style={{ fontSize: 15 }}>상태 메시지</Text>
             </View>
           </View>
           <View

@@ -129,6 +129,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getUserInfo(Long userPK) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         UserResponseDto userResponseDto = new UserResponseDto(user);
+        logger.debug("getUserInfo log : {}",userPK);
         logger.debug("Service In");
         logger.debug("user : {}", user);
         return userResponseDto;
@@ -282,11 +283,11 @@ public class UserServiceImpl implements UserService {
                 countOfNew++;
             } else {
                 RequestContentTimeDto past = pushMap.get(target.getName());
-                if (past.getStatus() != null && !past.getStatus().equals(target.getContentTime().getStatus())) {
+                if (target.getContentTime().getStatus() != null && (past.getStatus() == null || target.getContentTime().getStatus().isAfter(past.getStatus()))) {
                     targetContent = Type.STATUS;
-                } else if (past.getImages() != null && !past.getImages().equals(target.getContentTime().getImages())) {
+                } else if (target.getContentTime().getImages() != null && (past.getImages() == null || target.getContentTime().getImages().isAfter(past.getImages()))) {
                     targetContent = Type.IMAGE;
-                } else if (past.getSurvey() != null && !past.getSurvey().equals(target.getContentTime().getSurvey())) {
+                } else if (target.getContentTime().getSurvey() != null && (past.getSurvey() == null || target.getContentTime().getSurvey().isAfter(past.getSurvey()))) {
                     targetContent = Type.SURVEY;
                 }
             }

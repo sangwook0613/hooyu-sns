@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Animated, Dimensions, Text, TouchableOpacity, Image, View, StyleSheet, TextInput } from 'react-native';
-import amazingEmozi from '../assets/images/amazing2.png'
 import { actionCreators } from '../store/reducers'
 import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
