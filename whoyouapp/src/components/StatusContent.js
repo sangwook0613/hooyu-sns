@@ -330,10 +330,19 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           alignItems: 'center',
           height: 40,
           backgroundColor: 'white',
-          elevation: 10 
+          elevation: 3
         }}>
           {isLoaded && giveEmotion === '' &&
-            <TouchableOpacity style={{ marginLeft: 15, marginRight: 15 }} onPress={() => setIsEmojiSelect(!isEmojiSelect)}>
+            <TouchableOpacity 
+              style={{ 
+                alignItems: 'center',
+                flexDirection: 'row', 
+                marginLeft: 15, 
+                marginRight: 15 
+              }}
+              onPress={() => setIsEmojiSelect(!isEmojiSelect)}
+            > 
+              <Image source={images.sympathy} style={{ width: 20, height: 20, marginRight: 2, top: 1 }} />
               <Text style={{ fontSize: 15 }}>{isEmojiSelect ? '닫기': '공감'}</Text>
             </TouchableOpacity>
           }
