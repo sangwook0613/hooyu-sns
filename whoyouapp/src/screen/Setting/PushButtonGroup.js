@@ -57,7 +57,6 @@ const styles = StyleSheet.create({
   },
   btn: {
     flex: 1,
-    borderWidth: 1,
     borderColor: '#6B7280'
   },
   btnText: {

@@ -4,6 +4,7 @@ const images = {
     angry: require('./emoji/angry.png'),
     crying: require('./emoji/crying.png'),
     hard: require('./emoji/hard.png'),
+    like: require('./emoji/like.png'),
     love: require('./emoji/love.png'),
     pokerface: require('./emoji/pokerface.png'),
     pouting: require('./emoji/pouting.png'),

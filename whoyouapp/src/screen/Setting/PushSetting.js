@@ -82,7 +82,7 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
           backgroundColor: `${isPushEnabled && !isPushSyncEnabled ? 'white' : "#E5E5E5"}`,
         }}
       >
-        <Text style={{ color: `${isPushEnabled && !isPushSyncEnabled ? 'black' : "#767577"}`, fontSize: 16, fontWeight: '700' }}>푸시 알람 반경</Text>
+        <Text style={{ color: `${isPushEnabled && !isPushSyncEnabled ? 'black' : "#767577"}`, fontSize: 16, fontWeight: '700' }}>푸시 알림 반경</Text>
       </View>
       <View
         style={{
@@ -114,7 +114,7 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
           alignItems: 'center',
         }}
       >
-        <Text style={{ color: `${isPushEnabled ? 'black' : "#767577"}`, fontSize: 16, fontWeight: '700' }}>푸시 알림 반경 메인과 동기화</Text>
+        <Text style={{ color: `${isPushEnabled ? 'black' : "#767577"}`, fontSize: 16, fontWeight: '700' }}>메인 반경과 동기화</Text>
         <Switch
           trackColor={{ false: "#767577", true: "#F38181" }}
           thumbColor={isPushSyncEnabled ? "white" : "#f4f3f4"}
