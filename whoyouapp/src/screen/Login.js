@@ -1,6 +1,5 @@
 
-import React, { useState, useEffect } from 'react'
-import { Button, Dimensions } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
 import images from '../assets/images'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -11,6 +10,7 @@ import { actionCreators } from '../store/reducers'
 import messaging from '@react-native-firebase/messaging';
 import * as Location from 'expo-location'
 import { useNavigation } from '@react-navigation/native'
+import Toast from 'react-native-easy-toast'
 import {
   SafeAreaView,
   StyleSheet,
@@ -27,11 +27,12 @@ import {
 } from '@react-native-google-signin/google-signin'
 
 
-const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji, setUserName, setPushSetting, userPK, userEmoji }) => {
+const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK, setUserEmoji, setUserName, setPushSetting, userPK, userEmoji }) => {
   // const [userpk, setUserpk] = useState(0);
   const [userInfo, setUserInfo] = useState(null);
   const [userInfo2, setUserInfo2] = useState(null);
   const [gettingLoginStatus, setGettingLoginStatus] = useState(true)
+  const toastRef = useRef()
 
   const navigation = useNavigation()
 
@@ -172,15 +173,15 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
     } catch (error) {
       console.log('Message', JSON.stringify(error))
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        alert('로그인이 중단되었습니다.')
+        toastRef.current.show('로그인이 중단되었습니다.')
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        alert('로그인 중입니다.')
+        toastRef.current.show('로그인 중입니다.')
       } else if (
         error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE
       ) {
-        alert('죄송합니다. 서비스를 이용할 수 없습니다.\n잠시 후 재시도 해주세요.')
+        toastRef.current.show('죄송합니다. 서비스를 이용할 수 없습니다.\n잠시 후 재시도 해주세요.')
       } else {
-        alert(error.message)
+        console.log(error.message)
       }
     }
     isSignedIn()
@@ -229,7 +230,12 @@ const Login = ({ navigation: { navigate }, deviceWidth, setUserPK, setUserEmoji,
             />
           </View>
         </View>
-
+        <Toast ref={toastRef}
+          positionValue={deviceHeight * 0.4}
+          fadeInDuration={200}
+          fadeOutDuration={1000}
+          style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
+        />
       </SafeAreaView>
     );
   }
