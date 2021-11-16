@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState, useCallback} from 'react';
-import { Text, TouchableOpacity, View, Animated, StyleSheet, PermissionsAndroid, Dimensions, Image } from 'react-native';
+import { Alert, Text, TouchableOpacity, View, Animated, StyleSheet, PermissionsAndroid, Dimensions, Image } from 'react-native';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import imageUpload from '../../assets/createcontent/uploadImage.png'
@@ -122,7 +122,10 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
 
   const requestGalleryPermission = async () => {
     if (Platform.OS === 'ios') {
-      alert('안드로이드에서만 지원됩니다.')
+      Alert.alert(
+        '서비스 이용 알림',
+        '안드로이드에서만 지원됩니다.'
+      )
     }
 
     if (Platform.OS === 'android') {
@@ -134,7 +137,10 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
       ) {
         imageGalleryLaunch()
       } else {
-        alert('갤러리 접근 권한을 얻지 못했습니다.')
+        Alert.alert(
+          '서비스 이용 알림',
+          '갤러리 접근 권한을 얻지 못했습니다.'
+        )
         // return false
       }
     }
