@@ -52,7 +52,7 @@ const Root = ({ setUserPK, setUserEmoji, setUserName, userEmoji }) => {
         
         await api.getUser(jwt_decode(result).pk)
           .then((res) => {
-            console.log(res.data.success)
+            console.log('루트.jsx에서 뜨는 emoji 값 : ', res.data.success.emoji )
             setUserEmoji(res.data.success.emoji)
             setUserName(res.data.success.name)
             setEmoji(res.data.success.emoji)

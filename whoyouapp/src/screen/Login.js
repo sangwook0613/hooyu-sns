@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import images from '../assets/images'
-import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import jwt_decode from "jwt-decode";
 import Api from "../utils/api"
@@ -14,11 +13,9 @@ import Toast from 'react-native-easy-toast'
 import {
   SafeAreaView,
   StyleSheet,
-  Text,
   View,
   Image,
   ActivityIndicator,
-  TouchableOpacity,
 } from 'react-native'
 import {
   GoogleSignin,
@@ -34,13 +31,20 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
   const [gettingLoginStatus, setGettingLoginStatus] = useState(true)
   const toastRef = useRef()
 
+  const [userPK1, setUserPK1] = useState(0)
+  const [userEmoji1, setUserEmoji1] = useState(null)
+
+
   const navigation = useNavigation()
 
   useEffect( async () => {
     const front = await Location.getForegroundPermissionsAsync()
     const back = await Location.getBackgroundPermissionsAsync()
-
-    if (userPK !== 0 && userEmoji) {
+    // console.log('실행실행')
+    // console.log(userEmoji1)
+    // console.log(userPK1)
+    // console.log("확인")
+    if (userPK1 !== 0 && userEmoji1) {
       if (!front.granted && !back.granted) {
         navigation.reset({ routes: [{ name: 'InfoAgree' }] })
         // navigate('InfoAgree')
@@ -49,7 +53,7 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
         navigation.reset({ routes: [{ name: 'Main' }] })
         // navigate('Main')
       }
-    } else if (userPK !== 0 && !userEmoji) {
+    } else if (userPK1 !== 0 && !userEmoji1) {
       navigation.reset({ routes: [{ name: 'NicknameTutorial' }] })
       // navigate('NicknameTutorial')
     } else {
@@ -59,7 +63,7 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
       });
       isSignedIn()
     }
-  }, [userEmoji])
+  }, [userPK1 ,userEmoji1])
 
 
   // 이미 로그인 되어있는 상태인지 체크
@@ -71,14 +75,14 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
 
     const accessToken = await AsyncStorage.getItem('access_token')
     const refreshToken = await AsyncStorage.getItem('refresh_token')
-    console.log("순서 2")
-    console.log(accessToken)
+    // console.log("순서 2")
+    // console.log(accessToken)
     // refresh 토큰 유효기간 체크
     if (accessToken) {
       await getCurrentUserInfo()
       setTimeout(() => {
-        console.log("user : ", userInfo2)
-        console.log("순서 4")
+        // console.log("user : ", userInfo2)
+        // console.log("순서 4")
         setGettingLoginStatus(false)
         // if (userInfo2 && userInfo2.emoji) {
         //   navigate('Main')
@@ -108,7 +112,7 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
       // 여기서 백엔드한테 보내고, 응답으로 유저 정보를 받는다.
       const userInfo = await GoogleSignin.signInSilently()
       const accessToken = await AsyncStorage.getItem('access_token')
-      console.log('userpk', jwt_decode(accessToken).pk)
+      // console.log('userpk', jwt_decode(accessToken))
       const pk = jwt_decode(accessToken).pk
 
       await messaging().getToken()
@@ -126,12 +130,16 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
       await setUserPK(jwt_decode(accessToken).pk)
       Api.getUser(jwt_decode(accessToken).pk)
         .then((res) => {
+          // console.log('겟유저')
+          // console.log(res.data.success)
           setUserInfo2(res.data.success)
           setUserEmoji(res.data.success.emoji)
+          setUserEmoji1(res.data.success.emoji)
+          setUserPK1(res.data.success.id)
           setUserName(res.data.success.name)
           setPushSetting(res.data.success.acceptPush, res.data.success.acceptRadius, res.data.success.acceptSync)
-          console.log("순서 3")
-          console.log(res.data.success.emoji)
+          // console.log("순서 3")
+          // console.log(res.data.success.emoji)
         })
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_REQUIRED) {
@@ -161,10 +169,11 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
           await AsyncStorage.setItem('refresh_token', res.headers['refresh_token'])
           // console.log("access token : ", await AsyncStorage.getItem('access_token'))
           // console.log("refresh token : ",await AsyncStorage.getItem('refresh_token'))
-          console.log("순서 0")
-          console.log(res.data.success.id)
+          // console.log("순서 0")
+          // console.log(res.data.success.id)
           setUserPK(res.data.success.id)
-          console.log("순서 1")
+          // setUserPK1(res.data.success.id)
+          // console.log("순서 1")
         }).catch((err) => {
           console.log(err)
         })
@@ -185,22 +194,6 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
       }
     }
     isSignedIn()
-  };
-
-  const signOut = async () => {
-    setGettingLoginStatus(true)
-
-    // 토큰 지우기
-    try {
-      await GoogleSignin.revokeAccess()
-      await GoogleSignin.signOut()
-      await AsyncStorage.setItem('access_token', '')
-      await AsyncStorage.setItem('refresh_token', '')
-      setUserInfo(null)
-    } catch (error) {
-      console.error(error)
-    }
-    setGettingLoginStatus(false)
   };
 
   if (gettingLoginStatus) {
