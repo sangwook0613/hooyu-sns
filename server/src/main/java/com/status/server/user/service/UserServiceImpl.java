@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getUserInfo(Long userPK) throws NoUserException {
         User user = userRepository.findById(userPK).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
         UserResponseDto userResponseDto = new UserResponseDto(user);
-        logger.debug("getUserInfo log : {}",userPK);
+        logger.debug("getUserInfo log : {}", userPK);
         logger.debug("Service In");
         logger.debug("user : {}", user);
         return userResponseDto;
@@ -317,9 +317,22 @@ public class UserServiceImpl implements UserService {
         }
 
         if (targetContent != null && (targetToken.getPushTwo() == null || nowTime.isAfter(targetToken.getPushTwo()))) {
-            String title = "누군가 새 " + targetContent.getTitle() + "를 올렸어요!";
+            StringBuilder title = new StringBuilder();
+            title.append("누군가 새 ");
+            switch (targetContent.getTitle()){
+                case "상태메시지":
+                    title.append("상태 메시지를");
+                    break;
+                case "이미지":
+                    title.append("이미지를");
+                    break;
+                case "설문조사":
+                    title.append("질문을");
+                    break;
+            }
+            title.append(" 올렸어요!");
             String body = "클릭해서 확인해보세요";
-            fcmService.sendMessageTo(targetToken.getToken(), title, body);
+            fcmService.sendMessageTo(targetToken.getToken(), title.toString(), body);
             targetToken.setPushTwo(nowTime.plusHours(3));
         }
 
@@ -402,7 +415,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public String deleteUser(Long userPK) throws NoUserException, NoAuthorityUserException, NoContentException {
-        if(!userRepository.existsById(userPK)) throw new NoUserException("해당하는 사용자가 없습니다.");
+        if (!userRepository.existsById(userPK)) throw new NoUserException("해당하는 사용자가 없습니다.");
 
         List<Content> contents = contentRepository.findAllByUserId(userPK);
         for (int i = 0; i < contents.size(); i++) {

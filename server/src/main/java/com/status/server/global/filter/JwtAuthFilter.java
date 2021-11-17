@@ -47,15 +47,15 @@ public class JwtAuthFilter extends GenericFilterBean {
             logger.debug("user Info : {}",user);
 
             if(user.getRefreshToken().equals(refresh_token)){
-                logger.trace("저장된 re와 보낸 re가 일치 합니다.");
+                logger.debug("저장된 re와 보낸 re가 일치 합니다.");
 
                 Token newToken = tokenService.generateToken(user.getId(), user.getName(), "USER");
 
                 ((HttpServletResponse)response).addHeader("access_token",newToken.getAccess_token());
             } else {
-                logger.trace("저장된 re와 보낸 re가 불일치 합니다.");
-                logger.trace("저장된 re {}",user.getRefreshToken());
-                logger.trace("보낸 re {}",refresh_token);
+                logger.debug("저장된 re와 보낸 re가 불일치 합니다.");
+                logger.debug("저장된 re {}",user.getRefreshToken());
+                logger.debug("보낸 re {}",refresh_token);
                 throw new IllegalArgumentException("JWT 토큰이 잘못되었습니다.");
             }
 
