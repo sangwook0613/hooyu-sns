@@ -33,6 +33,7 @@ public class UserController {
         logger.debug("User Controller 진입 getUserInfo param {}", userPK);
         UserResponseDto userResponseDto = userService.getUserInfo(SecurityUtil.getCurrentUserId());
 
+        logger.debug("User Controller 진입 userResponseDto {}", userResponseDto);
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(userResponseDto);
 
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
@@ -50,7 +51,7 @@ public class UserController {
 
     @GetMapping("/duplicated/{userName}")
     public ResponseEntity<SuccessResponseDto> duplicateCheckName(@PathVariable String userName) throws NoUserException {
-        logger.trace("User Controller 진입  duplicateCheckName param {}", userName);
+        logger.debug("User Controller 진입  duplicateCheckName param {}", userName);
         String message = userService.duplicateCheckName(userName);
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
