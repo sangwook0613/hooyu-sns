@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native'
 import { actionCreators } from '../../store/reducers'
 import { GoogleSignin } from '@react-native-google-signin/google-signin'
 
-const UnregisterModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK, userPK }) => {
+const UnregisterModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK }) => {
 
   LogBox.ignoreAllLogs()
 

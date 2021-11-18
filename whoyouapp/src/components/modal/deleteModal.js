@@ -3,7 +3,7 @@ import { Text, View, TouchableOpacity, LogBox } from 'react-native'
 import Modal from "react-native-modal"
 import Api from '../../utils/api'
 
-const DeleteModal = ({ contentPK, userPK, isModalVisible, setModalVisible, reRender }) => {
+const DeleteModal = ({ contentPK, isModalVisible, setModalVisible, reRender }) => {
   
   LogBox.ignoreAllLogs()
 
@@ -12,7 +12,7 @@ const DeleteModal = ({ contentPK, userPK, isModalVisible, setModalVisible, reRen
   }
 
   const deleteContent = () => {
-    Api.deleteContent(contentPK, userPK)
+    Api.deleteContent(contentPK)
       .then(() => {
         reRender()
       })

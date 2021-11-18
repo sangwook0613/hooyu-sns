@@ -47,7 +47,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, setIsSurvey }
         setSurveyData(data)
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 
@@ -94,7 +94,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, setIsSurvey }
         setIsLoaded(true)
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 
@@ -142,7 +142,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, setIsSurvey }
     } else {
       r = "방금 전"
     }
-    return r;
+    return r
   }
 
   const convertCount = (cnt) => {

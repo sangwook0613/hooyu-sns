@@ -2,11 +2,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import images from '../assets/images'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import jwt_decode from "jwt-decode";
+import jwt_decode from "jwt-decode"
 import Api from "../utils/api"
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
-import messaging from '@react-native-firebase/messaging';
+import messaging from '@react-native-firebase/messaging'
 import * as Location from 'expo-location'
 import { useNavigation } from '@react-navigation/native'
 import Toast from 'react-native-easy-toast'
@@ -14,7 +14,7 @@ import { SafeAreaView, View, Image, ActivityIndicator, LogBox } from 'react-nati
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin'
 
 
-const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK, setUserEmoji, setUserName, setPushSetting, userPK, userEmoji }) => {
+const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK, setUserEmoji, setUserName, setPushSetting }) => {
   
   LogBox.ignoreAllLogs()
   
@@ -43,7 +43,7 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
       GoogleSignin.configure({
         scopes: ['https://www.googleapis.com/auth/drive.readonly'],
         webClientId: '5095342969-dcob776t7ckfeu2gddkb2j4ke2cprfst.apps.googleusercontent.com',
-      });
+      })
       isSignedIn()
     }
   }, [userPK1 ,userEmoji1])
@@ -88,13 +88,13 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
         console.log("에러에러")
       }
     }
-  };
+  }
 
   const signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices({
         showPlayServicesUpdateDialog: true,
-      });
+      })
       const userInfo = await GoogleSignin.signIn()
       await Api.loginGoogle(userInfo.idToken)
         .then(async (res) => {
@@ -119,14 +119,14 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
       }
     }
     isSignedIn()
-  };
+  }
 
   if (gettingLoginStatus) {
     return (
       <View style={{ flex: 1, justifyContent: "center" }}>
         <ActivityIndicator size="large" color="#0000ff" />
       </View>
-    );
+    )
   } else {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FF6A77' }}>
@@ -156,9 +156,9 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
           style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
         />
       </SafeAreaView>
-    );
+    )
   }
-};
+}
 
 function mapStateToProps(state) {
   return {
@@ -166,7 +166,6 @@ function mapStateToProps(state) {
     deviceHeight: state.user.deviceHeight,
     myRadius: state.user.myRadius,
     SERVER_URL: state.user.SERVER_URL,
-    userPK: state.user.userPK,
     userEmoji: state.user.userEmoji,
   }
 }

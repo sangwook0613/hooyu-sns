@@ -86,7 +86,6 @@ const PrivateZoneSetting = ({ SERVER_URL, deviceWidth }) => {
   )
 }
 
-
 function mapStateToProps(state) {
   return {
     SERVER_URL: state.user.SERVER_URL,

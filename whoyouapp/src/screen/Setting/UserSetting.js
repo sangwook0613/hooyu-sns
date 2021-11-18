@@ -83,7 +83,6 @@ function mapStateToProps(state) {
   return {
     deviceHeight: state.user.deviceHeight,
     deviceWidth: state.user.deviceWidth,
-    userPK: state.user.userPK,
   }
 }
 

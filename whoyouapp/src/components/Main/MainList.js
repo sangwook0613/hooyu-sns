@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react'
 import { Animated, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback, ScrollView, LogBox } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { useNavigation } from '@react-navigation/native'
@@ -68,9 +68,9 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
     } else if (parseInt(r) >= 60000) {
       r = parseInt(parseInt(r) / 60000).toString() + "분 전 게시"
     } else {
-      r = "방금 전 게시";
+      r = "방금 전 게시"
     }
-    return r;
+    return r
   }
 
   const isNewContent = (date) => {

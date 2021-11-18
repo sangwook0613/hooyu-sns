@@ -25,6 +25,6 @@ const images = {
   },
   sympathy: require('./images/sympathy.png'),
   profileLogo: require('./images/profile_logo.png')
-};
+}
 
 export default images

@@ -11,7 +11,7 @@ const BlockModal = ({ isModalVisible, setModalVisible }) => {
   }
 
   const sendReport = () => {
-    console.warn('Send Block')
+    console.log('Send Block')
     sendModalVisible()
   }
 

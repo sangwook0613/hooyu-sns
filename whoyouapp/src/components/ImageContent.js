@@ -45,7 +45,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, setIsImage }) 
         }
       })
       .catch((err) => {
-      console.warn(err)
+      console.log(err)
       })
   }, [])
 
@@ -92,7 +92,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, setIsImage }) 
         setIsLoaded(true)
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 
@@ -130,7 +130,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, setIsImage }) 
     } else {
       r = "방금 전"
     }
-    return r;
+    return r
   }
 
   const convertCount = (cnt) => {
@@ -161,7 +161,7 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, setIsImage }) 
         }
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 

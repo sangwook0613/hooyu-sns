@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
 
 
-const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, SERVER_URL, userPK, setUserName, setUserEmoji}) => {
+const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, SERVER_URL, setUserName, setUserEmoji}) => {
   
   LogBox.ignoreAllLogs()
   
@@ -163,7 +163,6 @@ function mapStateToProps(state) {
     deviceWidth: state.user.deviceWidth,
     deviceHeight: state.user.deviceHeight,
     SERVER_URL: state.user.SERVER_URL,
-    userPK: state.user.userPK,
   }
 }
 

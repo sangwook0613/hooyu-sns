@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { View, LogBox } from 'react-native'
-import { SimpleLineIcons } from '@expo/vector-icons'; 
+import { SimpleLineIcons } from '@expo/vector-icons'
 import CompassHeading from 'react-native-compass-heading'
 import { connect } from 'react-redux'
 
