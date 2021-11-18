@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Dimensions, Switch } from 'react-native'
+import { View, Text, Dimensions, Switch, LogBox } from 'react-native'
 import PushButtonGroup from './PushButtonGroup'
 import Api from '../../utils/api'
 import { connect } from 'react-redux'
@@ -7,6 +7,9 @@ import { actionCreators } from '../../store/reducers'
 
 
 const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptPush, acceptRadius, acceptSync}) => {
+
+  LogBox.ignoreAllLogs()
+
   const [isPushEnabled, setIsPushEnabled] = useState(acceptPush)
   const [isPushSyncEnabled, setIsPushSyncEnabled] = useState(acceptSync)
   const [pushRadius, setPushRadius] = useState(acceptRadius)

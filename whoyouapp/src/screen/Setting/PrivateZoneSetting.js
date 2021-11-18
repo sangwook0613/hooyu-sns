@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Dimensions, View, Text, TouchableOpacity } from 'react-native'
+import { Dimensions, View, Text, TouchableOpacity, LogBox } from 'react-native'
 import Geolocation from 'react-native-geolocation-service'
 import ListPrivateZone from '../../components/PrivateZone/ListPrivateZone'
 import NoPrivateZone from '../../components/PrivateZone/NoPrivateZone'
@@ -12,6 +12,9 @@ const deviceWidth = Dimensions.get('window').width
 const deviceHeight = Dimensions.get('window').height
 
 const PrivateZoneSetting = ({ userPK, SERVER_URL }) => {
+
+  LogBox.ignoreAllLogs()
+
   const [isSettingPrivateZone, setIsSettingPrivateZone] = useState(false)
   const [privateZoneList, setPrivateZoneList] = useState([])
   const [gotList, setGotList] = useState(false)

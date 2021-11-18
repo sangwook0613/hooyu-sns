@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
+import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput, LogBox } from 'react-native';
 import Api from '../utils/api'
 import { connect } from 'react-redux'
 import Toast from 'react-native-easy-toast'
 
 
 const NicknameTutorial = ({ navigation: { navigate }, deviceWidth, deviceHeight, SERVER_URL}) => {
+  LogBox.ignoreAllLogs()
+
   const styles = styleSheet(deviceWidth, deviceHeight)
   const [inputValue, setInputValue] = useState('')
   const toastRef = useRef()

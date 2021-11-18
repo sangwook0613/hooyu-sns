@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react'
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, TouchableWithoutFeedback, Dimensions, TextInput, Image, Animated } from 'react-native'
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, TouchableWithoutFeedback, Dimensions, TextInput, Image, Animated, LogBox } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import axios from 'axios'
 import { connect } from 'react-redux'
@@ -9,12 +9,12 @@ import { AntDesign } from "@expo/vector-icons"
 import { map } from 'lodash'
 
 
-
 const emojiArray = [
   'smile', 'amazing', 'sad', 'crying', 'sense', 'angry', 'pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep'
 ]
 
 const Emoji = ({ navigation, setUserEmoji, SERVER_URL, userPK, userEmoji, deviceWidth, deviceHeight }) => {
+  LogBox.ignoreAllLogs()
   const radius = deviceWidth * 1/3
   const emojiMoveLeft = [0, 0, radius*1/2, radius*Math.sqrt(3)/2, radius, radius*Math.sqrt(3)/2, radius*1/2, 0, -radius*1/2, -radius*Math.sqrt(3)/2, -radius, -radius*Math.sqrt(3)/2, -radius*1/2 ]
   const emojiMoveTop = [0, -radius, -radius*Math.sqrt(3)/2, -radius*1/2, 0, radius*1/2, radius*Math.sqrt(3)/2, radius, radius*Math.sqrt(3)/2, radius*1/2, 0, -radius*1/2, -radius*Math.sqrt(3)/2 ]

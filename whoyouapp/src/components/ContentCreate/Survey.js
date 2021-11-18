@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useCallback, useState} from 'react'
-import { Text, TouchableOpacity, View, StyleSheet, KeyboardAvoidingView, ScrollView, Dimensions, TextInput, Image, Button } from 'react-native'
+import { Text, TouchableOpacity, View, StyleSheet, KeyboardAvoidingView, ScrollView, Dimensions, TextInput, Image, Button, LogBox } from 'react-native'
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 import LinearGradient from 'react-native-linear-gradient'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -16,6 +16,7 @@ const emojiArray = [
 ]
 
 const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji, deviceWidth, deviceHeight }) => {
+  LogBox.ignoreAllLogs()
   const [emoji, setEmoji] = useState(userEmoji)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [title, setTitle] = useState('')

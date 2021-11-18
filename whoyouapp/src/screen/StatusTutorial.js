@@ -1,12 +1,12 @@
 import axios from 'axios'
 import React, { useState } from 'react'
-import { Alert, Text, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native'
+import { Alert, Text, TouchableOpacity, View, StyleSheet, TextInput, LogBox } from 'react-native'
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
 
 
 const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, SERVER_URL, userPK, setUserName, setUserEmoji}) => {
-
+  LogBox.ignoreAllLogs()
   const styles = styleSheet(deviceWidth, deviceHeight)
 
   const [inputValue, setInputValue] = useState('')

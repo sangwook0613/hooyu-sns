@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Animated, Dimensions, Text, TouchableOpacity, Image, View, StyleSheet, TextInput } from 'react-native';
+import { Animated, Dimensions, Text, TouchableOpacity, Image, View, StyleSheet, TextInput, LogBox } from 'react-native';
 import { actionCreators } from '../store/reducers'
 import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
@@ -16,6 +16,9 @@ const emojiMoveTop = [0, -radius, -radius*Math.sqrt(3)/2, -radius*1/2, 0, radius
 
 
 const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, setUserEmoji}) => {
+
+  LogBox.ignoreAllLogs()
+
 
   const styles = styleSheet(deviceWidth, deviceHeight)
   

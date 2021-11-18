@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Dimensions, Button, Text, Image, View, TouchableOpacity, ScrollView, FlatList } from 'react-native'
+import { Dimensions, Button, Text, Image, View, TouchableOpacity, ScrollView, FlatList, LogBox } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import Api from '../utils/api'
 import * as emojiImages from '../assets/images'
@@ -13,6 +13,8 @@ import images from '../assets/images'
   
 
 const UserScreen = ({ navigation, route, userPK, userName, userEmoji, setUserName, deviceWidth, deviceHeight }) => {
+  LogBox.ignoreAllLogs()
+
   const [ownerName, setOwnerName] = useState(route.params.nickname === userName ? userName : route.params.nickname)
   const [isStatus, setIsStatus] = useState(true)
   const [isImage, setIsImage] = useState(true)

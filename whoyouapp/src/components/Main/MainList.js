@@ -1,11 +1,13 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { Animated, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback, ScrollView } from 'react-native'
+import { Animated, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback, ScrollView, LogBox } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { useNavigation } from '@react-navigation/native'
 import images from '../../assets/images'
 
 
 const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUser, selectedUser, setUsers, mainListSortMode, setMainListSortMode }, ref) => {
+  LogBox.ignoreAllLogs()
+  
   const navigation = useNavigation()
   const mainList = useRef(new Animated.Value(deviceHeight)).current
 

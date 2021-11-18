@@ -1,10 +1,12 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, Button } from 'react-native'
+import { Text, View, TouchableOpacity, Button, LogBox } from 'react-native'
 import { Ionicons, Entypo } from '@expo/vector-icons';
 import { connect } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 
 const InfoAgree = ({ navigation: { navigate }, deviceWidth, deviceHeight }) => {
+
+  LogBox.ignoreAllLogs()
 
   const navigation = useNavigation()
 

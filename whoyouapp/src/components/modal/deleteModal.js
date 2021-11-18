@@ -1,9 +1,11 @@
 import React from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity, LogBox } from 'react-native';
 import Modal from "react-native-modal";
 import Api from '../../utils/api'
 
-const DeleteModal = ({ contentPK, userPK, isModalVisible, setModalVisible, reRender }) => {  
+const DeleteModal = ({ contentPK, userPK, isModalVisible, setModalVisible, reRender }) => {
+  LogBox.ignoreAllLogs()
+
   const sendModalVisible = () => {
     setModalVisible(!isModalVisible)
   }
