@@ -10,7 +10,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class RequestReportDto {
-    private Long userPK;
+//    private Long userPK;
     private Long ContentPK;
     private String reason;
 }

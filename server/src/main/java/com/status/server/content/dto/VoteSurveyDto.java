@@ -6,7 +6,7 @@ import lombok.ToString;
 @Data
 @ToString
 public class VoteSurveyDto {
-    Long userPK;
+//    Long userPK;
     Long contentPK;
     Long answerPK;
 }

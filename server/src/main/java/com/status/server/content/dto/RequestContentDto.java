@@ -10,7 +10,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class RequestContentDto {
-    private Long userPK;
+//    private Long userPK;
     private String exon;
     private String color;
 }

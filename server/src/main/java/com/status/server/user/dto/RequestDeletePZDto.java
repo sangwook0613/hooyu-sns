@@ -17,7 +17,7 @@ public class RequestDeletePZDto {
     @NotNull(message = "id는 필수 값입니다.")
     @Min(1)
     Long pzPK;
-    @NotNull(message = "id는 필수 값입니다.")
-    @Min(1)
-    Long userPK;
+//    @NotNull(message = "id는 필수 값입니다.")
+//    @Min(1)
+//    Long userPK;
 }

@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter @ToString
 public class RequestFCMDto {
 
-    private Long userPK;
+//    private Long userPK;
     private String browserToken;
 
 }

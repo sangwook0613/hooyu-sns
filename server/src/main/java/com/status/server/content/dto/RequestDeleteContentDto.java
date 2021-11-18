@@ -10,6 +10,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class RequestDeleteContentDto {
-    private Long userPK;
+//    private Long userPK;
     private Long ContentPK;
 }
