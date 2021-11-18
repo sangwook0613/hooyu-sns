@@ -4,7 +4,8 @@ import Modal from "react-native-modal"
 import Checkbox from 'expo-checkbox'
 import Api from '../../utils/api'
 
-const ReportModal = ({ contentPK, userPK, isModalVisible, setModalVisible }) => {
+
+const ReportModal = ({ contentPK, isModalVisible, setModalVisible }) => {
 
   LogBox.ignoreAllLogs()
 
@@ -12,6 +13,7 @@ const ReportModal = ({ contentPK, userPK, isModalVisible, setModalVisible }) => 
   const [isCheckedOne, setCheckedOne] = useState(false)
   const [isCheckedTwo, setCheckedTwo] = useState(false)
   const [isCheckedThree, setCheckedThree] = useState(false)
+  
   const reportItems = [
     {
       id: 1,
@@ -56,10 +58,7 @@ const ReportModal = ({ contentPK, userPK, isModalVisible, setModalVisible }) => 
   }
 
   const sendReport = () => {
-    Api.reportContent(contentPK, reportItems[checkIndex].title, userPK)
-      .then((res) => {
-        console.log('신고 성공!', res.data.success)
-      })
+    Api.reportContent(contentPK, reportItems[checkIndex].title)
       .catch((err) => {
         console.log(err)
       })
@@ -72,15 +71,19 @@ const ReportModal = ({ contentPK, userPK, isModalVisible, setModalVisible }) => 
       onBackdropPress={sendModalVisible}
       useNativeDriver={true}
       style={{
-        flex: 1, justifyContent: "center", alignItems: "center",
+        flex: 1, 
+        justifyContent: "center", 
+        alignItems: "center"
       }}
     >
-      <View style={{
-        padding: 20,
-        backgroundColor: 'white',
-        width: 320,
-        height: 280,
-      }}>
+      <View 
+        style={{
+          padding: 20,
+          backgroundColor: 'white',
+          width: 320,
+          height: 280,
+        }}
+      >
         <Text style={{fontSize: 22, fontWeight: 'bold', marginBottom: 20}}>신고하기</Text>
         <Text style={{fontSize: 14, marginBottom: 20}}>신고 사유를 선택하주세요.</Text>
         {reportItems.map((item) => (
@@ -103,17 +106,22 @@ const ReportModal = ({ contentPK, userPK, isModalVisible, setModalVisible }) => 
           </View>
         ))}
         <View style={{paddingTop: 20, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-          <TouchableOpacity style={{paddingLeft: 10, paddingRight: 10}} onPress={sendModalVisible}>
+          <TouchableOpacity 
+            style={{paddingLeft: 10, paddingRight: 10}} 
+            onPress={sendModalVisible}
+          >
             <Text style={{fontSize: 16}}>아니오</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{paddingLeft: 20, paddingRight: 20}}  onPress={sendReport}>
+          <TouchableOpacity 
+            style={{paddingLeft: 20, paddingRight: 20}}  
+            onPress={sendReport}
+          >
             <Text style={{fontSize: 16, color: 'red'}}>네</Text>
           </TouchableOpacity>
         </View>
       </View>
     </Modal>
   )
-  
 }
 
 export default ReportModal

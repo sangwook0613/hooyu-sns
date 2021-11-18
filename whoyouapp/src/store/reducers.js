@@ -18,7 +18,6 @@ const defaultState = {
 }
 
 // Actions 정의
-const login = createAction("LOGIN")
 const logout = createAction("LOGOUT")
 const setRadius = createAction("SETRADIUS")
 const setUserPK = createAction("SETUSERPK")
@@ -32,8 +31,6 @@ const UserReducer = createReducer(defaultState, {
   [setUserPK]: (state, action) => ({
     ...state,
     userPK: action.payload
-    // 로그인 시 state 변경 로직
-    // state.push({ text: action.payload, id: Date.now() });
   }),
   [setUserName]: (state, action) => ({
     ...state,
@@ -42,8 +39,6 @@ const UserReducer = createReducer(defaultState, {
   [setUserEmoji]: (state, action) => ({
     ...state,
     userEmoji: action.payload
-    // 로그인 시 state 변경 로직
-    // state.push({ text: action.payload, id: Date.now() });
   }),
   [setRadius]: (state, action) => ({
     ...state,
@@ -55,7 +50,7 @@ const UserReducer = createReducer(defaultState, {
     acceptRadius: action.payload.acceptRadius,
     acceptSync: action.payload.acceptSync
   }),
-});
+})
 
 export const actionCreators = {
   setUserPK,

@@ -13,7 +13,7 @@ import ReportModal from '../components/modal/reportModal'
 
 const emojiArray = ['like', 'smile', 'love', 'amazing', 'sad', 'angry']
 
-const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsStatus }) => {
+const StatusContent = ({ ownerName, userPK, userName, deviceWidth, setIsStatus }) => {
 
   LogBox.ignoreAllLogs()
 
@@ -42,7 +42,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         }
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }, [])
 
@@ -82,47 +82,30 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
             delete emojis[key]
           }
         }
-
         setStatusEmoji(emojis)
         setEmotions(chk)
         setGiveEmotion(isMe)
         setIsLoaded(true)
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
   
-  const addEmotion = (emoji, contentId, userPK) => {
-    Api.setContentEmotion(emoji, contentId, userPK)
+  const addEmotion = (emoji, contentId) => {
+    Api.setContentEmotion(emoji, contentId)
       .then((res) => {
         getEmotion(contentId)
-        // 공감 완료 표시 방법 2
-        // setImageEmoji(emojis => {
-        //   const updated = {...emojis}
-        //   updated[emoji] ? updated[emoji]++ : updated[emoji] = 1
-        //   return updated
-        // })
-        // setEmotions(true)
-        // setGiveEmotion(emoji)
       })  
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 
   const deleteEmotion = () => {
-    Api.setContentEmotion(giveEmotion, statusData[currentIndex].contentPk, userPK)
+    Api.setContentEmotion(giveEmotion, statusData[currentIndex].contentPk)
       .then((res) => {
         getEmotion(statusData[currentIndex].contentPk)
-        // 공감 취소 표시 방법 2 - 대신 해당 게시글에 이모지 존재 유무를 계산해야함
-        // setStatusEmoji(emojis => {
-        //   const updated = {...emojis}
-        //   updated[giveEmotion]--
-        //   return updated
-        // })
-        // setEmotions(false)
-        // setGiveEmotion('')
       })
       .catch((err) => {
         console.log(err)
@@ -177,7 +160,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         }
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 
@@ -186,14 +169,12 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       <View style={{ flex: 1 }}>
         <DeleteModal
           contentPK={deleteModalContent}
-          userPK={userPK}
           isModalVisible={isDeleteModalVisible}
           setModalVisible={setDeleteModalVisible}
           reRender={reRenderStatus}
         />
         <ReportModal
           contentPK={reportModalContent}
-          userPK={userPK}
           isModalVisible={isReportModalVisible}
           setModalVisible={setReportModalVisible}
         />
@@ -235,7 +216,6 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         data={statusData}
         showPagination
         onChangeIndex={({ index }) => {
-          console.log('onchangeIndex', '자몽이2', index)
           setCurrentIndex(index)
           setIsEmojiSelect(false)
           getEmotion(statusData[index].contentPk)
@@ -315,7 +295,7 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
               }}
               onPress={() => {
                 setIsEmojiSelect(false)
-                addEmotion(emotion, statusData[currentIndex].contentPk, userPK)
+                addEmotion(emotion, statusData[currentIndex].contentPk)
               }}
             >
             <Image

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, Dimensions, Switch, LogBox } from 'react-native'
+import { View, Text, Switch, LogBox } from 'react-native'
 import PushButtonGroup from './PushButtonGroup'
 import Api from '../../utils/api'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
 
 
-const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptPush, acceptRadius, acceptSync}) => {
+const PushSetting = ({deviceWidth, setPushSetting, acceptPush, acceptRadius, acceptSync}) => {
 
   LogBox.ignoreAllLogs()
 
@@ -16,14 +16,12 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
   const [first, setFirst] = useState(0)
   
   const updateAcceptPush = () => {
-    console.log('----Push------', isPushEnabled, pushRadius, isPushSyncEnabled, '---------------')
-    Api.setPushSetting(isPushEnabled, pushRadius, isPushSyncEnabled, userPK)
-      .then((res) => {
-        console.log('AcceptPush', res.data.success)
+    Api.setPushSetting(isPushEnabled, pushRadius, isPushSyncEnabled)
+      .then(() => {
         setPushSetting(isPushEnabled, pushRadius, isPushSyncEnabled)
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 
@@ -32,7 +30,6 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
       if (!isPushEnabled) {
         setIsPushSyncEnabled(false)
       }
-      console.log(isPushEnabled, pushRadius, isPushSyncEnabled)
       updateAcceptPush()
     }
     setFirst(1)
@@ -46,7 +43,6 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
   const pushSyncToggleSwitch = () => {
     setIsPushSyncEnabled(!isPushSyncEnabled)
   }
-
 
   return (
     <>
@@ -100,7 +96,11 @@ const PushSetting = ({deviceHeight, deviceWidth, userPK, setPushSetting, acceptP
           backgroundColor: `${isPushEnabled && !isPushSyncEnabled ? 'white' : "#E5E5E5"}`,
         }}
       >
-        <PushButtonGroup setPushRadius={setPushRadius} currentRadius={acceptRadius} isPushEnabled={isPushEnabled && !isPushSyncEnabled }/>
+        <PushButtonGroup 
+          setPushRadius={setPushRadius} 
+          currentRadius={acceptRadius} 
+          isPushEnabled={isPushEnabled && !isPushSyncEnabled }
+        />
       </View>
       <View
         pointerEvents={isPushEnabled ? "auto" : "none"} 
@@ -134,7 +134,6 @@ function mapStateToProps(state) {
   return {
     deviceWidth: state.user.deviceWidth,
     deviceHeight: state.user.deviceHeight,
-    userPK: state.user.userPK,
     myRadius: state.user.myRadius,
     acceptPush: state.user.acceptPush,
     acceptRadius: state.user.acceptRadius,

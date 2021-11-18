@@ -6,6 +6,7 @@ const PushButtonGroup = ({ setPushRadius, currentRadius, isPushEnabled }) => {
   LogBox.ignoreAllLogs()
 
   const [selection, setSelection] = useState(currentRadius)
+  
   useEffect(() => {
     setPushRadius(selection)
   }, [selection])
@@ -48,8 +49,9 @@ const PushButtonGroup = ({ setPushRadius, currentRadius, isPushEnabled }) => {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  btn: {
     flex: 1,
+    borderColor: '#6B7280'
   },
   btnGroup: {
     flexDirection: 'row',
@@ -58,15 +60,14 @@ const styles = StyleSheet.create({
     borderColor: '#6B7280',
     borderRadius: 20,
   },
-  btn: {
-    flex: 1,
-    borderColor: '#6B7280'
-  },
   btnText: {
     textAlign: 'center',
     paddingVertical: 10,
     fontSize: 14,
-  }
+  },
+  container: {
+    flex: 1,
+  },
 })
 
 export default PushButtonGroup
