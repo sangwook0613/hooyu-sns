@@ -250,10 +250,10 @@ const StatusContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                 backgroundColor: item.color,
                 flex: 1,
                 justifyContent: 'center',
-                alignItems:"center"
+                alignItems: 'center'
               }}
             >
-              <Text style={{fontSize: 18}}>{item.exon}</Text>
+              <Text style={{fontSize: 18, textAlign: 'center'}}>{item.exon}</Text>
             </View>
           </TouchableWithoutFeedback>
         )}

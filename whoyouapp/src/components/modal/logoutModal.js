@@ -92,10 +92,10 @@ const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK,
         <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 20 }}>로그아웃</Text>
         <Text style={{ fontSize: 14, marginBottom: 2 }}>로그아웃 하시겠습니까?</Text>
         <View style={{ paddingTop: 30, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
-          <TouchableOpacity style={{ paddingRight: 30 }} onPress={sendModalVisible}>
+          <TouchableOpacity style={{paddingLeft: 10, paddingRight: 10}} onPress={sendModalVisible}>
             <Text style={{ fontSize: 16, color: 'black' }}>아니오</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{ paddingRight: 20 }} onPress={sendLogout}>
+          <TouchableOpacity style={{paddingLeft: 20, paddingRight: 20}} onPress={sendLogout}>
             <Text style={{ fontSize: 16, color: 'red' }}>네</Text>
           </TouchableOpacity>
         </View>

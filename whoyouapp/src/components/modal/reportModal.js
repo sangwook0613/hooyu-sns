@@ -103,10 +103,10 @@ const ReportModal = ({ contentPK, userPK, isModalVisible, setModalVisible }) => 
           </View>
         ))}
         <View style={{paddingTop: 20, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-          <TouchableOpacity style={{paddingRight: 30}} onPress={sendModalVisible}>
+          <TouchableOpacity style={{paddingLeft: 10, paddingRight: 10}} onPress={sendModalVisible}>
             <Text style={{fontSize: 16}}>아니오</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{paddingRight: 20}} onPress={sendReport}>
+          <TouchableOpacity style={{paddingLeft: 20, paddingRight: 20}}  onPress={sendReport}>
             <Text style={{fontSize: 16, color: 'red'}}>네</Text>
           </TouchableOpacity>
         </View>
