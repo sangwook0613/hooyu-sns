@@ -2,9 +2,7 @@ package com.status.server.content.service;
 
 import com.status.server.content.domain.*;
 import com.status.server.content.dto.ResponseContentDto;
-import com.status.server.content.dto.ResponseContentPlusDto;
 import com.status.server.content.dto.ResponseSurveyDto;
-import com.status.server.content.dto.ResponseSurveyPlusDto;
 import com.status.server.emotion.domain.EmotionRepository;
 import com.status.server.emotion.service.EmotionServiceImpl;
 import com.status.server.fcm.domain.FcmToken;
@@ -245,68 +243,68 @@ public class ContentServiceImpl implements ContentService {
         return list;
     }
 
-    @Transactional
-    @Override
-    public List<ResponseContentPlusDto> statusesContent(String userName) throws NoUserException, NoContentException {
-        return getContents(userName, Type.STATUS);
-    }
-
-    @Transactional
-    @Override
-    public List<ResponseContentPlusDto> imagesContent(String userName) throws NoUserException, NoContentException {
-        return getContents(userName, Type.IMAGE);
-    }
-
-    private List<ResponseContentPlusDto> getContents(String userName, Type type) throws NoUserException {
-        User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(type, user.getId());
-
-        return contents.stream().map((e) -> {
-            ResponseContentPlusDto responseContentPlusDto = new ResponseContentPlusDto(e);
-
-            responseContentPlusDto.setEmotionDtoList(emotionService.getEmotionsPlus(e.getId()));
-
-            return responseContentPlusDto;
-        }).collect(Collectors.toList());
-    }
-
-    @Transactional
-    @Override
-    public List<ResponseSurveyPlusDto> surveysContent(String userName) throws NoUserException, NoContentException {
-        User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
-        List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(Type.SURVEY, user.getId());
-        if (contents.isEmpty())
-//            throw new NoContentException("해당하는 컨탠츠는 없습니다.");
-            return new ArrayList<>();
-
-        List<ResponseSurveyPlusDto> list = contents.stream().map((e) -> {
-            ResponseSurveyPlusDto responseSurveyPlusDto = new ResponseSurveyPlusDto(e);
-            HashMap<String, Integer> coutingMap = responseSurveyPlusDto.getCount();
-            HashMap<String, Long> answerPKMap = responseSurveyPlusDto.getAnswerPK();
-
-            List<String> tmp = surveyContentAnswerRepository.findByContentId(e.getId()).stream().map((s) -> {
-                String target = s.getAnswer();
-                // answer 선택받은 횟수
-                if (coutingMap.containsKey(target)) {
-                    coutingMap.put(target, coutingMap.get(target) + 1);
-                } else {
-                    coutingMap.put(target, 1);
-                    answerPKMap.put(target, s.getId());
-                }
-                if (user.getId() == s.getUser().getId()) {
-                    coutingMap.put(target, coutingMap.get(target) - 1);
-                    logger.debug("test!!!!!!!!!!!!!! : {},     : {}", user.getId(), s.getUser().getId());
-                    return target;
-                }
-                return null;
-            }).collect(Collectors.toList());
-            responseSurveyPlusDto.setAnswerList(tmp.stream().filter(t -> t != null).collect(Collectors.toList()));
-
-            responseSurveyPlusDto.setEmotionPlusDtoList(emotionService.getEmotionsPlus(e.getId()));
-            return responseSurveyPlusDto;
-        }).collect(Collectors.toList());
-        return list;
-    }
+//    @Transactional
+//    @Override
+//    public List<ResponseContentPlusDto> statusesContent(String userName) throws NoUserException, NoContentException {
+//        return getContents(userName, Type.STATUS);
+//    }
+//
+//    @Transactional
+//    @Override
+//    public List<ResponseContentPlusDto> imagesContent(String userName) throws NoUserException, NoContentException {
+//        return getContents(userName, Type.IMAGE);
+//    }
+//
+//    private List<ResponseContentPlusDto> getContents(String userName, Type type) throws NoUserException {
+//        User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+//        List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(type, user.getId());
+//
+//        return contents.stream().map((e) -> {
+//            ResponseContentPlusDto responseContentPlusDto = new ResponseContentPlusDto(e);
+//
+//            responseContentPlusDto.setEmotionDtoList(emotionService.getEmotionsPlus(e.getId()));
+//
+//            return responseContentPlusDto;
+//        }).collect(Collectors.toList());
+//    }
+//
+//    @Transactional
+//    @Override
+//    public List<ResponseSurveyPlusDto> surveysContent(String userName) throws NoUserException, NoContentException {
+//        User user = userRepository.findByName(userName).orElseThrow(() -> new NoUserException("해당하는 사용자가 없습니다."));
+//        List<Content> contents = contentRepository.findByTypeAndUserIdOrderByCreatedAtDesc(Type.SURVEY, user.getId());
+//        if (contents.isEmpty())
+////            throw new NoContentException("해당하는 컨탠츠는 없습니다.");
+//            return new ArrayList<>();
+//
+//        List<ResponseSurveyPlusDto> list = contents.stream().map((e) -> {
+//            ResponseSurveyPlusDto responseSurveyPlusDto = new ResponseSurveyPlusDto(e);
+//            HashMap<String, Integer> coutingMap = responseSurveyPlusDto.getCount();
+//            HashMap<String, Long> answerPKMap = responseSurveyPlusDto.getAnswerPK();
+//
+//            List<String> tmp = surveyContentAnswerRepository.findByContentId(e.getId()).stream().map((s) -> {
+//                String target = s.getAnswer();
+//                // answer 선택받은 횟수
+//                if (coutingMap.containsKey(target)) {
+//                    coutingMap.put(target, coutingMap.get(target) + 1);
+//                } else {
+//                    coutingMap.put(target, 1);
+//                    answerPKMap.put(target, s.getId());
+//                }
+//                if (user.getId() == s.getUser().getId()) {
+//                    coutingMap.put(target, coutingMap.get(target) - 1);
+//                    logger.debug("test!!!!!!!!!!!!!! : {},     : {}", user.getId(), s.getUser().getId());
+//                    return target;
+//                }
+//                return null;
+//            }).collect(Collectors.toList());
+//            responseSurveyPlusDto.setAnswerList(tmp.stream().filter(t -> t != null).collect(Collectors.toList()));
+//
+//            responseSurveyPlusDto.setEmotionPlusDtoList(emotionService.getEmotionsPlus(e.getId()));
+//            return responseSurveyPlusDto;
+//        }).collect(Collectors.toList());
+//        return list;
+//    }
 
     @Transactional
     @Override

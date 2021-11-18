@@ -35,8 +35,6 @@ public class ContentController{
     @PostMapping("/upload")
     public ResponseEntity<SuccessResponseDto> upload(@RequestParam("upload") MultipartFile multipartFile) throws IOException {
 
-//        logger.debug("승현이와 함께하는 디버그 request getMethodValue : {}", request.getMethodValue());
-//        logger.debug("승현이와 함께하는 디버그 ContentController in getURI : {}", request.getURI());
         logger.debug("승현이와 함께하는 디버그 ContentController in Param : {}", multipartFile);
         String imageurl = s3Uploader.upload(multipartFile, "image");
 
@@ -132,35 +130,35 @@ public class ContentController{
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/statuses/{userName}")
-    public ResponseEntity<SuccessResponseDto> getStatusContent(@PathVariable String userName) throws NoUserException, NoContentException {
-
-        List<ResponseContentPlusDto> list = contentService.statusesContent(userName);
-
-        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(list);
-
-        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
-    }
-
-    @GetMapping("/images/{userName}")
-    public ResponseEntity<SuccessResponseDto> getImageContent(@PathVariable String userName) throws NoUserException, NoContentException {
-
-        List<ResponseContentPlusDto> list = contentService.imagesContent(userName);
-
-        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(list);
-
-        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
-    }
-
-    @GetMapping("/surveys/{userName}")
-    public ResponseEntity<SuccessResponseDto> getSurveyContent(@PathVariable String userName) throws NoUserException, NoContentException {
-
-        List<ResponseSurveyPlusDto> list = contentService.surveysContent(userName);
-
-        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(list);
-
-        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
-    }
+//    @GetMapping("/statuses/{userName}")
+//    public ResponseEntity<SuccessResponseDto> getStatusContent(@PathVariable String userName) throws NoUserException, NoContentException {
+//
+//        List<ResponseContentPlusDto> list = contentService.statusesContent(userName);
+//
+//        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(list);
+//
+//        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/images/{userName}")
+//    public ResponseEntity<SuccessResponseDto> getImageContent(@PathVariable String userName) throws NoUserException, NoContentException {
+//
+//        List<ResponseContentPlusDto> list = contentService.imagesContent(userName);
+//
+//        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(list);
+//
+//        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/surveys/{userName}")
+//    public ResponseEntity<SuccessResponseDto> getSurveyContent(@PathVariable String userName) throws NoUserException, NoContentException {
+//
+//        List<ResponseSurveyPlusDto> list = contentService.surveysContent(userName);
+//
+//        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(list);
+//
+//        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
+//    }
 
     @GetMapping("/status/{userName}")
     public ResponseEntity<SuccessResponseDto> getStatusesContent(@PathVariable String userName) throws NoUserException, NoContentException {

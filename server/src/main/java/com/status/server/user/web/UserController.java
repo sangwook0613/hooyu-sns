@@ -119,37 +119,6 @@ public class UserController {
 
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
-//    @PostMapping("/push/accept")
-//    public ResponseEntity<SuccessResponseDto> setPushAlarmReceive(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
-//        logger.trace("User Controller 진입 SetPushAlarmReceive param {}", pushAlarmDto);
-//        String message = userService.setPushAlarmReceive(pushAlarmDto.getUserPK(),pushAlarmDto.getAccept());
-//
-//        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
-//
-//        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
-//    }
-//
-//
-//    @PostMapping("/push/sync")
-//    public ResponseEntity<SuccessResponseDto> setPushAlarmSync(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
-//        logger.trace("User Controller 진입 SetPushAlarmSync param {}", pushAlarmDto);
-//        String message = userService.setPushAlarmSync(pushAlarmDto.getUserPK(),pushAlarmDto.getSync());
-//
-//        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
-//
-//        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
-//    }
-//
-//
-//    @PostMapping("/push/radius")
-//    public ResponseEntity<SuccessResponseDto> setPushAlarmRadius(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws NoUserException {
-//        logger.trace("User Controller 진입 SetPushAlarmRadius param {}", pushAlarmDto);
-//        String message = userService.setPushAlarmRadius(pushAlarmDto.getUserPK(),pushAlarmDto.getRadius());
-//
-//        SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
-//
-//        return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
-//    }
 
     @PostMapping("/radar")
     public ResponseEntity<SuccessResponseDto> getListUserWithinRadius(@RequestBody RequestUserLocationDto requestUserLocationDto) throws NoUserException, NoBrowserTokenException, IOException {

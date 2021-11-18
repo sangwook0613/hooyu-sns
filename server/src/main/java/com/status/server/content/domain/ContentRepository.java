@@ -9,8 +9,6 @@ import java.util.Optional;
 @Repository
 public interface ContentRepository extends JpaRepository<Content, Long> {
     List<Content> findByTypeAndUserIdOrderByCreatedAtDesc(Type type,Long userPK);
-    Optional<Content> findByUserIdAndIdAndType(Long userPK, Long contentPK, Type type);
     Optional<Content> findByUserIdAndId(Long userPK, Long contentPK);
     List<Content> findAllByUserId(Long userPK);
-    void deleteByUserId(Long userPK);
 }
