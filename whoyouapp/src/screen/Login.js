@@ -59,19 +59,20 @@ const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK,
     }
     setGettingLoginStatus(false)
   }
-
+  
   const getCurrentUserInfo = async () => {
     try {
       const userInfo = await GoogleSignin.signInSilently()
       const accessToken = await AsyncStorage.getItem('access_token')
-
+      var fcmToken = ''
       await messaging().getToken()
         .then((res) => {
-          Api.setFCMToken(res)
-          .catch((err) => {
-            console.log(err)
-          })
+          fcmToken = res
         })
+      await Api.setFCMToken(fcmToken)
+      .catch((err) => {
+        console.log(err)
+      })
       await setUserPK(jwt_decode(accessToken).pk)
       Api.getUser(jwt_decode(accessToken).pk)
         .then((res) => {
