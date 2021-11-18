@@ -25,7 +25,7 @@
 >
 > 당신의 상태 메시지, 사진, 질문을 공유해보세요.
 
-[HOOYU APP Download Link](https://whoyou-bucket.s3.ap-northeast-2.amazonaws.com/hooyu.apk)
+[HOOYU APP Download Link](https://whoyou-bucket.s3.ap-northeast-2.amazonaws.com/houyuApp.apk)
 
 <br>
 
