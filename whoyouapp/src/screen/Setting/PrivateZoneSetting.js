@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Dimensions, View, Text, TouchableOpacity, LogBox } from 'react-native'
+import { View, Text, LogBox } from 'react-native'
 import Geolocation from 'react-native-geolocation-service'
 import ListPrivateZone from '../../components/PrivateZone/ListPrivateZone'
 import NoPrivateZone from '../../components/PrivateZone/NoPrivateZone'
@@ -8,10 +8,7 @@ import { connect } from 'react-redux'
 import axios from 'axios'
 
 
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
-
-const PrivateZoneSetting = ({ userPK, SERVER_URL }) => {
+const PrivateZoneSetting = ({ SERVER_URL, deviceWidth }) => {
 
   LogBox.ignoreAllLogs()
 
@@ -24,26 +21,21 @@ const PrivateZoneSetting = ({ userPK, SERVER_URL }) => {
     if (!gotList) {
       getPrivateZone()
       setGotList(true)
-      console.log('getList')
     }
     Geolocation.getCurrentPosition(position => {
       const { latitude, longitude } = position.coords
       setUserLocation({ latitude: latitude, longitude: longitude})
     })
-    console.log(privateZoneList)
   }, [isSettingPrivateZone, privateZoneList])
   
   const goToSettingPrivateZone = () => {
     setIsSettingPrivateZone(true)
   }
 
-
   const getPrivateZone = () => {
-    console.log(userPK)
-    console.log(SERVER_URL + 'user/private/' + userPK)
     axios({
       method: 'get',
-      url: SERVER_URL + 'user/private/' + userPK,
+      url: SERVER_URL + 'user/private',
     })
     .then((res) => {
       setPrivateZoneList(res.data.success)
@@ -52,7 +44,6 @@ const PrivateZoneSetting = ({ userPK, SERVER_URL }) => {
       console.log(err)
     })
   }
-
 
   const privateZoneComponent = () => {
     if (isSettingPrivateZone) {
@@ -99,8 +90,8 @@ const PrivateZoneSetting = ({ userPK, SERVER_URL }) => {
 function mapStateToProps(state) {
   return {
     SERVER_URL: state.user.SERVER_URL,
-    userPK: state.user.userPK,
+    deviceWidth: state.user.deviceWidth
   }
 }
 
-export default connect(mapStateToProps)(PrivateZoneSetting);
+export default connect(mapStateToProps)(PrivateZoneSetting)

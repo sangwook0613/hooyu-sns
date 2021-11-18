@@ -13,10 +13,10 @@ import ReportModal from '../components/modal/reportModal'
 
 const emojiArray = ['like', 'smile', 'love', 'amazing', 'sad', 'angry']
 
-const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsImage }) => {
-
+const ImageContent = ({ ownerName, userPK, userName, deviceWidth, setIsImage }) => {
+  
   LogBox.ignoreAllLogs()
-
+  
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [imageData, setImageData] = useState([])
@@ -28,11 +28,13 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
   const [deleteModalContent, setDeleteModalContent] = useState(null)
   const [isReportModalVisible, setReportModalVisible] = useState(false)
   const [reportModalContent, setReportModalContent] = useState(null)
-  const now = new Date()
+  
+  const swiperFlatList = useRef()
 
+  const now = new Date()
   
   useEffect(() => {
-    Api.getUserImage(ownerName)//ownerName
+    Api.getUserImage(ownerName)
       .then((res) => {
         if (res.data.success.length === 0) {
           setIsImage(false)
@@ -94,36 +96,20 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
       })
   }
 
-  const addEmotion = (emoji, contentId, userPK) => {
-    Api.setContentEmotion(emoji, contentId, userPK)
-      .then((res) => {
+  const addEmotion = (emoji, contentId) => {
+    Api.setContentEmotion(emoji, contentId)
+      .then(() => {
         getEmotion(contentId)
-        // 공감 완료 표시 방법 2
-        // setImageEmoji(emojis => {
-        //   const updated = {...emojis}
-        //   updated[emoji] ? updated[emoji]++ : updated[emoji] = 1
-        //   return updated
-        // })
-        // setEmotions(true)
-        // setGiveEmotion(emoji)
       })  
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 
   const deleteEmotion = () => {
-    Api.setContentEmotion(giveEmotion, imageData[currentIndex].contentPk, userPK)
-      .then((res) => {
+    Api.setContentEmotion(giveEmotion, imageData[currentIndex].contentPk)
+      .then(() => {
         getEmotion(imageData[currentIndex].contentPk)
-        // 공감 취소 표시 방법 2 - 대신 해당 게시글에 이모지 존재 유무를 계산해야함
-        // setImageEmoji(emojis => {
-        //   const updated = {...emojis}
-        //   updated[giveEmotion]--
-        //   return updated
-        // })
-        // setEmotions(false)
-        // setGiveEmotion('')
       })
       .catch((err) => {
         console.log(err)
@@ -159,8 +145,6 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
     }
   }
 
-  const swiperFlatList = useRef()
-
   const reRenderImage = () => {
     Api.getUserImage(ownerName)
       .then((res) => {
@@ -186,14 +170,12 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
       <View style={{ flex: 1 }}>
         <DeleteModal
           contentPK={deleteModalContent}
-          userPK={userPK}
           isModalVisible={isDeleteModalVisible}
           setModalVisible={setDeleteModalVisible}
           reRender={reRenderImage}
         />
         <ReportModal
           contentPK={reportModalContent}
-          userPK={userPK}
           isModalVisible={isReportModalVisible}
           setModalVisible={setReportModalVisible}
         />
@@ -274,12 +256,8 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
                 <Image
                   style={{ width: 22, height: 22, marginRight: 5 }}
                   source={emojiImages.default.emoji[item]}
-                  />
-                <Text
-                  style={{
-                    fontSize: 12,
-                  }}
-                >
+                />
+                <Text style={{ fontSize: 12 }}>
                   {convertCount(imageEmoji[item])}
                 </Text>
               </View>
@@ -308,11 +286,10 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
                 elevation: 10,
                 flex: 1,
                 height: 35,
-                // height: '50%',
               }}
               onPress={() => {
                 setIsEmojiSelect(false)
-                addEmotion(emotion, imageData[currentIndex].contentPk, userPK)
+                addEmotion(emotion, imageData[currentIndex].contentPk)
               }}
             >
               <Image
@@ -391,13 +368,11 @@ const ImageContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, 
   )
 }
 
-
 function mapStateToProps(state) {
   return {
     deviceWidth: state.user.deviceWidth,
-    deviceHeight: state.user.deviceHeight,
-    userPK: state.user.userPK,
     userName: state.user.userName,
+    userPK: state.user.userPK
   }
 }
 

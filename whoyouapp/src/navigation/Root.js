@@ -11,26 +11,23 @@ import StatusTutorial from '../screen/StatusTutorial'
 import EmojiTutorial from '../screen/EmojiTutorial'
 import InfoAgree from '../screen/InfoAgree';
 import CreateContent from '../screen/CreateContent';
-import UserScreen from '../screen/UserScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
 import jwt_decode from "jwt-decode";
 import api from '../utils/api'
 import SplashScreen from 'react-native-splash-screen'
-
 import UserSetting from '../screen/Setting/UserSetting';
 import PrivateZoneSetting from '../screen/Setting/PrivateZoneSetting';
 import PushSetting from '../screen/Setting/PushSetting';
-
 import * as Location from 'expo-location'
 
 
 const Nav = createNativeStackNavigator()
 
 const Root = ({ setUserPK, setUserEmoji, setUserName, userEmoji }) => {
+  
   LogBox.ignoreAllLogs()
-  const navigation = useNavigation();
 
   const [accessToken, setAccessToken] = useState(null)
   const [isReady, setIsReady] = useState(false)
@@ -40,26 +37,20 @@ const Root = ({ setUserPK, setUserEmoji, setUserName, userEmoji }) => {
   const [back, setBack] = useState(false)
 
   useEffect(async () => {
-
     const front1 = await Location.getForegroundPermissionsAsync()
     const back1 = await Location.getBackgroundPermissionsAsync()
     setFront(front1.granted)
     setBack(back1.granted)
     AsyncStorage.getItem('access_token', async (err, result) => {
       if (result) {
-        console.log('result :', result)
-        console.log('pk :', jwt_decode(result).pk)
         setUserPK(jwt_decode(result).pk)
         setAccessToken(result)
-        console.log('awiat', await AsyncStorage.getItem('refresh_token'))
         await api.getUser(jwt_decode(result).pk)
           .then((res) => {
-            console.log('루트.jsx에서 뜨는 emoji 값 : ', res.data.success.emoji )
             setUserEmoji(res.data.success.emoji)
             setUserName(res.data.success.name)
             setEmoji(res.data.success.emoji)
           }).catch((err) => {
-            console.log('여기인가?')
             console.log(err)
           })
       }
@@ -84,29 +75,15 @@ const Root = ({ setUserPK, setUserEmoji, setUserName, userEmoji }) => {
         animation: 'slide_from_right',
       }}
     >
-
-      {/* 로그인 화면 */}
       <Nav.Screen name="Login" component={Login} />
-      {/* <Nav.Screen name="Loading" component={Loading} /> */}
       <Nav.Screen name="NicknameTutorial" component={NicknameTutorial} />
       <Nav.Screen name="StatusTutorial" component={StatusTutorial} />
       <Nav.Screen name="EmojiTutorial" component={EmojiTutorial} />
       <Nav.Screen name="InfoAgree" component={InfoAgree} />
       <Nav.Screen name="Main" component={Main} />
-      <Nav.Screen name="Profile" component={ProfileScreen}
-        options={{
-          headerShown: true,
-        }} />
-      <Nav.Screen name="Setting" component={SettingScreen} options={{
-        headerShown: true,
-        headerTitle: "설정",
-      }} />
+      <Nav.Screen name="Profile" component={ProfileScreen} options={{ headerShown: true }} />
+      <Nav.Screen name="Setting" component={SettingScreen} options={{ headerShown: true, headerTitle: "설정" }} />
 
-      {/* 유저 페이지 */}
-      <Nav.Screen name="User" component={UserScreen}
-        options={{
-          headerShown: true,
-        }} />
       {/* 세부 설정 */}
       <Nav.Screen name="UserSetting" component={UserSetting} options={{
         headerShown: true,
@@ -123,10 +100,6 @@ const Root = ({ setUserPK, setUserEmoji, setUserName, userEmoji }) => {
 
       {/* 컨텐츠 생성 */}
       <Nav.Screen name="CreateContent" component={CreateContent} options={{ headerShown: true }} />
-      {/* <Nav.Screen name="CreateStatus" component={Status} options={{ headerShown: true }} /> */}
-      {/* <Nav.Screen name="CreateImage" component={CreateImageScreen} options={{ headerShown: true }} /> */}
-      {/* <Nav.Screen name="CreateEmoji" component={CreateEmojiScreen} options={{ headerShown: true }} /> */}
-      {/* <Nav.Screen name="CreateSurvey" component={CreateSurveyScreen} options={{ headerShown: true }} /> */}
     </Nav.Navigator>
   )
 }

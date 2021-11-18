@@ -1,17 +1,15 @@
-import React, {useEffect, useRef, useState} from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, TouchableWithoutFeedback, Dimensions, TextInput, Image, Animated } from 'react-native';
+import React, { useState } from 'react'
+import { Text, TouchableOpacity, View, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import axios from 'axios'
 import { connect } from 'react-redux'
 import PrivateZoneModal from '../modal/PrivateZoneModal'
 
-const clientWidth = Dimensions.get('screen').width
-const clientHeight = Dimensions.get('screen').height
-
-const ListPrivateZone = ({ navigation, userPK, privateZoneList, onDelete, SERVER_URL }) => {
+const ListPrivateZone = ({ privateZoneList, onDelete, SERVER_URL, deviceWidth }) => {
   
+  const styles = styleSheet(deviceWidth)
+
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [currentPrivateZone, setCurrentPrivateZone] = useState({ latitude: 0, longitude: 0, title: ''})
-
 
   const deletePrivateZone = (pzPK) => {
     axios({
@@ -19,7 +17,6 @@ const ListPrivateZone = ({ navigation, userPK, privateZoneList, onDelete, SERVER
       url: SERVER_URL + 'user/deletePrivate',
       data: {
         'pzPK': pzPK,
-        'userPK': userPK
       }
     })
     .then(() => {
@@ -66,54 +63,58 @@ const ListPrivateZone = ({ navigation, userPK, privateZoneList, onDelete, SERVER
         <TouchableOpacity
           style={styles.mainButton}
         >
-          <Text style={{fontSize: 16, fontWeight: '700', color: 'white'}}>프라이빗 존은 한개만 설정 가능합니다.</Text>
+          <Text style={{fontSize: 16, fontWeight: '700', color: 'white'}}>
+            프라이빗 존은 한개만 설정 가능합니다.
+          </Text>
         </TouchableOpacity>
       </View> 
-      <PrivateZoneModal isModalVisible={isModalVisible} onCloseModal={onCloseModal} currentPrivateZone={currentPrivateZone} />
+      <PrivateZoneModal 
+        isModalVisible={isModalVisible} 
+        onCloseModal={onCloseModal} 
+        currentPrivateZone={currentPrivateZone} 
+      />
     </View>
   )
 }
 
-const styles = StyleSheet.create({
+const styleSheet = (deviceWidth) => StyleSheet.create({
   mainButton: {
-    width: clientWidth * 0.8,
+    width: deviceWidth * 0.8,
     height: 50,
     backgroundColor: '#ccc',
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  zoneListContainer: {
-    flex: 2,
-    padding: 20 
-  },
   zoneList: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 20
   },
-  zoneListButtonView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
+  zoneListButtonDelete: {
+    fontWeight: 'bold',
+    marginLeft: 10,
+    color: 'red'
   },
   zoneListButtonShow: {
     fontWeight: 'bold',
     marginHorizontal: 10
   },
-  zoneListButtonDelete: {
-    fontWeight: 'bold',
-    marginLeft: 10,
-    color: 'red'
+  zoneListButtonView: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  zoneListContainer: {
+    flex: 2,
+    padding: 20 
   }
-});
-
+})
 
 function mapStateToProps(state) {
   return {
+    deviceWidth: state.user.deviceWidth,
     SERVER_URL: state.user.SERVER_URL,
-    userPK: state.user.userPK,
   }
 }
 
-
-export default connect(mapStateToProps)(ListPrivateZone);
+export default connect(mapStateToProps)(ListPrivateZone)

@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
-import { Text, View, TouchableOpacity, StyleSheet, LogBox } from 'react-native';
-import Modal from "react-native-modal";
+import React from 'react'
+import { Text, View, TouchableOpacity, StyleSheet, LogBox } from 'react-native'
+import Modal from "react-native-modal"
 import { connect } from 'react-redux'
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps'
+
 
 const PrivateZoneModal = ({ isModalVisible, onCloseModal, deviceWidth, deviceHeight, currentPrivateZone }) => {  
 
@@ -18,10 +19,20 @@ const PrivateZoneModal = ({ isModalVisible, onCloseModal, deviceWidth, deviceHei
       onBackdropPress={closeModal}
       useNativeDriver={true}
       style={{
-        flex: 1, justifyContent: "center", alignItems: "center",
+        flex: 1, 
+        justifyContent: "center", 
+        alignItems: "center"
       }}
     >
-      <View style={{ width: deviceWidth*0.9, height: deviceHeight*0.5, borderRadius: 10, backgroundColor: 'white', padding: 20}}>
+      <View 
+        style={{ 
+          width: deviceWidth*0.9, 
+          height: deviceHeight*0.5, 
+          borderRadius: 10, 
+          backgroundColor: 'white', 
+          padding: 20
+        }}
+      >
         <View style={{ flex: 1, justifyContent: 'center', borderWidth: 1, borderColor: '#ccc' }}>
           <MapView
             style={{ flex : 1 }}
@@ -63,16 +74,10 @@ const PrivateZoneModal = ({ isModalVisible, onCloseModal, deviceWidth, deviceHei
             <Text style={{fontSize: 16, fontWeight: '700', color: 'white'}}>닫기</Text>
           </TouchableOpacity>
         </View> 
-
       </View>
     </Modal>
   )
-  
-};
-
-const styles = StyleSheet.create({
-
-});
+}
 
 function mapStateToProps(state) {
   return {
@@ -81,5 +86,4 @@ function mapStateToProps(state) {
   }
 }
 
-
-export default connect(mapStateToProps)(PrivateZoneModal);
+export default connect(mapStateToProps)(PrivateZoneModal)

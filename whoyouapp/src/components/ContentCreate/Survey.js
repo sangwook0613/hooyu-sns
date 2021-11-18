@@ -15,17 +15,18 @@ const emojiArray = [
   ['pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep']
 ]
 
-const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji, deviceWidth, deviceHeight }) => {
+const Survey = ({ navigation, setUserEmoji, SERVER_URL, userEmoji, deviceWidth, deviceHeight }) => {
+  
   LogBox.ignoreAllLogs()
+  
+  const styles = styleSheet(deviceWidth)
+
   const [emoji, setEmoji] = useState(userEmoji)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [title, setTitle] = useState('')
-  const [options, setOptions] = useState(
-    [
-      '', ''
-    ]
-  )
+  const [options, setOptions] = useState(['', ''])
   const [isSurveyValid, setIsSurveyValid] = useState(false)
+  
   const toastRef = useRef()
 
   const SurveyTitle = () => {
@@ -34,11 +35,11 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
         <TouchableOpacity onPress={() => setIsEmojiSelect(true)}
         >
           <Image
-            style={{ width: 34, height: 34 }}
+            style={styles.navEmojiSelect}
             source={emojiImages.default.emoji[emoji]}
           />
         </TouchableOpacity>
-        <Text style={{ marginLeft: 10, color: '#aaa'}}>이모지 선택</Text>
+        <Text style={styles.navEmojiSelectText}>이모지 선택</Text>
       </View>
     )
   }
@@ -61,15 +62,18 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
       headerRight: () => (
         <View>
           { isSurveyValid ? 
-            <TouchableOpacity style={{ padding: 10 }} onPress={() => {
-              createSurvey()
-              navigation.navigate('Main')
-            }}>
+            <TouchableOpacity 
+              style={{ padding: 10 }} 
+              onPress={() => {
+                createSurvey()
+                navigation.navigate('Main')
+              }}
+            >
               <Text>등록</Text>
             </TouchableOpacity>
             :
             <TouchableWithoutFeedback
-            onPress={() => showToast()}
+              onPress={() => showToast()}
             >
               <Text style={{color: 'gray', padding: 10 }}>등록</Text>
             </TouchableWithoutFeedback>
@@ -78,7 +82,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
         </View>
       )
     })
-    var optionArray = new Array()
+    const optionArray = new Array()
     for (let i=0; i<options.length; i++) {
       if (!optionArray.includes(options[i]))
       optionArray.push(options[i])
@@ -107,11 +111,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
       url: SERVER_URL + 'user/emojiSet',
       data: {
         "userEmoji": emoji,
-        "userPK": userPK
       }
-    })
-    .then((res) => {
-      console.log("emoji set sucess")
     })
     .catch((err) => {
       console.log(err)
@@ -128,12 +128,10 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
         "requestContentDto": {
           "color": '',
           "exon": title,
-          "userPK": userPK
         }
       }
     })
-    .then((res) => {
-      console.log("survey set sucess")
+    .then(() => {
       createEmoji()
     })
     .catch((err) => {
@@ -144,14 +142,19 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
 
   return (
     <LinearGradient colors={["#AB79EF", "#FC98AB"]} style={styles.mainView}>
-      <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}} style={{flex: 1, width: deviceWidth, alignItems: 'center'}}>
-        <KeyboardAwareScrollView style={{flex: 1}}
+      <TouchableWithoutFeedback 
+        onPress={() => setIsEmojiSelect(false)} 
+        style={{flex: 1, width: deviceWidth, alignItems: 'center'}}
+      >
+        <KeyboardAwareScrollView 
+          style={{flex: 1}}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.surveyTitleView}>
             <Text style={{ color: "#000000CC", marginLeft: 3 }}>무엇이 궁금하신가요?</Text>
             <View style={{width: deviceWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
-              <TextInput style={{height: '100%'}}
+              <TextInput 
+                style={{height: '100%'}}
                 placeholder={"질문을 입력해주세요"}
                 onChangeText={(text) => setTitle(text)}
                 maxLength={36}
@@ -160,15 +163,17 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
           </View>
           <View style={styles.surveyContentView}>
             <Text style={{ color: "#000000CC", marginLeft: 3 }}>옵션</Text>
-            <View style={{width: deviceWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
-              <TextInput style={{height: '100%'}}
+            <View style={styles.mainOptionTextView}>
+              <TextInput 
+                style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}
                 onChangeText={(text) => onTextChange(0, text)}
                 maxLength={16}
               />
             </View>
-            <View style={{width: deviceWidth*0.8, height: 40, backgroundColor: 'white', borderRadius: 3, justifyContent: 'center', marginTop: 10, paddingHorizontal: 10}}>
-              <TextInput style={{height: '100%'}}
+            <View style={styles.mainOptionTextView}>
+              <TextInput 
+                style={{height: '100%'}}
                 placeholder={"옵션을 입력해주세요"}
                 onChangeText={(text) => onTextChange(1, text)}
                 maxLength={16}
@@ -177,8 +182,12 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
             {
               options.map((option, index) => (
                 index > 1 &&
-                <View key={index} style={{width: deviceWidth*0.8, height: 40, flexDirection: 'row', backgroundColor: 'white', borderRadius: 3, justifyContent: 'space-between', alignItems:'center', marginTop: 10, paddingHorizontal: 10}}>
-                  <TextInput style={{height: '100%'}}
+                <View 
+                  key={index} 
+                  style={styles.subOptionTextView}
+                >
+                  <TextInput 
+                    style={{height: '100%'}}
                     placeholder={"옵션을 입력해주세요"}
                     onChangeText={(text) => onTextChange(index, text)}
                     value={options[index]}
@@ -223,7 +232,7 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
                     <Image 
                       source={emojiImages.default.emoji[emotion]}
                       style={{width: '100%', height: '100%'}}
-                      />
+                    />
                   </TouchableOpacity>
                 </View>
                 ))}
@@ -231,7 +240,8 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
           ))}
         </View>
       }
-      <Toast ref={toastRef}
+      <Toast 
+        ref={toastRef}
         positionValue={deviceHeight * 0.4}
         fadeInDuration={200}
         fadeOutDuration={1000}
@@ -241,23 +251,14 @@ const Survey = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
   )
 }
 
-const styles = StyleSheet.create({
-  mainView: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  surveyTitleView: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    padding: 5,
-    marginTop: 80
-  },
-  surveyContentView: {
-    flex: 2,
-    padding: 5,
-    paddingTop: 30,
+const styleSheet = (deviceWidth) => StyleSheet.create({
+  addOption: {
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   emojiSelect: {
     position: 'absolute',
@@ -267,12 +268,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: 'white',
     elevation: 4,
-    },
-  emojiSelectRow: {
-    flex: 1, 
-    flexDirection: 'row',
-    width: '100%', 
-    height: 10
   },
   emojiSelectCol: {
     flex:1, 
@@ -280,13 +275,11 @@ const styles = StyleSheet.create({
     height: '100%',
     padding: 5
   },
-  addOption: {
-    height: 30,
-    width: 30,
-    borderRadius: 15,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    alignItems: 'center'
+  emojiSelectRow: {
+    flex: 1, 
+    flexDirection: 'row',
+    width: '100%', 
+    height: 10
   },
   minusOption: {
     height: 30,
@@ -294,14 +287,58 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center'
-  }
+  },
+  mainOptionTextView: {
+    width: deviceWidth*0.8, 
+    height: 40, 
+    backgroundColor: 'white', 
+    borderRadius: 3, 
+    justifyContent: 'center', 
+    marginTop: 10, 
+    paddingHorizontal: 10
+  },
+  mainView: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  navEmojiSelect: {
+    width: 34, 
+    height: 34
+  },
+  navEmojiSelectText: { 
+    marginLeft: 10, 
+    color: '#aaa'
+  },
+  subOptionTextView: {
+    width: deviceWidth*0.8, 
+    height: 40, 
+    flexDirection: 'row', 
+    backgroundColor: 'white', 
+    borderRadius: 3, 
+    justifyContent: 'space-between', 
+    alignItems:'center', 
+    marginTop: 10, 
+    paddingHorizontal: 10
+  },
+  surveyContentView: {
+    flex: 2,
+    padding: 5,
+    paddingTop: 30,
+  },
+  surveyTitleView: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    padding: 5,
+    marginTop: 80
+  },
 })
 
 
 function mapStateToProps(state) {
   return {
     SERVER_URL: state.user.SERVER_URL,
-    userPK: state.user.userPK,
     userEmoji: state.user.userEmoji,
   }
 }

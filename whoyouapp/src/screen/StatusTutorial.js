@@ -6,7 +6,9 @@ import { actionCreators } from '../store/reducers'
 
 
 const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHeight, SERVER_URL, userPK, setUserName, setUserEmoji}) => {
+  
   LogBox.ignoreAllLogs()
+  
   const styles = styleSheet(deviceWidth, deviceHeight)
 
   const [inputValue, setInputValue] = useState('')
@@ -29,8 +31,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
       url: SERVER_URL + 'user/nameSet',
       method: 'post',
       data: {
-        userName: route.params.nickname,
-        userPK: userPK
+        userName: route.params.nickname
       }
     })
     .then(() => {
@@ -38,7 +39,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
       setEmoji()
     })
     .catch((err) => {
-      console.warn(err)
+      console.log(err)
     })
   }
 
@@ -47,8 +48,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
       url: SERVER_URL + 'user/emojiSet',
       method: 'post',
       data: {
-        userEmoji: route.params.emoji,
-        userPK: userPK
+        userEmoji: route.params.emoji
       }
     })
     .then(() => {
@@ -56,7 +56,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
       setStatus()
     })
     .catch((err) => {
-      console.warn(err)
+      console.log(err)
     })
   }
 
@@ -66,43 +66,41 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
       method: 'post',
       data: {
         color: 'pink',
-        exon: inputValue,
-        userPK: userPK
+        exon: inputValue
       }
     })
     .then(() => {
       navigate('InfoAgree')
     })
     .catch((err) => {
-      console.warn(err)
+      console.log(err)
     })
   }
 
   return (
     <View>
       <View style={styles.statusContainer}>
-        <View style={{
-            width: deviceWidth * 0.8
-          }}
-        > 
-          <Text style={{
-            color: '#0B1C26',
-            fontSize: 22,
-            fontWeight: 'bold',
-          }}>
+        <View style={{ width: deviceWidth * 0.8 }}> 
+          <Text 
+            style={{
+              color: '#0B1C26',
+              fontSize: 22,
+              fontWeight: 'bold',
+            }}
+          >
             오늘 내 기분은?
           </Text>
-          <Text style={{
-            color: '#4F5457',
-            fontSize: 14,
-            marginTop: deviceHeight * 0.01,
-          }}>
+          <Text 
+            style={{
+              color: '#4F5457',
+              fontSize: 14,
+              marginTop: deviceHeight * 0.01,
+            }}
+          >
             오늘 당신의 기분은 어떠신가요?
           </Text>
         </View>
-        <View
-          style={styles.statusInput}
-        >
+        <View style={styles.statusInput}>
           <TextInput
             style={{
               fontSize: 18,
@@ -121,9 +119,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
           disabled={inputValue === ''}
           onPress={() => registerStatus()}
         >
-          <Text
-            style={styles.register__text}
-          >
+          <Text style={styles.register__text}>
             등록
           </Text>
         </TouchableOpacity>
@@ -132,7 +128,7 @@ const StatusTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHe
   )
 }
 
-const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight) => StyleSheet.create({
   statusContainer: {
     alignItems: 'center',
     marginTop: deviceHeight * 0.15,
