@@ -38,4 +38,4 @@ spring:
 logging:
   level:
     root: Info
-    com.status.server : Info
+    com.status.server : debug
