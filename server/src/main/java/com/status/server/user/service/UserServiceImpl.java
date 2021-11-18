@@ -297,17 +297,9 @@ public class UserServiceImpl implements UserService {
         logger.debug("LocalDataTime : {}", nowTime);
         FcmToken targetToken = fcmTokenRepository.findByUserId(user.getId()).orElseThrow(() -> new NoBrowserTokenException("브라우저토큰이 없습니다...."));
         logger.debug("FCMToekn : {}", targetToken);
-//        logger.debug("LocalDataTime check : {}",nowTime.isAfter(null));
         //push
 
-//        //장기 미 사용자 까꿍 message
-//        logger.debug("nowTime null Exception check : {}", nowTime.isAfter(LocalDateTime.now()));
-//        if (targetToken.getPushThree() != null && nowTime.isAfter(targetToken.getPushThree())) {
-//            String title = "주변 사람들이 당신의 생각을 궁금해하고 있어요!";
-//            String body = "클릭해서 컨텐츠를 작성해보세요";
-//            fcmService.sendMessageTo(targetToken.getToken(), title, body);
-//            targetToken.setPushThree(nowTime.plusDays(5));
-//        }
+        // push server에 장기 사용자 push 있음
 
         if (countOfNew != 0 && (targetToken.getPushOne() == null || nowTime.isAfter(targetToken.getPushOne()))) {
             String title = "반경 내에 " + countOfNew + "명의 사람이 새로 들어왔어요!";
