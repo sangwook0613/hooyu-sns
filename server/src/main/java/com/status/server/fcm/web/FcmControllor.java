@@ -31,6 +31,8 @@ public class FcmControllor {
     @PostMapping("/in")
     public ResponseEntity<SuccessResponseDto> inToken (@RequestBody RequestFCMDto requestFCMDto) throws NoBrowserTokenException, NoUserException {
         String message = "";
+        logger.debug("inToken gogo 들어왔어요 browser: {}", requestFCMDto.toString());
+        logger.debug("inToken gogo 들어왔어요 browser: {}", requestFCMDto.getBrowserToken());
         if(requestFCMDto.getBrowserToken() == null || requestFCMDto.getBrowserToken().equals("")){
             throw new NoBrowserTokenException("브라우저토큰이 null입니다....");
         }else{
