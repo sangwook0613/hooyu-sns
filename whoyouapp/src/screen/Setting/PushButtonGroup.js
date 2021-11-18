@@ -31,12 +31,12 @@ const PushButtonGroup = ({ setPushRadius, currentRadius, isPushEnabled }) => {
           style={[
             styles.btn,
             { borderBottomRightRadius: 20, borderTopRightRadius: 20, },
-            selection === 2000 ? { backgroundColor: `${isPushEnabled ? "#FF6A77" : "#c9c9c9"}` } : null
+            selection === 30000 ? { backgroundColor: `${isPushEnabled ? "#FF6A77" : "#c9c9c9"}` } : null
           ]}
-          onPress={() => setSelection(2000)}
+          onPress={() => setSelection(30000)}
           disabled={!isPushEnabled}
         >
-          <Text style={[styles.btnText, selection === 2000 ? { color: "white" } : { color: "#E5E5E5" }]}>2km</Text>
+          <Text style={[styles.btnText, selection === 30000 ? { color: "white" } : { color: "#E5E5E5" }]}>2km</Text>
         </TouchableOpacity>
       </View>
         
