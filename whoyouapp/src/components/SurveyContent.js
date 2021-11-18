@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { Image, Text, View, TouchableOpacity, TouchableWithoutFeedback } from 'react-native'
+import { Image, Text, View, TouchableOpacity, TouchableWithoutFeedback, LogBox } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
 import LinearGradient from 'react-native-linear-gradient'
 import { SwiperFlatList } from 'react-native-swiper-flatlist'
@@ -14,6 +14,9 @@ import ReportModal from '../components/modal/reportModal'
 const emojiArray = ['like', 'smile', 'love', 'amazing', 'sad', 'angry']
 
 const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsSurvey }) => {
+
+  LogBox.ignoreAllLogs()
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [surveyData, setSurveyData] = useState([])

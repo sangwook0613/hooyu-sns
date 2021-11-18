@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState, useCallback} from 'react'
-import { Text, TouchableOpacity, View, Animated, StyleSheet, PermissionsAndroid, Dimensions, Image } from 'react-native'
+import { Text, TouchableOpacity, View, Animated, StyleSheet, PermissionsAndroid, Dimensions, Image, LogBox } from 'react-native'
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
 import LinearGradient from 'react-native-linear-gradient'
 import imageUpload from '../../assets/createcontent/uploadImage.png'
@@ -16,7 +16,7 @@ const emojiArray = [
 ]
 
 const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji, deviceWidth, deviceHeight }) => {
-  
+  LogBox.ignoreAllLogs()
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [emoji, setEmoji] = useState(userEmoji)
   const [imageFile, setImageFile] = useState('')

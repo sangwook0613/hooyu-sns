@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Text, TouchableOpacity, View, LogBox } from 'react-native';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons'; 
 
 const deviceWidth = Dimensions.get('window').width
@@ -7,6 +7,9 @@ const deviceHeight = Dimensions.get('window').height
 
 
 const SettingScreen = ({ navigation: { navigate }}) => {
+
+  LogBox.ignoreAllLogs()
+
   return (
     <View>
       <TouchableOpacity

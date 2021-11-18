@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, LogBox } from 'react-native'
 
 const PushButtonGroup = ({ setPushRadius, currentRadius, isPushEnabled }) => {
+
+  LogBox.ignoreAllLogs()
+
   const [selection, setSelection] = useState(currentRadius)
   useEffect(() => {
     setPushRadius(selection)

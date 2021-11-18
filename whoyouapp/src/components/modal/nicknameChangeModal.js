@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useState } from 'react'
-import { Text, View, TouchableOpacity, TextInput } from 'react-native'
+import { Text, View, TouchableOpacity, TextInput, LogBox } from 'react-native'
 import Modal from "react-native-modal"
 import Api from '../../utils/api'
 import { connect } from 'react-redux'
@@ -8,6 +8,9 @@ import { actionCreators } from '../../store/reducers'
 import Toast from 'react-native-easy-toast'
 
 const NicknameChangeModal = ({ isModalVisible, setModalVisible, deviceHeight, userPK, setUserName }) => {
+  LogBox.ignoreAllLogs()
+
+
   const navigation = useNavigation()
   const [newNickname, setNewNickname] = useState('')
   const toastRef = useRef()

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, TouchableOpacity, TextInput, LogBox } from 'react-native';
 import Modal from "react-native-modal";
 import api from '../../utils/api'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -12,7 +12,10 @@ import {
   GoogleSignin,
 } from '@react-native-google-signin/google-signin'
 
-const UnregisterModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK, userPK }) => {  
+const UnregisterModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK, userPK }) => {
+
+  LogBox.ignoreAllLogs()
+
   const navigation = useNavigation()
   const sendModalVisible = () => {
     setModalVisible(!isModalVisible)

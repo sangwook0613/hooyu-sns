@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Animated, Dimensions, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback, __spread } from 'react-native'
+import { Animated, Dimensions, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback, __spread, LogBox } from 'react-native'
 import { connect } from 'react-redux'
 import { AntDesign, Entypo, FontAwesome5 } from "@expo/vector-icons"
 import images from '../../assets/images'
 
 
 const AddButton = ({ navigate, deviceWidth, deviceHeight, theme }) => {
-
+  LogBox.ignoreAllLogs()
   const mainColor3 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#B4B4B4')
 
   const styles = styleSheet(deviceWidth, deviceHeight, mainColor3)

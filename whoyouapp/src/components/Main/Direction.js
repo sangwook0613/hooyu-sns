@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { View, Animated, Image } from 'react-native'
+import { View, Animated, Image, LogBox } from 'react-native'
 import images from '../../assets/images'
 import { SimpleLineIcons } from '@expo/vector-icons'; 
 import CompassHeading from 'react-native-compass-heading'
 import { connect } from 'react-redux'
 const Direction = ({radarWidth, deviceHeight, deviceWidth}) => {
+  LogBox.ignoreAllLogs()
   // const [directionInterval, setDirectionInterval] = useState(null)
   // const [direction, setDirection] = useState(null)
 

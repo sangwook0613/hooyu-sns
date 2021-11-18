@@ -16,6 +16,7 @@ import {
   View,
   Image,
   ActivityIndicator,
+  LogBox
 } from 'react-native'
 import {
   GoogleSignin,
@@ -26,6 +27,8 @@ import {
 
 const Login = ({ navigation: { navigate }, deviceHeight, deviceWidth, setUserPK, setUserEmoji, setUserName, setPushSetting, userPK, userEmoji }) => {
   // const [userpk, setUserpk] = useState(0);
+  LogBox.ignoreAllLogs()
+  
   const [userInfo, setUserInfo] = useState(null);
   const [userInfo2, setUserInfo2] = useState(null);
   const [gettingLoginStatus, setGettingLoginStatus] = useState(true)

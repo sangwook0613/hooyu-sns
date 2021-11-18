@@ -1,5 +1,5 @@
 import React, {useRef, useState, useEffect, useCallback} from 'react'
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, TextInput, Image, TouchableWithoutFeedback } from 'react-native'
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, TextInput, Image, TouchableWithoutFeedback, LogBox } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import axios from 'axios'
 import { connect } from 'react-redux'
@@ -16,6 +16,7 @@ const emojiArray = [
 
 
 const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji, deviceWidth, deviceHeight }) => {
+  LogBox.ignoreAllLogs()
   const [emoji, setEmoji] = useState(userEmoji)
   const [isEmojiSelect, setIsEmojiSelect] = useState(0)
   const [color, setColor] = useState('#FFD0D0')

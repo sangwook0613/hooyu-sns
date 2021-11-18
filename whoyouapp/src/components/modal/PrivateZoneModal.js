@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
-import { Text, View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, StyleSheet, LogBox } from 'react-native';
 import Modal from "react-native-modal";
 import { connect } from 'react-redux'
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps'
 
 const PrivateZoneModal = ({ isModalVisible, onCloseModal, deviceWidth, deviceHeight, currentPrivateZone }) => {  
+
+  LogBox.ignoreAllLogs()
 
   const closeModal = () => {
     onCloseModal()

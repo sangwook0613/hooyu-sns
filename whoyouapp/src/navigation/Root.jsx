@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LogBox } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useNavigation } from '@react-navigation/native';
 import Main from '../screen/Main';
@@ -28,6 +29,7 @@ import * as Location from 'expo-location'
 const Nav = createNativeStackNavigator()
 
 const Root = ({ setUserPK, setUserEmoji, setUserName, userEmoji }) => {
+  LogBox.ignoreAllLogs()
   const navigation = useNavigation();
 
   const [accessToken, setAccessToken] = useState(null)

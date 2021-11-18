@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, View, TouchableOpacity } from 'react-native'
+import { Text, View, TouchableOpacity, LogBox } from 'react-native'
 import Modal from "react-native-modal"
 import Api from '../../utils/api'
 import { connect } from 'react-redux'
@@ -10,6 +10,9 @@ import {
   GoogleSignin,
 } from '@react-native-google-signin/google-signin'
 const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK, userPK }) => {
+  LogBox.ignoreAllLogs()
+
+
   const navigation = useNavigation()
   // const FOREGROUND_LOCATION_TASK = 'foreground-location-task'
   // const BACKGROUND_LOCATION_TASK = 'background-location-task'

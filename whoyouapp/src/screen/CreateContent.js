@@ -1,5 +1,5 @@
 import React, {useRef, useState, useEffect} from 'react'
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image } from 'react-native'
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image, LogBox } from 'react-native'
 import Status from '../components/ContentCreate/Status'
 import Emoji from '../components/ContentCreate/Emoji'
 import Picture from '../components/ContentCreate/Picture'
@@ -10,6 +10,9 @@ const menuArray = ['이모지', '상태 메시지', '사진', '설문']
 const menuLocation = [0, 93, 172, 260]
 
 const CreateContent = ({ navigation, route, deviceHeight, deviceWidth }) => {
+
+  LogBox.ignoreAllLogs()
+
   const styles = styleSheet(deviceWidth)
   const [selectedMenu, setSelectedMenu] = useState(route.params.menu)
   const menuScroll = useRef()
