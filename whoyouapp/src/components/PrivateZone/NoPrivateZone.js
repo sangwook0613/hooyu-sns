@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import React from 'react'
+import { Text, TouchableOpacity, View } from 'react-native'
 import { connect } from 'react-redux'
 
 
@@ -37,14 +37,11 @@ const NoPrivateZone = ({ goToSettingPrivateZone, deviceWidth }) => {
   )
 }
 
-
 function mapStateToProps(state) {
   return {
     deviceWidth: state.user.deviceWidth,
     SERVER_URL: state.user.SERVER_URL,
-    userPK: state.user.userPK,
   }
 }
 
-
-export default connect(mapStateToProps)(NoPrivateZone);
+export default connect(mapStateToProps)(NoPrivateZone)

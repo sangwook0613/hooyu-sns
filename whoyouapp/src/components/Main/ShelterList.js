@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react';
+import React, { forwardRef, useImperativeHandle, useRef, useState, useEffect } from 'react'
 import { Animated, View, Text, StyleSheet, Image, TouchableOpacity, TouchableWithoutFeedback, ScrollView, LogBox } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import { useNavigation } from '@react-navigation/native'
@@ -6,14 +6,16 @@ import images from '../../assets/images'
 
 
 const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectPrivateZoneUser, selectedPrivateZoneUser, setPrivateZoneUsers }, ref) => {
+  
   LogBox.ignoreAllLogs()
   
-  const shelterList = useRef(new Animated.Value(deviceHeight)).current
-  const navigation = useNavigation()
-  
   const [now, setNow] = useState(new Date().toString())
-
+  
+  const shelterList = useRef(new Animated.Value(deviceHeight)).current
   const isInitialMount = useRef(true)
+  const scrollRef = useRef()
+  
+  const navigation = useNavigation()
 
   useEffect(() => {
     if (isInitialMount.current) {
@@ -59,13 +61,13 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selec
     } else if (parseInt(r) > 86400000) {
       r = parseInt(parseInt(r) / 86400000).toString() + "일 전 게시"
     } else if (parseInt(r) >= 3600000) {
-      r = parseInt(parseInt(r) / 3600000).toString() + "시간 전 게시";
+      r = parseInt(parseInt(r) / 3600000).toString() + "시간 전 게시"
     } else if (parseInt(r) >= 60000) {
-      r = parseInt(parseInt(r) / 60000).toString() + "분 전 게시";
+      r = parseInt(parseInt(r) / 60000).toString() + "분 전 게시"
     } else {
-      r = "방금 전 게시";
+      r = "방금 전 게시"
     }
-    return r;
+    return r
   }
 
   const isNewContent = (date) => {
@@ -78,13 +80,8 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selec
     return false
   }
 
-  const scrollRef = useRef()
-  
   return (
-    <Animated.View
-      style={{
-        top: shelterList}}
-    >
+    <Animated.View style={{ top: shelterList }}>
       <View style={styles.shelterList}>
         <View style={styles.shelterListHeader}>
           <View style={styles.shelterListHeaderOption}>
@@ -93,25 +90,25 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selec
             </Text>
           </View>
         </View>
-        <ScrollView
-          ref={scrollRef}
-        >
+        <ScrollView ref={scrollRef}>
           {users.map((user, index) => (
             <View
-            key={index}
-            style={{
-              borderBottomColor: mainColor4,
-              borderBottomWidth: 2,
-            }}
+              key={index}
+              style={{
+                borderBottomColor: mainColor4,
+                borderBottomWidth: 2,
+              }}
             >
               <TouchableWithoutFeedback  
                 onPress={() => selectPrivateZoneUser(index)}
               >
                 <View style={styles.user}>
-                  <View style={{
-                    alignItems: 'center',
-                    flexDirection: 'row'
-                  }}>
+                  <View 
+                    style={{
+                      alignItems: 'center',
+                      flexDirection: 'row'
+                    }}
+                  >
                     <Image
                       style={styles.shelterListEmoji}
                       source={images.emoji[user.emoji]}
@@ -141,10 +138,12 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selec
                       style={styles.userMenuButton}
                       onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'status', emoji: user.emoji})}}
                     >
-                      <Text style={{
-                        color: 'white',
-                        fontWeight: 'bold',
-                      }}>
+                      <Text 
+                        style={{
+                          color: 'white',
+                          fontWeight: 'bold',
+                        }}
+                      >
                         상태
                       </Text>
                     </TouchableOpacity>
@@ -163,10 +162,12 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selec
                       onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'image', emoji: user.emoji})}}
                       disabled={user.contentTime.images === null ? true : false}
                     >
-                      <Text style={{
-                        color: 'white',
-                        fontWeight: 'bold',
-                      }}>
+                      <Text 
+                        style={{
+                          color: 'white',
+                          fontWeight: 'bold',
+                        }}
+                      >
                         사진
                       </Text>
                     </TouchableOpacity>
@@ -185,10 +186,12 @@ const ShelterList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selec
                       onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'survey', emoji: user.emoji})}}
                       disabled={user.contentTime.survey === null ? true : false}
                     >
-                      <Text style={{
-                        color: 'white',
-                        fontWeight: 'bold',
-                      }}>
+                      <Text 
+                        style={{
+                          color: 'white',
+                          fontWeight: 'bold',
+                        }}
+                      >
                         질문
                       </Text>
                     </TouchableOpacity>

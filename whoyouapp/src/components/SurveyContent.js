@@ -13,7 +13,7 @@ import ReportModal from '../components/modal/reportModal'
 
 const emojiArray = ['like', 'smile', 'love', 'amazing', 'sad', 'angry']
 
-const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight, setIsSurvey }) => {
+const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, setIsSurvey }) => {
 
   LogBox.ignoreAllLogs()
 
@@ -23,12 +23,12 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   const [isEmotions, setEmotions] = useState(false)
   const [giveEmotion, setGiveEmotion] = useState('')
   const [surveyEmoji, setSurveyEmoji] = useState({})
-  // const [checkVote, setCheckVote] = useState('')
   const [isLoaded, setIsLoaded] = useState(false)
   const [isDeleteModalVisible, setDeleteModalVisible] = useState(false)
   const [deleteModalContent, setDeleteModalContent] = useState(null)
   const [isReportModalVisible, setReportModalVisible] = useState(false)
   const [reportModalContent, setReportModalContent] = useState(null)
+  
   const now = new Date()
 
   useEffect(() => {
@@ -47,7 +47,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         setSurveyData(data)
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 
@@ -94,40 +94,24 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         setIsLoaded(true)
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 
-  const addEmotion = (emoji, contentId, userPK) => {
-    Api.setContentEmotion(emoji, contentId, userPK)
-      .then((res) => {
+  const addEmotion = (emoji, contentId) => {
+    Api.setContentEmotion(emoji, contentId)
+      .then(() => {
         getEmotion(contentId)
-        // 공감 완료 표시 방법 2
-        // setImageEmoji(emojis => {
-        //   const updated = {...emojis}
-        //   updated[emoji] ? updated[emoji]++ : updated[emoji] = 1
-        //   return updated
-        // })
-        // setEmotions(true)
-        // setGiveEmotion(emoji)
       })  
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 
   const deleteEmotion = () => {
-    Api.setContentEmotion(giveEmotion, surveyData[currentIndex].contentPK, userPK)
-      .then((res) => {
+    Api.setContentEmotion(giveEmotion, surveyData[currentIndex].contentPK)
+      .then(() => {
         getEmotion(surveyData[currentIndex].contentPK)
-        // 공감 취소 표시 방법 2 - 대신 해당 게시글에 이모지 존재 유무를 계산해야함
-        // setImageEmoji(emojis => {
-        //   const updated = {...emojis}
-        //   updated[giveEmotion]--
-        //   return updated
-        // })
-        // setEmotions(false)
-        // setGiveEmotion('')
       })
       .catch((err) => {
         console.log(err)
@@ -135,15 +119,14 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
   }
 
   const voteToSurvey = (answerPK, contentPK) => {
-    Api.voteSurvey(answerPK, contentPK, userPK)
-      .then((res) => {
+    Api.voteSurvey(answerPK, contentPK)
+      .then(() => {
         updateSurveyData()
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
-
 
   const humanize = (date) => {
     const moment = require("moment")
@@ -159,7 +142,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
     } else {
       r = "방금 전"
     }
-    return r;
+    return r
   }
 
   const convertCount = (cnt) => {
@@ -184,7 +167,6 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           setIsSurvey(false)
         } else {
           getEmotion(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
-          // getVoteCheck(currentIndex === data.length ? data[currentIndex - 1].contentPK : data[currentIndex].contentPK)
           if (currentIndex === data.length) {
             setCurrentIndex(currentIndex - 1)
           }
@@ -193,7 +175,7 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
         swiperFlatList.current.scrollToIndex({ index: currentIndex === 0 ? currentIndex : currentIndex - 1 })
       })
       .catch((err) => {
-        console.warn(err)
+        console.log(err)
       })
   }
 
@@ -202,14 +184,12 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
       <View style={{ flex: 1 }}>
         <DeleteModal
           contentPK={deleteModalContent}
-          userPK={userPK}
           isModalVisible={isDeleteModalVisible}
           setModalVisible={setDeleteModalVisible}
           reRender={reRenderSurvey}
         />
         <ReportModal
           contentPK={reportModalContent}
-          userPK={userPK}
           isModalVisible={isReportModalVisible}
           setModalVisible={setReportModalVisible}
         />
@@ -254,7 +234,6 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
           setCurrentIndex(index)
           setIsEmojiSelect(false)
           getEmotion(surveyData[index].contentPK)
-          // getVoteCheck(surveyData[index].contentPK)
         }}
         renderItem={({ item }) => (
           <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
@@ -277,8 +256,6 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                     const num = Number.isNaN(Math.round(item.count[ans]/total*100)) ? 0 : Math.round(item.count[ans]/total*100)
                     return (
                       <LinearGradient colors={["#AB79EF", "#FC98AB"]}
-                        // start={{ x: 0, y: 1 }}
-                        // end={{ x: 1, y: 1 }}
                         key={item.answerPK[ans]}
                         style={{
                           alignItems: 'center',
@@ -288,23 +265,46 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                           padding: ownerName === userName || item.myVote === ans ? 1 : 0
                         }}
                       >
-                        <View style={{
-                          width: deviceWidth * 0.75,
-                          height: 40,
-                          backgroundColor: '#0B1C26',
-                          borderColor: 'white',
-                          borderRadius: 3,
-                          borderWidth: ownerName === userName || item.myVote === ans ? 0 : 1,
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          paddingHorizontal: 10,
-                        }}>
-                          <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'rgba(255, 255, 255, 0.8)'}}
+                        <View 
+                          style={{
+                            width: deviceWidth * 0.75,
+                            height: 40,
+                            backgroundColor: '#0B1C26',
+                            borderColor: 'white',
+                            borderRadius: 3,
+                            borderWidth: ownerName === userName || item.myVote === ans ? 0 : 1,
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            paddingHorizontal: 10,
+                         }}
+                        >
+                          <Text 
+                            style={{
+                              zIndex: 1, 
+                              height: '100%', 
+                              fontSize: 16, 
+                              textAlignVertical: 
+                              'center', paddingLeft: 5, 
+                              color: 'rgba(255, 255, 255, 0.8)'
+                            }}
                             onChangeText={(text) => onTextChange(0, text)}
-                          >{ans}</Text>
-                          <Text style={{zIndex: 1, height: '100%', fontSize: 16, textAlignVertical: 'center', paddingLeft: 5, color: 'rgba(255, 255, 255, 0.8)'}}
+                          >
+                            {ans}
+                          </Text>
+                          <Text 
+                            style={{
+                              zIndex: 1, 
+                              height: '100%', 
+                              fontSize: 16, 
+                              textAlignVertical: 
+                              'center', 
+                              paddingLeft: 5, 
+                              color: 'rgba(255, 255, 255, 0.8)'
+                            }}
                             onChangeText={(text) => onTextChange(0, text)}
-                          >{num + "%"}</Text>
+                          >
+                            {num + "%"}
+                          </Text>
                           <LinearGradient colors={[ownerName === userName || item.myVote === ans ? "#AB79EF" : "#B4B4B4", ownerName === userName || item.myVote === ans ? "#FC98AB" : "#FFFFFF"]}
                             start={{ x: 0, y: 1 }}
                             end={{ x: 1, y: 1 }}
@@ -410,11 +410,10 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
                 elevation: 10,
                 flex: 1,
                 height: 35,
-                // height: '50%',
               }}
               onPress={() => {
                 setIsEmojiSelect(false)
-                addEmotion(emotion, surveyData[currentIndex].contentPK, userPK)
+                addEmotion(emotion, surveyData[currentIndex].contentPK)
               }}
             >
               <Image
@@ -492,7 +491,6 @@ const SurveyContent = ({ ownerName, userPK, userName, deviceWidth, deviceHeight,
     </View>
   )
 }
-
 
 function mapStateToProps(state) {
   return {

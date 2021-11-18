@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import React, {useEffect, useState} from 'react'
+import { Text, View, StyleSheet, TouchableWithoutFeedback } from 'react-native'
 import axios from 'axios'
 import { connect } from 'react-redux'
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps'
-import { TextInput } from 'react-native-gesture-handler';
+import { TextInput } from 'react-native-gesture-handler'
 
 
-const SettingPrivateZone = ({ userLocation, privateZoneList, deviceWidth, SERVER_URL, userPK, onCreate }) => {
+const SettingPrivateZone = ({ userLocation, deviceWidth, SERVER_URL, onCreate }) => {
   
   const styles = styleSheet(deviceWidth)
 
@@ -19,9 +19,6 @@ const SettingPrivateZone = ({ userLocation, privateZoneList, deviceWidth, SERVER
   }
 
   const setPrivateZone = () => {
-    const privateZoneTitles = privateZoneList.map((privateZone, idx) => {
-      return privateZone.title
-    })
     axios({
       method: 'post',
       url: SERVER_URL + 'user/setPrivate',
@@ -29,11 +26,9 @@ const SettingPrivateZone = ({ userLocation, privateZoneList, deviceWidth, SERVER
         'lat': userLocation.latitude,
         'lon': userLocation.longitude,
         'title': privateZoneName,
-        'userPK': userPK
       }
     })
-    .then((res) => {
-      console.log(res.data.success)
+    .then(() => {
       onCreate()
     })
     .catch((err) => {
@@ -72,11 +67,17 @@ const SettingPrivateZone = ({ userLocation, privateZoneList, deviceWidth, SERVER
             showsUserLocation={true}
           >
             <Marker
-              coordinate={{latitude: userLocation.latitude, longitude: userLocation.longitude}}
+              coordinate={{
+                latitude: userLocation.latitude, 
+                longitude: userLocation.longitude
+              }}
               tappable={false}
             />
             <Circle
-              center={{latitude: userLocation.latitude, longitude: userLocation.longitude}}
+              center={{
+                latitude: userLocation.latitude, 
+                longitude: userLocation.longitude
+              }}
               radius={100}
               strokeWidth={2}
               strokeColor={'#FF6A77'}
@@ -103,7 +104,7 @@ const SettingPrivateZone = ({ userLocation, privateZoneList, deviceWidth, SERVER
   )
 }
 
-const styleSheet = (deviceWidth) => StyleSheet.create({
+const styleSheet = () => StyleSheet.create({
   privateZoneNameInput: {
     borderWidth: 1,
     borderColor: '#aaa',
@@ -117,9 +118,8 @@ const styleSheet = (deviceWidth) => StyleSheet.create({
 function mapStateToProps(state) {
   return {
     deviceWidth: state.user.deviceWidth,
-    SERVER_URL: state.user.SERVER_URL,
-    userPK: state.user.userPK,
+    SERVER_URL: state.user.SERVER_URL
   }
 }
 
-export default connect(mapStateToProps)(SettingPrivateZone);
+export default connect(mapStateToProps)(SettingPrivateZone)

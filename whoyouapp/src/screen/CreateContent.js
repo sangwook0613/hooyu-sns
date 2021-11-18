@@ -1,5 +1,5 @@
 import React, {useRef, useState, useEffect} from 'react'
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image, LogBox } from 'react-native'
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, LogBox } from 'react-native'
 import Status from '../components/ContentCreate/Status'
 import Emoji from '../components/ContentCreate/Emoji'
 import Picture from '../components/ContentCreate/Picture'
@@ -14,8 +14,11 @@ const CreateContent = ({ navigation, route, deviceHeight, deviceWidth }) => {
   LogBox.ignoreAllLogs()
 
   const styles = styleSheet(deviceWidth)
+
   const [selectedMenu, setSelectedMenu] = useState(route.params.menu)
+
   const menuScroll = useRef()
+
   const menuComponent = [
     <Emoji navigation={navigation} route={route} deviceHeight={deviceHeight} deviceWidth={deviceWidth} />,
     <Status navigation={navigation} route={route} deviceHeight={deviceHeight} deviceWidth={deviceWidth} />, 
@@ -38,7 +41,6 @@ const CreateContent = ({ navigation, route, deviceHeight, deviceWidth }) => {
             horizontal={true}
             ref={menuScroll}
             showsHorizontalScrollIndicator={false}
-
           >
             <View style={styles.blankBoxStart}></View>
             {
@@ -49,7 +51,6 @@ const CreateContent = ({ navigation, route, deviceHeight, deviceWidth }) => {
                   menuScroll.current.scrollTo({ x:menuLocation[index] })
                   setSelectedMenu(index)
                 }}
-                
                 >
                   <Text 
                     style={{
@@ -73,10 +74,16 @@ const CreateContent = ({ navigation, route, deviceHeight, deviceWidth }) => {
 }
 
 const styleSheet = (deviceWidth) => StyleSheet.create({
-  mainView: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
+  blankBoxEnd: {
+    width: deviceWidth/2-76,
+    marginHorizontal: 20,
+  },
+  blankBoxStart: {
+    width: deviceWidth/2-85,
+    marginHorizontal: 20,
+  },
+  checkBox: {
+    borderWidth: 2,
   },
   content: {
     flex: 9,
@@ -86,28 +93,22 @@ const styleSheet = (deviceWidth) => StyleSheet.create({
     backgroundColor: "#eee",
     justifyContent: 'center',
   },
-  checkBox: {
-    borderWidth: 2,
-  },
-  blankBoxStart: {
-    width: deviceWidth/2-85,
-    marginHorizontal: 20,
-  },
-  blankBoxEnd: {
-    width: deviceWidth/2-76,
-    marginHorizontal: 20,
-  },
-  selectedMenuText: {
-    marginHorizontal: 20,
-    fontSize: 16,
-    paddingBottom: 2
+  mainView: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
   notSelectedMenuText: {
     marginHorizontal: 20,
     fontSize: 16,
     paddingBottom: 2
+  },
+  selectedMenuText: {
+    marginHorizontal: 20,
+    fontSize: 16,
+    paddingBottom: 2
   }
-});
+})
 
 function mapStateToProps(state) {
   return {
@@ -116,4 +117,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps)(CreateContent);
+export default connect(mapStateToProps)(CreateContent)

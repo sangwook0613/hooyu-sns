@@ -6,16 +6,15 @@ import { connect } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 import { actionCreators } from '../../store/reducers'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import {
-  GoogleSignin,
-} from '@react-native-google-signin/google-signin'
-const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK, userPK }) => {
+import { GoogleSignin } from '@react-native-google-signin/google-signin'
+
+
+const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK }) => {
+  
   LogBox.ignoreAllLogs()
 
-
   const navigation = useNavigation()
-  // const FOREGROUND_LOCATION_TASK = 'foreground-location-task'
-  // const BACKGROUND_LOCATION_TASK = 'background-location-task'
+  
   const sendModalVisible = () => {
     setModalVisible(!isModalVisible)
   }
@@ -23,29 +22,6 @@ const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK,
   const sendLogout = () => {
     signOut()
   }
-
-  // TaskManager.defineTask(FOREGROUND_LOCATION_TASK, ({ data, error }) => {
-  //   if (error) {
-  //     console.log(error.message)
-  //     return
-  //   }
-  //   if (data) {
-  //     const { locations } = data
-  //     getUsers(locations[0].coords.latitude, locations[0].coords.longitude)
-  //   }
-  // })
-
-  // TaskManager.defineTask(BACKGROUND_LOCATION_TASK, ({ data, error }) => {
-  //   if (error) {
-  //     console.log(error.message)
-  //     return
-  //   }
-  //   if (data) {
-  //     const { locations } = data
-  //     getUsers(locations[0].coords.latitude, locations[0].coords.longitude)
-  //   }
-  // })
-
 
   const signOut = async () => {
     GoogleSignin.configure({
@@ -55,8 +31,7 @@ const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK,
     try {
       await GoogleSignin.revokeAccess()
       await GoogleSignin.signOut()
-
-      Api.setUserKilled(userPK)
+      Api.setUserKilled()
         .then(async() => {
           setUserEmoji(null)
           setUserPK(0)
@@ -73,41 +48,44 @@ const LogoutModal = ({ isModalVisible, setModalVisible, setUserEmoji, setUserPK,
     }
   }
 
-
   return (
     <Modal
       isVisible={isModalVisible}
       onBackdropPress={sendModalVisible}
       useNativeDriver={true}
       style={{
-        flex: 1, justifyContent: "center", alignItems: "center",
+        flex: 1, 
+        justifyContent: "center", 
+        alignItems: "center"
       }}
     >
-      <View style={{
-        padding: 20,
-        backgroundColor: 'white',
-        width: 320,
-        height: 170,
-      }}>
+      <View 
+        style={{
+          padding: 20,
+          backgroundColor: 'white',
+          width: 320,
+          height: 170,
+        }}
+      > 
         <Text style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 20 }}>로그아웃</Text>
         <Text style={{ fontSize: 14, marginBottom: 2 }}>로그아웃 하시겠습니까?</Text>
         <View style={{ paddingTop: 30, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
-          <TouchableOpacity style={{paddingLeft: 10, paddingRight: 10}} onPress={sendModalVisible}>
+          <TouchableOpacity 
+            style={{paddingLeft: 10, paddingRight: 10}} 
+            onPress={sendModalVisible}
+          >
             <Text style={{ fontSize: 16, color: 'black' }}>아니오</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={{paddingLeft: 20, paddingRight: 20}} onPress={sendLogout}>
+          <TouchableOpacity 
+            style={{paddingLeft: 20, paddingRight: 20}} 
+            onPress={sendLogout}
+          >
             <Text style={{ fontSize: 16, color: 'red' }}>네</Text>
           </TouchableOpacity>
         </View>
       </View>
     </Modal>
   )
-}
-
-function mapStateToProps(state) {
-  return {
-    userPK: state.user.userPK,
-  }
 }
 
 function mapDispatchToProps(dispatch) {
@@ -121,4 +99,4 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LogoutModal)
+export default connect(null, mapDispatchToProps)(LogoutModal)

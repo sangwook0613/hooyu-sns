@@ -1,7 +1,5 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { Dimensions, Button, Text, Image, View, TouchableOpacity, ScrollView, FlatList, LogBox } from 'react-native'
-import { AntDesign } from '@expo/vector-icons'
-import Api from '../utils/api'
+import React, { useEffect, useRef, useState } from 'react'
+import { Text, Image, View, TouchableOpacity, ScrollView, LogBox } from 'react-native'
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
 import * as emojiImages from '../assets/images'
@@ -11,7 +9,7 @@ import SurveyContent from '../components/SurveyContent'
 import images from '../assets/images'
   
 
-const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUserName, deviceWidth, deviceHeight }) => {
+const ProfileScreen = ({ navigation, route, userName, userEmoji, deviceWidth }) => {
   LogBox.ignoreAllLogs()
 
   const [ownerName, setOwnerName] = useState(route.params.nickname === userName ? userName : route.params.nickname)
@@ -19,23 +17,19 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
   const [isImage, setIsImage] = useState(true)
   const [isSurvey, setIsSurvey] = useState(true)
   
-  const now = new Date()
   const scrollRef = useRef()
+
   const moveTo = [
-    // 그냥 프로필을 눌러서 들어온 경우
     {
       status: 0,
       image: 0,
       survey: 0,
     },
-    // 이미지 or 설문만 있는 경우
-    // 제목 공간 + 이미지 크기 + 공감 받은 이모지 공간 + 공감 버튼 공간 + 여백
     {
       status: 0,
       image: 50 + deviceWidth + 40 + 40 + 10,
       survey: 50 + deviceWidth + 40 + 40 + 10,
     },
-    // 둘다 있는 경우
     {
       status: 0,
       image: 50 + deviceWidth + 40 + 40 + 10,
@@ -76,24 +70,15 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
     })
   }, [navigation])
 
-  // useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerTitle: (props) => <ProfileTitle {...props} />,
-  //     headerRight: () => (
-  //       <TouchableOpacity style={{ padding: 10, }} onPress={() => navigation.navigate('Setting')}>
-  //         <Text>설정</Text>
-  //       </TouchableOpacity>
-  //     )
-  //   })
-  // }, [navigation])
-
   return (
     <>
       <ScrollView
         style={{backgroundColor: '#D7D7D7'}}
         ref={scrollRef}
       >
-        {isStatus ? (
+        {isStatus 
+        ? 
+        (
           <>
             <StatusContent 
               ownerName={ownerName}
@@ -101,7 +86,8 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
             />
           </>
         )
-        : (
+        : 
+        (
           <>
           <View
             style={{
@@ -189,7 +175,6 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
           <View style={{ height: 10, backgroundColor: "#D7D7D7"}}></View>
           </>
         )}
-
         {isImage && (
           <>
             <ImageContent 
@@ -198,7 +183,6 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
             />
           </>
         )}
-
         {isSurvey && (
           <>
             <SurveyContent 
@@ -207,7 +191,6 @@ const ProfileScreen = ({ navigation, route, userPK, userName, userEmoji, setUser
             />
           </>
         )}
-
         {!isImage && !isSurvey && (
           <>
             <View
@@ -240,7 +223,6 @@ function mapStateToProps(state) {
   return {
     deviceWidth: state.user.deviceWidth,
     deviceHeight: state.user.deviceHeight,
-    userPK: state.user.userPK,
     userName: state.user.userName,
     userEmoji: state.user.userEmoji,
   }
