@@ -51,7 +51,7 @@ const Root = ({ setUserPK, setUserEmoji, setUserName, userEmoji }) => {
         console.log('pk :', jwt_decode(result).pk)
         setUserPK(jwt_decode(result).pk)
         setAccessToken(result)
-        
+        console.log('awiat', await AsyncStorage.getItem('refresh_token'))
         await api.getUser(jwt_decode(result).pk)
           .then((res) => {
             console.log('루트.jsx에서 뜨는 emoji 값 : ', res.data.success.emoji )
@@ -59,6 +59,7 @@ const Root = ({ setUserPK, setUserEmoji, setUserName, userEmoji }) => {
             setUserName(res.data.success.name)
             setEmoji(res.data.success.emoji)
           }).catch((err) => {
+            console.log('여기인가?')
             console.log(err)
           })
       }

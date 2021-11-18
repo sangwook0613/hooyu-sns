@@ -82,10 +82,10 @@ const NicknameChangeModal = ({ isModalVisible, setModalVisible, deviceHeight, us
             onChangeText={(text) => setNewNickname(text)}
           />
           <View style={{paddingTop: 30, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-            <TouchableOpacity style={{paddingRight: 30}} onPress={sendModalVisible}>
+            <TouchableOpacity style={{paddingLeft: 10, paddingRight: 10}} onPress={sendModalVisible}>
               <Text style={{fontSize: 16, color: 'black'}}>취소</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={{paddingRight: 20}} disabled={newNickname === ''} onPress={sendReport}>
+            <TouchableOpacity style={{paddingLeft: 20, paddingRight: 20}} disabled={newNickname === ''} onPress={sendReport}>
               <Text style={{fontSize: 16, color: 'red'}}>네</Text>
             </TouchableOpacity>
           </View>
