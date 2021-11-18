@@ -7,7 +7,7 @@ import { Dimensions, StatusBar } from 'react-native'
 const defaultState = {
   deviceWidth: Dimensions.get('window').width,
   deviceHeight: StatusBar.currentHeight > 24 ? Dimensions.get('window').height : Dimensions.get('window').height - StatusBar.currentHeight,
-  myRadius: 2000,
+  myRadius: 30000,
   SERVER_URL: 'https://k5a101.p.ssafy.io/api/v1/',
   userPK: 0,
   userEmoji: 'none',
