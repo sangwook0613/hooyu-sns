@@ -6,13 +6,14 @@ import images from '../../assets/images'
 
 
 const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUser, selectedUser, setUsers, mainListSortMode, setMainListSortMode }, ref) => {
+  
   LogBox.ignoreAllLogs()
   
   const navigation = useNavigation()
-  const mainList = useRef(new Animated.Value(deviceHeight)).current
 
   const [now, setNow] = useState(new Date().toString())
 
+  const mainList = useRef(new Animated.Value(deviceHeight)).current
   const isInitialMount = useRef(true)
 
   useEffect(() => {
@@ -105,10 +106,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
   const scrollRef = useRef()
   
   return (
-    <Animated.View
-      style={{
-        top: mainList}}
-    >
+    <Animated.View style={{ top: mainList }}>
       <View style={styles.mainList}>
         <View style={styles.mainListHeader}>
           <TouchableWithoutFeedback 
@@ -130,25 +128,25 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
             </View>
           </TouchableWithoutFeedback>
         </View>
-        <ScrollView
-          ref={scrollRef}
-        >
+        <ScrollView ref={scrollRef}>
           {users.map((user, index) => (
             <View
-            key={index}
-            style={{
-              borderBottomColor: mainColor4,
-              borderBottomWidth: 2,
-            }}
+              key={index}
+              style={{
+                borderBottomColor: mainColor4,
+                borderBottomWidth: 2,
+              }}
             >
               <TouchableWithoutFeedback  
                 onPress={() => selectUser(index)}
               >
                 <View style={styles.user}>
-                  <View style={{
-                    alignItems: 'center',
-                    flexDirection: 'row'
-                  }}>
+                  <View 
+                    style={{
+                      alignItems: 'center',
+                      flexDirection: 'row'
+                    }}
+                  >
                     <Image
                       style={styles.mainListEmoji}
                       source={images.emoji[user.emoji]}
@@ -178,10 +176,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
                       style={styles.userMenuButton}
                       onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'status', emoji: user.emoji})}}
                     >
-                      <Text style={{
-                        color: 'white',
-                        fontWeight: 'bold',
-                      }}>
+                      <Text style={{ color: 'white', fontWeight: 'bold' }}>
                         상태
                       </Text>
                     </TouchableOpacity>
@@ -200,10 +195,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
                       onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'image', emoji: user.emoji})}}
                       disabled={user.contentTime.images === null ? true : false}
                     >
-                      <Text style={{
-                        color: 'white',
-                        fontWeight: 'bold',
-                      }}>
+                      <Text style={{ color: 'white', fontWeight: 'bold' }}>
                         사진
                       </Text>
                     </TouchableOpacity>
@@ -222,10 +214,7 @@ const MainList = forwardRef(({ deviceWidth, deviceHeight, theme, users, selectUs
                       onPress={() => {navigation.navigate('Profile', {nickname: user.name, content: 'survey', emoji: user.emoji})}}
                       disabled={user.contentTime.survey === null ? true : false}
                     >
-                      <Text style={{
-                        color: 'white',
-                        fontWeight: 'bold',
-                      }}>
+                      <Text style={{ color: 'white', fontWeight: 'bold' }}>
                         질문
                       </Text>
                     </TouchableOpacity>

@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Animated, Dimensions, Text, TouchableOpacity, Image, View, StyleSheet, TextInput, LogBox } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react'
+import { Animated, Dimensions, Text, TouchableOpacity, Image, View, StyleSheet, LogBox } from 'react-native'
 import { actionCreators } from '../store/reducers'
 import { connect } from 'react-redux'
 import * as emojiImages from '../assets/images'
@@ -19,18 +19,16 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
 
   LogBox.ignoreAllLogs()
 
-
   const styles = styleSheet(deviceWidth, deviceHeight)
   
   const open = useRef(new Animated.Value(0)).current
   const [emoji, setEmoji] = useState('smile')
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
 
-  const floatValue = useRef(new Animated.Value(0)).current;
-
+  const floatValue = useRef(new Animated.Value(0)).current
 
   const range = (n) => {
-    let arr = [];
+    let arr = []
     for (let i = 0; i < n; i++) {
       arr.push(i/n)
     }
@@ -53,16 +51,16 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
       toValue: 1,
       duration: 1500,
       useNativeDriver: false
-    }).start();
-  };
+    }).start()
+  }
 
   const floatDown = () => {
     Animated.timing(floatValue, {
       toValue: 0,
       duration: 1500,
       useNativeDriver: false
-    }).start();
-  };
+    }).start()
+  }
 
   useEffect(() => {
     floatUp()
@@ -73,7 +71,7 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
         floatUp()
       }
     })
-  }, [emoji]);
+  }, [emoji])
 
 
   const registerEmoji = () => {
@@ -84,15 +82,18 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
   return (
     <View>
       <View style={styles.emojiContainer}>
-        <View style={{
+        <View 
+          style={{
             width: deviceWidth * 0.8
           }}
         > 
-          <Text style={{
-            color: '#0B1C26',
-            fontSize: 22,
-            fontWeight: 'bold',
-          }}>
+          <Text 
+            style={{
+              color: '#0B1C26',
+              fontSize: 22,
+              fontWeight: 'bold',
+            }}
+          >
             지금의 감정은 무엇인가요?
           </Text>
         </View>
@@ -101,16 +102,19 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
         >
           {
           emojiArray.map((emotion, index) => (
-            <Animated.View key={index} style={['', {
-              left: open.interpolate({
-                inputRange: range(index+1),
-                outputRange: emojiMoveLeft.slice(0, index+2)
-              }),
-              top: open.interpolate({
-                inputRange: range(index+1),
-                outputRange: emojiMoveTop.slice(0, index+2)
-              })
-            }]}>
+            <Animated.View 
+              key={index} 
+              style={['', {
+                left: open.interpolate({
+                  inputRange: range(index+1),
+                  outputRange: emojiMoveLeft.slice(0, index+2)
+                }),
+                top: open.interpolate({
+                  inputRange: range(index+1),
+                  outputRange: emojiMoveTop.slice(0, index+2)
+                })
+              }]}
+            >
               <TouchableOpacity
                 style={styles.selectableEmoji}
                 onPress={() => {
@@ -143,18 +147,20 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
           </TouchableOpacity>
           :
           <TouchableOpacity
-          onPress={() => {
-            setIsEmojiSelect(true)
-            toggleMenu()
-          }}
-          style={styles.myEmoji}
+            onPress={() => {
+              setIsEmojiSelect(true)
+              toggleMenu()
+            }}
+            style={styles.myEmoji}
           >
-            <Animated.View style={['', {
-              top: floatValue.interpolate({
-                inputRange: [0, 0.5, 1],
-                outputRange: [-3, 2, -3]
-              })
-            }]}>
+            <Animated.View 
+              style={['', {
+                top: floatValue.interpolate({
+                  inputRange: [0, 0.5, 1],
+                  outputRange: [-3, 2, -3]
+                })
+              }]}
+            >
               <Image
                 source={emojiImages.default.emoji[emoji]}
                 style={{ width: 80, height: 80 }}
@@ -180,7 +186,17 @@ const EmojiTutorial = ({ navigation: { navigate }, route, deviceWidth, deviceHei
   )
 }
 
-const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create({
+const styleSheet = (deviceWidth, deviceHeight) => StyleSheet.create({
+  disableEmojiSelect: {
+    width: 60, 
+    height: 60, 
+    backgroundColor: '#eee', 
+    borderRadius: 30, 
+    elevation: 4,
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    position: 'absolute'
+  },
   emojiContainer: {
     alignItems: 'center',
     marginTop: deviceHeight * 0.15,
@@ -192,6 +208,19 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     justifyContent: 'center',
     paddingHorizontal: 10,
     width: deviceWidth * 0.8,
+  },
+  emojiSelect: {
+    height: deviceHeight * 0.5,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  myEmoji: {
+    width: 80, 
+    height: 80, 
+    borderRadius: 40,
+    position: 'absolute',
+    elevation: 6,
   },
   register: {
     alignItems: 'center',
@@ -208,29 +237,6 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
   register__text: {
     color: 'white',
     fontSize: 15,
-  },
-  emojiSelect: {
-    height: deviceHeight * 0.5,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  myEmoji: {
-    width: 80, 
-    height: 80, 
-    borderRadius: 40,
-    position: 'absolute',
-    elevation: 6,
-  },
-  disableEmojiSelect: {
-    width: 60, 
-    height: 60, 
-    backgroundColor: '#eee', 
-    borderRadius: 30, 
-    elevation: 4,
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    position: 'absolute'
   },
   selectableEmoji: { 
     position: 'absolute',

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Dimensions, Animated } from 'react-native';
+import React from 'react'
+import { Dimensions, Animated } from 'react-native'
 
 
 const deviceWidth = Dimensions.get('window').width
@@ -19,17 +19,13 @@ class RadderEffect extends React.Component {
         duration: 10000,
         useNativeDriver: false
       },
-
-    );
-
+    )
     Animated.loop(
       rotateAnimation,
       {
         iterations: -1,
       },
-
-
-    ).start();
+    ).start()
   }
 
   render() {
@@ -46,19 +42,17 @@ class RadderEffect extends React.Component {
         inputRange: [0, 0.7, 1],
         outputRange: [1, 0, 0]
       }),
-
-    };
-
+    }
+    
     return (
       <Animated.View style={[objectStyles.object, animationStyles]}>
       </Animated.View>
-    );
+    )
   }
 }
 
 const objectStyles = {
   object: {
-    // backgroundColor: '#FFF8EA',
     borderWidth: 10,
     borderColor: '#FDA604',
     borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
@@ -68,4 +62,4 @@ const objectStyles = {
   },
 }
 
-export { RadderEffect };
+export { RadderEffect }

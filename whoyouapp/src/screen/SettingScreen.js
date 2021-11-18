@@ -1,12 +1,10 @@
-import React from 'react';
-import { Dimensions, Text, TouchableOpacity, View, LogBox } from 'react-native';
-import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons'; 
-
-const deviceWidth = Dimensions.get('window').width
-const deviceHeight = Dimensions.get('window').height
+import React from 'react'
+import { Text, TouchableOpacity, View, LogBox } from 'react-native'
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons' 
+import { connect } from 'react-redux'
 
 
-const SettingScreen = ({ navigation: { navigate }}) => {
+const SettingScreen = ({ navigation: { navigate }, deviceWidth }) => {
 
   LogBox.ignoreAllLogs()
 
@@ -70,4 +68,10 @@ const SettingScreen = ({ navigation: { navigate }}) => {
   )
 }
 
-export default SettingScreen;
+function mapStateToProps(state) {
+  return {
+    deviceWidth: state.user.deviceWidth
+  }
+}
+
+export default connect(mapStateToProps)(SettingScreen)

@@ -1,8 +1,9 @@
-import React from 'react';
-import { Text, View, TouchableOpacity, LogBox } from 'react-native';
-import Modal from "react-native-modal";
+import React from 'react'
+import { Text, View, TouchableOpacity, LogBox } from 'react-native'
+import Modal from "react-native-modal"
 
 const BlockModal = ({ isModalVisible, setModalVisible }) => {  
+  
   LogBox.ignoreAllLogs()
 
   const sendModalVisible = () => {
@@ -43,6 +44,6 @@ const BlockModal = ({ isModalVisible, setModalVisible }) => {
     </Modal>
   )
   
-};
+}
 
-export default BlockModal;
+export default BlockModal
