@@ -357,6 +357,7 @@ public class UserServiceImpl implements UserService {
             if (target.getUser().getId() == user.getId()) continue;
 
             DistDto checkDist = radarMath.distance(lat, lon, target.getLatitude(), target.getLongitude());
+            logger.debug("승호와 함게하는 dist test : {}", checkDist.toString());
             if (checkDist.getDist() > radius) continue;
 
             //privateZone안에 있는 여부check
