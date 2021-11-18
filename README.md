@@ -23,8 +23,6 @@
 >
 > 나를 보여주고 싶은 10~20대들! 나의 상태를 공유하는 서비스
 >
-> <br>
->
 > 당신의 상태 메시지, 사진, 질문을 공유해보세요.
 
 [HOOYU APP Download Link](https://whoyou-bucket.s3.ap-northeast-2.amazonaws.com/app-debug.apk)
@@ -152,16 +150,17 @@
 
 ## 🌈 Usage
 <p>
-	<img src="README.assets/Usage_1.png" alt="Usage_1" style="zoom: 25%;" />
-	<img src="README.assets/Usage_2.png" alt="Usage_2" style="zoom:25%;" />
+	<img src="README.assets/Usage_1.png" alt="Usage_1" style="zoom: 33%;" />
+	<img src="README.assets/Usage_2.png" alt="Usage_2" style="zoom: 33%;" />
 </p>
+
 <br>
 
-## 🔨 Architecture
+## 🔨 Structure
 
 ### Architecture
 
-
+![Architecture](README.assets/Architecture.PNG)
 
 ### ERD
 
