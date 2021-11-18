@@ -313,7 +313,7 @@ public class UserServiceImpl implements UserService {
             String title = "반경 내에 " + countOfNew + "명의 사람이 새로 들어왔어요!";
             String body = "클릭해서 확인해보세요";
             fcmService.sendMessageTo(targetToken.getToken(), title, body);
-//            targetToken.setPushOne(nowTime.plusHours(3));
+            targetToken.setPushOne(nowTime.plusHours(3));
         }
 
         if (targetContent != null && (targetToken.getPushTwo() == null || nowTime.isAfter(targetToken.getPushTwo()))) {
@@ -333,7 +333,7 @@ public class UserServiceImpl implements UserService {
             title.append(" 올렸어요!");
             String body = "클릭해서 확인해보세요";
             fcmService.sendMessageTo(targetToken.getToken(), title.toString(), body);
-//            targetToken.setPushTwo(nowTime.plusHours(3));
+            targetToken.setPushTwo(nowTime.plusHours(3));
         }
 
         fcmTokenRepository.save(targetToken);
