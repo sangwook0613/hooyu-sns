@@ -372,7 +372,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
             }
             <TouchableOpacity
               style={[styles.shelterArea, {top: isListOpened ? deviceHeight * 0.173 - 30 : deviceHeight * 0.175}]}
-              disabled={myRadius === 500 || myRadius === 2000 ? false : true}
+              disabled={myRadius === 500 || myRadius === 30000 ? false : true}
               onPress={() => {
                 mainListRef.current.close()
                 shelterListRef.current.open()
@@ -385,7 +385,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                   style={[
                     styles.shelterImage,
                     {
-                      opacity: myRadius === 500 || myRadius === 2000 ? 1 : 0.2
+                      opacity: myRadius === 500 || myRadius === 30000 ? 1 : 0.2
                     }
                   ]}
                 ></Image>
@@ -393,7 +393,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                   style={[
                     styles.shelterCount,
                     {
-                      opacity: myRadius === 500 || myRadius === 2000 ? 1 : 0
+                      opacity: myRadius === 500 || myRadius === 30000 ? 1 : 0
                     }
                   ]}
                 >
@@ -502,7 +502,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                 </View>
               }
               {
-                myRadius == 2000 &&
+                myRadius == 30000 &&
                 <View style={{ top: -deviceWidth * 0.06, transform: [{ rotate: '-30deg' }] }}>
                   <View style={{ position: "absolute", left: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
                   <View style={{ position: "absolute", right: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
@@ -510,9 +510,9 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                 </View>
               }
               {
-                myRadius != 2000 &&
+                myRadius != 30000 &&
                 <View style={{ top: -deviceWidth * 0.06, transform: [{ rotate: '-30deg' }] }}>
-                  <Text onPress={() => setMyRadius(2000)} style={{ color: mainColor5, paddingRight: 5, paddingLeft: 5 }}>2km</Text>
+                  <Text onPress={() => setMyRadius(30000)} style={{ color: mainColor5, paddingRight: 5, paddingLeft: 5 }}>2km</Text>
                 </View>
               }
             </View>
