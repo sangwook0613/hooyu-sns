@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class VotedDto {
-    private Long userPK;
+//    private Long userPK;
     private Long contentPK;
 }

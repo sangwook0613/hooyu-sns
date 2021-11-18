@@ -12,11 +12,11 @@ import lombok.ToString;
 @Setter
 @ToString
 public class EmotionPlusDto {
-    private Long userPK;
+//    private Long userPK;
     private String contentEmoji;
 
     public EmotionPlusDto(Emotion entity) {
-        this.userPK = entity.getUser().getId();
+//        this.userPK = entity.getUser().getId();
         this.contentEmoji = entity.getContentEmoji();
     }
 }

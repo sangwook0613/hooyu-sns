@@ -5,8 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @NoArgsConstructor
@@ -14,9 +12,9 @@ import java.math.BigDecimal;
 @Setter
 @ToString
 public class PrivateZoneDto {
-    @NotNull(message = "id는 필수 값입니다.")
-    @Min(1)
-    Long userPK;
+//    @NotNull(message = "id는 필수 값입니다.")
+//    @Min(1)
+//    Long userPK;
     String title;
     BigDecimal lat;
     BigDecimal lon;

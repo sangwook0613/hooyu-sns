@@ -28,9 +28,9 @@ public class UserController {
 
     Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @GetMapping("/setup/{userPK}")
-    public ResponseEntity<SuccessResponseDto> getUserInfo(@PathVariable Long userPK) throws NoUserException {
-        logger.debug("User Controller 진입 getUserInfo param {}", userPK);
+    @GetMapping("/setup")
+    public ResponseEntity<SuccessResponseDto> getUserInfo() throws NoUserException {
+        logger.debug("User Controller 진입 getUserInfo");
         UserResponseDto userResponseDto = userService.getUserInfo(SecurityUtil.getCurrentUserId());
 
         logger.debug("User Controller 진입 userResponseDto {}", userResponseDto);
@@ -39,9 +39,9 @@ public class UserController {
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/test/{userPK}")
-    public ResponseEntity<SuccessResponseDto> getUserInfoTwo(@PathVariable Long userPK) throws NoUserException {
-        logger.debug("User Controller 진입 getUserInfo param {}", userPK);
+    @GetMapping("/test")
+    public ResponseEntity<SuccessResponseDto> getUserInfoTwo() throws NoUserException {
+        logger.debug("User Controller 진입 getUserInfo");
         User user = userService.getUserInfoTwo(SecurityUtil.getCurrentUserId());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(user);
@@ -70,7 +70,7 @@ public class UserController {
     }
 
     @PostMapping("/emojiSet")
-    public ResponseEntity<SuccessResponseDto> changeEmoji(@RequestBody @Valid EmojiDto emojiDto) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> changeEmoji(@RequestBody EmojiDto emojiDto) throws NoUserException {
         logger.trace("User Controller 진입 ChangeEmoji param {}", emojiDto);
         String message = userService.changeEmoji(SecurityUtil.getCurrentUserId(), emojiDto.getUserEmoji());
 
@@ -80,7 +80,7 @@ public class UserController {
     }
 
     @PostMapping("/setPrivate")
-    public ResponseEntity<SuccessResponseDto> setUpPrivateZone(@RequestBody @Valid PrivateZoneDto privateZoneDto) throws NoUserException {
+    public ResponseEntity<SuccessResponseDto> setUpPrivateZone(@RequestBody PrivateZoneDto privateZoneDto) throws NoUserException {
         logger.trace("User Controller 진입 SetUpPrivateZone param {}", privateZoneDto);
         String message = userService.setUpPrivateZone(SecurityUtil.getCurrentUserId(), privateZoneDto.getTitle(), privateZoneDto.getLat(), privateZoneDto.getLon());
 
@@ -89,9 +89,9 @@ public class UserController {
         return new ResponseEntity<>(successResponseDto, HttpStatus.OK);
     }
 
-    @GetMapping("/private/{userPK}")
-    public ResponseEntity<SuccessResponseDto> getPrivateZone(@PathVariable Long userPK) throws NoUserException {
-        logger.trace("User Controller 진입 getPrivateZone param {}", userPK);
+    @GetMapping("/private")
+    public ResponseEntity<SuccessResponseDto> getPrivateZone() throws NoUserException {
+        logger.trace("User Controller 진입 getPrivateZone");
         List<ResponsePrivateZoneDto> responsePrivateZoneDtoList = userService.getPrivateZone(SecurityUtil.getCurrentUserId());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(responsePrivateZoneDtoList);
@@ -111,7 +111,7 @@ public class UserController {
 
 
     @PostMapping("/push")
-    public ResponseEntity<SuccessResponseDto> setPushAlarmReceive(@RequestBody @Valid PushAlarmDto pushAlarmDto) throws Exception {
+    public ResponseEntity<SuccessResponseDto> setPushAlarmReceive(@RequestBody PushAlarmDto pushAlarmDto) throws Exception {
         logger.trace("User Controller 진입 SetPushAlarmReceive param {}", pushAlarmDto);
         String message = userService.setAllPush(SecurityUtil.getCurrentUserId(), pushAlarmDto.getAccept(), pushAlarmDto.getSync(), pushAlarmDto.getRadius());
 
@@ -134,8 +134,8 @@ public class UserController {
     }
 
     @PutMapping("/killed")
-    public ResponseEntity<SuccessResponseDto> setKilled(@RequestParam Long userPK) throws NoUserException {
-        logger.trace("User Controller 진입 getListUserWithinRadius param {}", userPK);
+    public ResponseEntity<SuccessResponseDto> setKilled() throws NoUserException {
+        logger.trace("User Controller 진입 getListUserWithinRadius ");
         String message = userService.killApp(SecurityUtil.getCurrentUserId());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
@@ -144,8 +144,8 @@ public class UserController {
     }
 
     @PutMapping("/wakeup")
-    public ResponseEntity<SuccessResponseDto> setAlive(@RequestParam Long userPK) throws NoUserException {
-        logger.trace("User Controller 진입 getListUserWithinRadius param {}", userPK);
+    public ResponseEntity<SuccessResponseDto> setAlive() throws NoUserException {
+        logger.trace("User Controller 진입 getListUserWithinRadius ");
         String message = userService.aliveApp(SecurityUtil.getCurrentUserId());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
@@ -154,8 +154,8 @@ public class UserController {
     }
 
     @DeleteMapping("/drop")
-    public ResponseEntity<SuccessResponseDto> dropMembership(@RequestParam Long userPK) throws NoUserException, NoAuthorityUserException, NoContentException {
-        logger.trace("User Controller 진입 getListUserWithinRadius param {}", userPK);
+    public ResponseEntity<SuccessResponseDto> dropMembership() throws NoUserException, NoAuthorityUserException, NoContentException {
+        logger.trace("User Controller 진입 getListUserWithinRadius");
         String message = userService.deleteUser(SecurityUtil.getCurrentUserId());
 
         SuccessResponseDto successResponseDto = responseGenerateService.generateSuccessResponse(message);
