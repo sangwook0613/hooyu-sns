@@ -27,30 +27,6 @@
 
 [HOOYU APP Download Link](https://whoyou-bucket.s3.ap-northeast-2.amazonaws.com/hooyu.apk)
 
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#📋-Stack">Stack</a>
-    </li>
-    <li>
-      <a href="#🚀-Getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#Prerequisites">Prerequisites</a></li>
-        <li><a href="#Installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#🌈-Usage">Usage</a></li>
-    <li>
-    	<a href="#🔨-Structure">Structure</a>
-    	<ul>
-        <li><a href="#Architecture">Architecture</a></li>
-        <li><a href="#ERD">ERD</a></li>
-      </ul>
-    </li>
-    <li><a href="#💬-Contact">Contact</a></li>
-  </ol>
-</details>
 <br>
 
 ## 📋 Stack
