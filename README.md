@@ -23,31 +23,34 @@
 >
 > 나를 보여주고 싶은 10~20대들! 나의 상태를 공유하는 서비스
 >
-> <br>
->
 > 당신의 상태 메시지, 사진, 질문을 공유해보세요.
 
-[HOOYU APP Download Link](https://whoyou-bucket.s3.ap-northeast-2.amazonaws.com/app-debug.apk)
+[HOOYU APP Download Link](https://whoyou-bucket.s3.ap-northeast-2.amazonaws.com/hooyu.apk)
 
 <details>
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#Stack">Stack</a>
+      <a href="#📋-Stack">Stack</a>
     </li>
     <li>
-      <a href="#getting-started">Getting Started</a>
+      <a href="#🚀-Getting-started">Getting Started</a>
       <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
+        <li><a href="#Prerequisites">Prerequisites</a></li>
+        <li><a href="#Installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#Architecture">Architecture</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#🌈-Usage">Usage</a></li>
+    <li>
+    	<a href="#🔨-Structure">Structure</a>
+    	<ul>
+        <li><a href="#Architecture">Architecture</a></li>
+        <li><a href="#ERD">ERD</a></li>
+      </ul>
+    </li>
+    <li><a href="#💬-Contact">Contact</a></li>
   </ol>
 </details>
-
 <br>
 
 ## 📋 Stack
@@ -151,17 +154,21 @@
 <br>
 
 ## 🌈 Usage
-<p>
-	<img src="README.assets/Usage_1.png" alt="Usage_1" style="zoom: 25%;" />
-	<img src="README.assets/Usage_2.png" alt="Usage_2" style="zoom:25%;" />
-</p>
+|Splash|Main|User List|
+|:-:|:-:|:-:|
+|<img src="README.assets/Usage_1.png" alt="Second Image" width="300" />|<img src="README.assets/Usage_2.png" alt="First Image" width="300" />|<img src="README.assets/Usage_3.png" alt="First Image" width="300" />|
+
+|Content Create|Profile_1|Profile_2|
+|:-:|:-:|:-:|
+|<img src="README.assets/Usage_4.png" alt="First Image" width="300" />|<img src="README.assets/Usage_5.png" alt="First Image" width="300" />|<img src="README.assets/Usage_6.png" alt="First Image" width="300" />|
+
 <br>
 
-## 🔨 Architecture
+## 🔨 Structure
 
 ### Architecture
 
-
+![Architecture](README.assets/Architecture.PNG)
 
 ### ERD
 
