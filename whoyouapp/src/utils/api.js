@@ -54,12 +54,12 @@ export default {
     })
   },
   
-  setFCMToken(token) {
+  setFCMToken(browserToken) {
     return axios({
-      url: `browser/in`,
+      url: 'browser/in',
       method: 'post',
       data: {
-        browserToken: token,
+        browserToken: browserToken
       }
     })
   },
