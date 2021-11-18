@@ -19,7 +19,6 @@ const SettingPrivateZone = ({ userLocation, deviceWidth, SERVER_URL, onCreate })
   }
 
   const setPrivateZone = () => {
-    console.log('here')
     axios({
       method: 'post',
       url: SERVER_URL + 'user/setPrivate',

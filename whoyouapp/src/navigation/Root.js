@@ -1,31 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import { LogBox } from 'react-native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { useNavigation } from '@react-navigation/native';
-import Main from '../screen/Main';
-import Login from '../screen/Login';
-import ProfileScreen from '../screen/ProfileScreen';
-import SettingScreen from '../screen/SettingScreen';
-import NicknameTutorial from '../screen/NicknameTutorial';
+import Main from '../screen/Main'
+import Login from '../screen/Login'
+import ProfileScreen from '../screen/ProfileScreen'
+import SettingScreen from '../screen/SettingScreen'
+import NicknameTutorial from '../screen/NicknameTutorial'
 import StatusTutorial from '../screen/StatusTutorial'
 import EmojiTutorial from '../screen/EmojiTutorial'
-import InfoAgree from '../screen/InfoAgree';
-import CreateContent from '../screen/CreateContent';
+import InfoAgree from '../screen/InfoAgree'
+import CreateContent from '../screen/CreateContent'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
-import jwt_decode from "jwt-decode";
+import jwt_decode from "jwt-decode"
 import api from '../utils/api'
 import SplashScreen from 'react-native-splash-screen'
-import UserSetting from '../screen/Setting/UserSetting';
-import PrivateZoneSetting from '../screen/Setting/PrivateZoneSetting';
-import PushSetting from '../screen/Setting/PushSetting';
+import UserSetting from '../screen/Setting/UserSetting'
+import PrivateZoneSetting from '../screen/Setting/PrivateZoneSetting'
+import PushSetting from '../screen/Setting/PushSetting'
 import * as Location from 'expo-location'
 
 
 const Nav = createNativeStackNavigator()
 
-const Root = ({ setUserPK, setUserEmoji, setUserName, userEmoji }) => {
+const Root = ({ setUserPK, setUserEmoji, setUserName }) => {
   
   LogBox.ignoreAllLogs()
 
@@ -106,8 +105,7 @@ const Root = ({ setUserPK, setUserEmoji, setUserName, userEmoji }) => {
 
 function mapStateToProps(state) {
   return {
-    userPK: state.user.userPK,
-    userEmoji: state.user.userEmoji,
+    userEmoji: state.user.userEmoji
   }
 }
 

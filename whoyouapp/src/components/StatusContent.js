@@ -13,7 +13,7 @@ import ReportModal from '../components/modal/reportModal'
 
 const emojiArray = ['like', 'smile', 'love', 'amazing', 'sad', 'angry']
 
-const StatusContent = ({ ownerName, userName, deviceWidth, setIsStatus, userPK }) => {
+const StatusContent = ({ ownerName, userPK, userName, deviceWidth, setIsStatus }) => {
 
   LogBox.ignoreAllLogs()
 
@@ -28,9 +28,6 @@ const StatusContent = ({ ownerName, userName, deviceWidth, setIsStatus, userPK }
   const [deleteModalContent, setDeleteModalContent] = useState(null)
   const [isReportModalVisible, setReportModalVisible] = useState(false)
   const [reportModalContent, setReportModalContent] = useState(null)
-  
-  const swiperFlatList = useRef()
-
   const now = new Date()
 
   useEffect(() => {
@@ -97,7 +94,7 @@ const StatusContent = ({ ownerName, userName, deviceWidth, setIsStatus, userPK }
   
   const addEmotion = (emoji, contentId) => {
     Api.setContentEmotion(emoji, contentId)
-      .then(() => {
+      .then((res) => {
         getEmotion(contentId)
       })  
       .catch((err) => {
@@ -107,7 +104,7 @@ const StatusContent = ({ ownerName, userName, deviceWidth, setIsStatus, userPK }
 
   const deleteEmotion = () => {
     Api.setContentEmotion(giveEmotion, statusData[currentIndex].contentPk)
-      .then(() => {
+      .then((res) => {
         getEmotion(statusData[currentIndex].contentPk)
       })
       .catch((err) => {
@@ -144,6 +141,8 @@ const StatusContent = ({ ownerName, userName, deviceWidth, setIsStatus, userPK }
       return cnt
     }
   }
+
+  const swiperFlatList = useRef()
 
   const reRenderStatus = () => {
     Api.getUserStatus(ownerName)
@@ -217,7 +216,6 @@ const StatusContent = ({ ownerName, userName, deviceWidth, setIsStatus, userPK }
         data={statusData}
         showPagination
         onChangeIndex={({ index }) => {
-          console.log('onchangeIndex', '자몽이2', index)
           setCurrentIndex(index)
           setIsEmojiSelect(false)
           getEmotion(statusData[index].contentPk)
@@ -293,6 +291,7 @@ const StatusContent = ({ ownerName, userName, deviceWidth, setIsStatus, userPK }
                 elevation: 10,
                 flex: 1,
                 height: 35,
+                // height: '50%',
               }}
               onPress={() => {
                 setIsEmojiSelect(false)

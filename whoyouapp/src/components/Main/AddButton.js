@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from 'react'
 import { Animated, View, StyleSheet, Image, TouchableWithoutFeedback, __spread, LogBox } from 'react-native'
 import { connect } from 'react-redux'
 import { AntDesign } from "@expo/vector-icons"
