@@ -13,6 +13,8 @@ const images = {
     sleep: require('./emoji/sleep.png'),
     smile: require('./emoji/smile.png'),
     sunglass: require('./emoji/sunglass.png'),
+    namsan: require('./emoji/namsan.png'),
+    gyeongbokgung: require('./emoji/gyeongbokgung.png')
   },
   logo: require('../assets/images/logo.png'),
   menu: {
