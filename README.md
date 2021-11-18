@@ -149,10 +149,13 @@
 <br>
 
 ## 🌈 Usage
-<p>
-	<img src="README.assets/Usage_1.png" alt="Usage_1" style="zoom: 33%;" />
-	<img src="README.assets/Usage_2.png" alt="Usage_2" style="zoom: 33%;" />
-</p>
+|Splash|Main|User List|
+|:-:|:-:|:-:|
+|<img src="README.assets/Usage_1.png" alt="Second Image" width="300" />|<img src="README.assets/Usage_2.png" alt="First Image" width="300" />|<img src="README.assets/Usage_3.png" alt="First Image" width="300" />|
+
+|Content Create|Profile_1|Profile_2|
+|:-:|:-:|:-:|
+|<img src="README.assets/Usage_4.png" alt="First Image" width="300" />|<img src="README.assets/Usage_5.png" alt="First Image" width="300" />|<img src="README.assets/Usage_6.png" alt="First Image" width="300" />|
 
 <br>
 
