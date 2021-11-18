@@ -12,6 +12,7 @@ spring:
       max-request-size: 100MB
 
   datasource:
+
 #  ?autoReconnect=true&useUnicode=true&characterEncoding=utf8mb4&serverTimezone=KST
 #    url: jdbc:mariadb://k5a101.p.ssafy.io:3308/whoyou
 #    driver-class-name: org.mariadb.jdbc.Driver
@@ -37,4 +38,4 @@ spring:
 logging:
   level:
     root: Info
-    com.status.server : debug
+    com.status.server : Info

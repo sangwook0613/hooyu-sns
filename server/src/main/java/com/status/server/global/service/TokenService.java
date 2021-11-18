@@ -19,8 +19,8 @@ public class TokenService {
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
     // 인증 token 30분, 리프레쉬 토큰 = 8주;
-//    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60L * 30L;            // 30분
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60L * 2L;            // 2분 test
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60L * 30L;            // 30분
+//    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60L * 2L;            // 2분 test
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L * 60L * 60L * 24L * 7L * 8L;  // 8주
 
     @PostConstruct
