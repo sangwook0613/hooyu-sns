@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, LogBox } from 'react-native'
 
 const PushButtonGroup = ({ setPushRadius, currentRadius, isPushEnabled }) => {
-  const [selection, setSelection] = useState(currentRadius)
 
+  LogBox.ignoreAllLogs()
+
+  const [selection, setSelection] = useState(currentRadius)
+  
   useEffect(() => {
     setPushRadius(selection)
   }, [selection])
@@ -18,24 +21,26 @@ const PushButtonGroup = ({ setPushRadius, currentRadius, isPushEnabled }) => {
             selection === 20 ? { backgroundColor: `${isPushEnabled ? "#FF6A77" : "#c9c9c9"}` } : null
           ]}
           onPress={() => setSelection(20)}
+          disabled={!isPushEnabled}
         >
           <Text style={[styles.btnText, selection === 20 ? { color: "white" } : { color: "#E5E5E5" }]}>20m</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.btn, selection === 100 ? { backgroundColor: `${ isPushEnabled ? "#FF6A77" : "#c9c9c9"}`} : null]} onPress={() => setSelection(100)}>
+        <TouchableOpacity style={[styles.btn, selection === 100 ? { backgroundColor: `${ isPushEnabled ? "#FF6A77" : "#c9c9c9"}`} : null]} onPress={() => setSelection(100)} disabled={!isPushEnabled}>
           <Text style={[styles.btnText, selection === 100 ? { color: "white" } : { color: "#E5E5E5" }]}>100m</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.btn, selection === 500 ? { backgroundColor: `${ isPushEnabled ? "#FF6A77" : "#c9c9c9"}`} : null]} onPress={() => setSelection(500)}>
+        <TouchableOpacity style={[styles.btn, selection === 500 ? { backgroundColor: `${ isPushEnabled ? "#FF6A77" : "#c9c9c9"}`} : null]} onPress={() => setSelection(500)} disabled={!isPushEnabled}>
           <Text style={[styles.btnText, selection === 500 ? { color: "white" } : { color: "#E5E5E5" }]}>500m</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[
             styles.btn,
             { borderBottomRightRadius: 20, borderTopRightRadius: 20, },
-            selection === 2000 ? { backgroundColor: `${isPushEnabled ? "#FF6A77" : "#c9c9c9"}` } : null
+            selection === 30000 ? { backgroundColor: `${isPushEnabled ? "#FF6A77" : "#c9c9c9"}` } : null
           ]}
-          onPress={() => setSelection(2000)}
+          onPress={() => setSelection(30000)}
+          disabled={!isPushEnabled}
         >
-          <Text style={[styles.btnText, selection === 2000 ? { color: "white" } : { color: "#E5E5E5" }]}>2km</Text>
+          <Text style={[styles.btnText, selection === 30000 ? { color: "white" } : { color: "#E5E5E5" }]}>2km</Text>
         </TouchableOpacity>
       </View>
         
@@ -44,8 +49,9 @@ const PushButtonGroup = ({ setPushRadius, currentRadius, isPushEnabled }) => {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  btn: {
     flex: 1,
+    borderColor: '#6B7280'
   },
   btnGroup: {
     flexDirection: 'row',
@@ -54,16 +60,14 @@ const styles = StyleSheet.create({
     borderColor: '#6B7280',
     borderRadius: 20,
   },
-  btn: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#6B7280'
-  },
   btnText: {
     textAlign: 'center',
     paddingVertical: 10,
     fontSize: 14,
-  }
+  },
+  container: {
+    flex: 1,
+  },
 })
 
 export default PushButtonGroup

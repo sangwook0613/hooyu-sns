@@ -2,6 +2,14 @@ import axios from './interceptor'
 
 export default {
 
+  deleteContent(contentPK) {
+    return axios({
+      url: 'content',
+      method: 'delete',
+      data: { contentPK: contentPK }
+    })
+  },
+  
   loginGoogle(data) {
     return axios({
       url: 'login/google',
@@ -10,82 +18,150 @@ export default {
     })
   },
 
-  getUser(pk) {
+  getUser() {
     return axios({
-      url: `user/setup/${pk}`,
+      url: 'user/setup',
+      method: 'get'
+    })
+  },
+  
+  isDuplicatedNickname(inputValue) {
+    return axios({
+      url: `user/duplicated/${inputValue}`,
       method: 'get'
     })
   },
 
-  isDuplicatedNickname(inputValue) {
-    return axios({
-      url: `user/duplicated/${inputValue}`,
-      method: 'post',
-      data: {
-        userName: inputValue  
-      }
-    })
-  },
-
-  updateNickname(inputValue, pk) {
+  updateNickname(inputValue) {
     return axios({
       url: `user/nameSet`,
       method: 'post',
       data: {
         userName: inputValue,
-        userPK: pk,
       }
     })
   },
-
-  setPushSetting(accept, radius, sync, pk) {
+  
+  setPushSetting(accept, radius, sync) {
     return axios({
       url: `user/push`,
       method: 'post',
       data: {
         accept: accept,
         radius: radius,
-        sync: sync,
-        userPK: pk
+        sync: sync
       }
     })
   },
-
-  setFCMToken(pk, token) {
+  
+  setFCMToken(browserToken) {
     return axios({
-      url: `browser/in`,
+      url: 'browser/in',
       method: 'post',
       data: {
-        browserToken: token,
-        userPK: pk
+        browserToken: browserToken
       }
     })
   },
-
-  setPushAlarmReceive(accept, radius, sync, pk) {
+  
+  setPushAlarmReceive(accept, radius, sync) {
     return axios({
       method: 'post',
       url: 'user/push',
       data: {
         accept: accept,
         radius: radius,
-        sync: sync,
-        userPK: pk
+        sync: sync
+      }
+    })
+  },
+  
+  setUserAlived() {
+    return axios({
+      method: 'put',
+      url: 'user/wakeup'
+    })
+  },
+
+  setUserKilled() {
+    return axios({
+      method: 'put',
+      url: 'user/killed'
+    })
+  },
+
+  reportContent(contentPK, reason) {
+    return axios({
+      method: 'post',
+      url: 'content/report',
+      data: { contentPK, reason }
+    })
+  },
+
+  getUserStatus(userName) {
+    return axios({
+      method: 'get',
+      url: `content/status/${userName}`,
+    })
+  },
+
+  getUserImage(userName) {
+    return axios({
+      method: 'get',
+      url: `content/image/${userName}`,
+    })
+  },
+
+  getUserSurvey(userName) {
+    return axios({
+      method: 'get',
+      url: `content/survey/${userName}`,
+    })
+  },
+
+  getContentEmotion(contentPK) {
+    return axios({
+      method: 'get',
+      url: `emotion/${contentPK}`,
+    })
+  },
+  
+  setContentEmotion(emoji, contentPK) {
+    return axios({
+      method: 'post',
+      url: 'emotion/empathize',
+      data: {
+        contentEmoji: emoji,
+        contentPk: contentPK
+      }
+    })
+  },
+  
+  voteCheck(contentPK) {
+    return axios({
+      method: 'post',
+      url: 'content/vote/check',
+      data: {
+        contentPK
       }
     })
   },
 
-  setUserAlived(pk) {
+  voteSurvey(answerPK, contentPK) {
     return axios({
-      method: 'put',
-      url: `user/wakeup?userPK=${pk}`
+      method: 'post',
+      url: 'content/vote/survey',
+      data: {
+        answerPK,
+        contentPK
+      }
     })
   },
 
-  setUserKilled(pk) {
+  userDelete() {
     return axios({
-      method: 'put',
-      url: `user/killed?userPK=${pk}`
+      method: 'delete',
+      url: 'user/drop'
     })
-  },
+  }
 }

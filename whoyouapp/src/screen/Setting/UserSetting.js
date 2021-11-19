@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Dimensions, View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, LogBox } from 'react-native'
 import { connect } from 'react-redux'
 import NicknameChangeModal from '../../components/modal/nicknameChangeModal'
 import LogoutModal from '../../components/modal/logoutModal'
@@ -7,10 +7,12 @@ import UnregisterModal from '../../components/modal/unregisterModal'
 
 
 const UserSetting = ({deviceWidth, deviceHeight}) => {
+
+  LogBox.ignoreAllLogs()
+
   const [isNicknameChangeModalVisible, setNicknameChangeModalVisible] = useState(false)
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false)
   const [isUnregisterModalVisible, setUnregisterModalVisible] = useState(false)
-
   
   return (
     <>
@@ -81,7 +83,6 @@ function mapStateToProps(state) {
   return {
     deviceHeight: state.user.deviceHeight,
     deviceWidth: state.user.deviceWidth,
-    userPK: state.user.userPK,
   }
 }
 
