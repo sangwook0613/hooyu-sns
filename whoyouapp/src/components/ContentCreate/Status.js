@@ -1,46 +1,49 @@
-import React, {useRef, useState, useEffect} from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, ScrollView, Dimensions, TextInput, Image, TouchableWithoutFeedback } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import React, {useRef, useState, useCallback} from 'react'
+import { Text, TouchableOpacity, View, StyleSheet, ScrollView, TextInput, Image, TouchableWithoutFeedback, LogBox } from 'react-native'
+import LinearGradient from 'react-native-linear-gradient'
 import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
 import * as emojiImages from '../../assets/images'
+import Toast from 'react-native-easy-toast'
 
 
-const SERVER_URL = 'https://k5a101.p.ssafy.io/api/v1/'
-const clientWidth = Dimensions.get('screen').width
-const clientHeight = Dimensions.get('screen').height
-
-const colorArray = ['#FFD0D0', 'red', 'orange', 'yellow', 'green', 'blue', 'purple']
+const colorArray = ['#FFD0D0', '#CDD1FF', '#E8AFFE', '#CECECE', '#DEBACC', '#F9A996', '#FBF997']
 const emojiArray = [
   ['smile', 'amazing', 'sad', 'crying', 'sense', 'angry'], 
   ['pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep']
 ]
 
 
-const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
+const Status = ({ navigation, setUserEmoji, SERVER_URL, userEmoji, deviceWidth, deviceHeight }) => {
+  
+  LogBox.ignoreAllLogs()
+  
+  const styles = styleSheet(deviceWidth)
+  
   const [emoji, setEmoji] = useState(userEmoji)
   const [isEmojiSelect, setIsEmojiSelect] = useState(0)
   const [color, setColor] = useState('#FFD0D0')
   const [colorScrollX, setColorScrollX] = useState(0)
   const [status, setStatus] = useState('')
+  
   const statusBackground = useRef()
   const colorScroll = useRef()
-  
-  
+  const toastRef = useRef()
+
   const StatusTitle = () => {
     return (
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <TouchableOpacity onPress={() => setIsEmojiSelect(isEmojiSelect+1)}
         >
           <Image
-            style={{ width: 40, height: 40 }}
+            style={styles.navEmojiSelect}
             source={emojiImages.default.emoji[emoji]}
           />
         </TouchableOpacity>
-        <Text style={{ marginLeft: 10, color: '#aaa'}}>이모지 선택</Text>
+        <Text style={styles.navEmojiSelectText}>이모지 선택</Text>
       </View>
-    );
+    )
   }
 
   React.useEffect(() => {
@@ -49,21 +52,31 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
       headerRight: () => (
         <View>
           { status ? 
-            <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
-              createStatus()
-              navigation.navigate('Main')
-            }}>
+            <TouchableOpacity 
+              style={{ padding: 10 }} 
+              onPress={() => {
+                createStatus()
+                navigation.navigate('Main')
+              }}
+            >
               <Text>등록</Text>
             </TouchableOpacity>
             :
-            <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+            <TouchableWithoutFeedback
+              onPress={() => showToast()}
+            >
+              <Text style={{color: 'gray', padding: 10 }}>등록</Text>
+            </TouchableWithoutFeedback>
           }
 
         </View>
       )
-    });
-  }, [navigation, status, color, emoji]);
+    })
+  }, [navigation, status, color, emoji])
 
+  const showToast = useCallback(() => {
+    toastRef.current.show('상태를 입력해 주세요')
+  })
 
   const onEndScroll = () => {
     colorScroll.current.scrollTo({ x : parseInt((colorScrollX+35)/70)*70 })
@@ -83,8 +96,6 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
     }
   }
 
-  
-
   const createEmoji = () => {
     setUserEmoji(emoji)
     axios({
@@ -92,11 +103,7 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
       url: SERVER_URL + 'user/emojiSet',
       data: {
         "userEmoji": emoji,
-        "userPK": userPK
       }
-    })
-    .then((res) => {
-      console.log(res.data.success)
     })
     .catch((err) => {
       console.log(err)
@@ -110,19 +117,15 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
       data: {
         "color": color,
         "exon": status,
-        "userPK": userPK
       }
     })
-    .then((res) => {
-      console.log(res.data.success)
+    .then(() => {
       createEmoji()
     })
     .catch((err) => {
       console.log(err)
     })
   }
-
-
 
   return (
     <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}}>
@@ -131,15 +134,16 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
           <Text></Text>
         </View>
           <View style={styles.statusBox} >
-            <TextInput style={{ textAlign: 'center'}}
+            <TextInput 
+              style={{ fontSize: 18, padding: 30, textAlign: 'center'}}
               placeholder={"상태를 입력해주세요"}
               onChangeText={(text) => setStatus(text)}
-              />
+              multiline={true}
+            />
           </View>
         <View style={styles.scrollViewBox} >
           <View style={styles.scrollViewInner}>
             <ScrollView 
-              style={styles.scrollView}
               showsHorizontalScrollIndicator={false}
               horizontal={true}
               onScroll = {(e) => {
@@ -148,13 +152,13 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
               }}
               onScrollEndDrag={onEndScroll}
               ref={colorScroll}
-              >
+            >
               <View style={styles.blankBox}></View>
               {
                 colorArray.map((color, index) => (
                   <TouchableOpacity 
-                  onPress={() => {onColorPress(index)}} 
-                  key={index}
+                    onPress={() => {onColorPress(index)}} 
+                    key={index}
                   >
                     <LinearGradient
                       colors={colorArray[parseInt((colorScrollX+35)/70)] === color ? 
@@ -182,11 +186,9 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
                       ></View>
                     </LinearGradient>
                   </TouchableOpacity>
-                  
                   ))
                 }
               <View style={styles.blankBox}></View>
-
             </ScrollView>
           </View>
         </View>
@@ -213,36 +215,24 @@ const Status = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji
           ))}
         </View>
         }
+        <Toast 
+          ref={toastRef}
+          positionValue={deviceHeight * 0.4}
+          fadeInDuration={200}
+          fadeOutDuration={1000}
+          style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
+        />
       </View>
     </TouchableWithoutFeedback>
   )
 }
 
-const styles = StyleSheet.create({
-  mainView: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: "#FFD0D0",
+const styleSheet = (deviceWidth) => StyleSheet.create({
+  blankBox: {
+    width: deviceWidth/2-65,
+    height: 40,
+    marginHorizontal: 15
   },
-  foo: {
-    flex: 1,
-  },
-  statusBox: {
-    flex: 3,
-    justifyContent: "center",
-  },
-  scrollViewBox: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-  },
-  scrollViewInner: {
-    height: 40
-  },
-  scrollView: {
-  },  
   colorBox: {
     width: 40,
     height: 40,
@@ -250,17 +240,11 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     marginHorizontal: 15
   },
-  blankBox: {
-    width: clientWidth/2-65,
-    height: 40,
-    marginHorizontal: 15
-  },
   emojiSelect: {
     position: 'absolute',
     width: 300,
     height: 100,
-    borderWidth: 1,
-    borderColor: "#aaa",
+    top: 1,
     borderRadius: 10,
     backgroundColor: 'white',
     elevation: 4,
@@ -277,12 +261,41 @@ const styles = StyleSheet.create({
     height: '100%',
     padding: 5
   },
-});
+  foo: {
+    flex: 1,
+  },
+  mainView: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: "#FFD0D0",
+  },
+  navEmojiSelect: {
+    width: 34, 
+    height: 34
+  },
+  navEmojiSelectText: { 
+    marginLeft: 10, 
+    color: '#aaa'
+  },
+  scrollViewBox: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  scrollViewInner: {
+    height: 40
+  },
+  statusBox: {
+    flex: 3,
+    justifyContent: "center",
+  },
+})
 
 function mapStateToProps(state) {
   return {
     SERVER_URL: state.user.SERVER_URL,
-    userPK: state.user.userPK,
     userEmoji: state.user.userEmoji,
   }
 }
@@ -295,5 +308,4 @@ function mapDispatchToProps(dispatch) {
   }
 }
 
-
-export default connect(mapStateToProps, mapDispatchToProps)(Status);
+export default connect(mapStateToProps, mapDispatchToProps)(Status)

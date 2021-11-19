@@ -4,27 +4,24 @@ import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableWithoutFeedba
 import LinearGradient from 'react-native-linear-gradient'
 import { connect } from 'react-redux'
 import { actionCreators } from '../store/reducers'
-
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import shelter from '../assets/images/shelter.png'
-import wowImoticon from '../assets/images/wowimoticon.png'
-import amazingEmozi from '../assets/images/amazing2.png'
 import morning from '../assets/images/morning.png'
 import evening from '../assets/images/evening.png'
 import night from '../assets/images/night.png'
 import GestureRecognizer from 'react-native-swipe-gestures'
 import images from '../assets/images'
-
 import { RadderEffect } from '../components/Main/RadderEffect'
 import MainList from '../components/Main/MainList'
 import ShelterList from '../components/Main/ShelterList'
 import AddButton from '../components/Main/AddButton'
+import Direction from '../components/Main/Direction'
 import axios from 'axios'
 import * as TaskManager from 'expo-task-manager'
 import * as Location from 'expo-location'
 import * as emojiImages from '../assets/images'
-
-
 import api from '../utils/api'
+
 
 const date = new Date()
 
@@ -33,15 +30,12 @@ const mainColor1 = theme == "morning" ? "#A1D1E7" : (theme == "evening" ? '#EC54
 const mainColor2 = theme == "morning" ? "#CDE4EE" : (theme == "evening" ? '#F2B332' : '#293A44')
 const mainColor3 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#B4B4B4')
 const mainColor4 = '#E9E9E9'
-// 선택 안된 반경
 const mainColor5 = theme == "morning" ? "#B2B2B2" : (theme == "evening" ? '#FFFFFF' : '#B2B2B2')
-// 선택 된 반경
 const mainColor6 = theme == "morning" ? "#000000" : (theme == "evening" ? '#000000' : '#FFFFFF')
-// 선택 된 반경 옆 표시색
 const mainColor7 = theme == "morning" ? "#FDA604" : (theme == "evening" ? '#ED5646' : '#FFFFFF')
 
 
-const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userPK,userEmoji, setMyRadius }) => {
+const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, SERVER_URL, userEmoji, userName, setMyRadius }) => {
 
   LogBox.ignoreAllLogs()
 
@@ -50,11 +44,12 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   const [radarX, setRadarX] = useState(-100)
   const [radarY, setRadarY] = useState(-100)
   const [radarWidth, setRadarWidth] = useState(-100)
-
   const [users, setUsers] = useState([])
   const [privateZoneUsers, setPrivateZoneUsers] = useState([])
   const [selectedUser, setSelectedUser] = useState(-1)
   const [selectedPrivateZoneUser, setSelectedPrivateZoneUser] = useState(-1)
+  const [mainListSortMode, setMainListSortMode] = useState('distance')
+  const [isListOpened, setIsListOpened] = useState(false)
 
   const mainListRef = useRef()
   const shelterListRef = useRef()
@@ -65,7 +60,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
   const BACKGROUND_LOCATION_TASK = 'background-location-task'
 
   useEffect(() => {
-    api.setUserAlived(userPK)
+    api.setUserAlived()
       .then(() => {
       })
       .catch((err) => {
@@ -75,16 +70,23 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       await requestPermission()
       AppState.addEventListener('change', handleAppStateChange)
     }
-    initialPermission ()
-    return () => {
-      console.log('메인에서 끊기')
+    initialPermission()
+    return async () => {
       AppState.removeEventListener('change', handleAppStateChange)
-      api.setUserKilled(userPK)
-        .then(() => {
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+      AsyncStorage.getItem('access_token', async (err, result) => {
+        if (result) {
+          api.setUserKilled()
+            .catch((err) => {
+              console.log(err)
+            })
+        }
+        else {
+          const isTaskStarted = await Location.hasStartedLocationUpdatesAsync(FOREGROUND_LOCATION_TASK)
+          if (isTaskStarted) {
+            await Location.stopLocationUpdatesAsync(FOREGROUND_LOCATION_TASK)
+          }
+        }
+      })
     }
   }, [])
 
@@ -109,7 +111,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     ) {
       instantGetLocation('background')
     }
-    appState.current = nextAppState;
+    appState.current = nextAppState
   }
 
   const requestPermission = async () => {
@@ -119,7 +121,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       instantGetLocation('active')
     } else {
       Alert.alert(
-        '서비스 이용 알림', 
+        '서비스 이용 알림',
         '필수 권한을 허용해야 서비스 정상 이용이 가능합니다. 설정에서 설정해주세요.',
         [
           {
@@ -156,7 +158,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     const front = await Location.getForegroundPermissionsAsync()
     const back = await Location.getBackgroundPermissionsAsync()
     if (front.granted && back.granted) {
-      const data = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.high})
+      const data = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.high })
       getUsers(data.coords.latitude, data.coords.longitude)
       if (status == 'active') {
         activeGetLocation()
@@ -165,7 +167,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       }
     } else {
       Alert.alert(
-        '서비스 이용 알림', 
+        '서비스 이용 알림',
         '필수 권한을 허용해야 서비스 정상 이용이 가능합니다. 설정에서 설정해주세요.',
         [
           {
@@ -187,7 +189,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
       timeInterval: 10000,
       foregroundService: {
         notificationTitle: 'Hooyu',
-        notificationBody : '당신의 반경을 탐색하는중...',
+        notificationBody: '당신의 반경을 탐색하는중...',
         notificationColor: '#FF6A77'
       }
     })
@@ -201,41 +203,55 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
     await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
       accuracy: Location.Accuracy.High,
       distanceInterval: 0,
-      timeInterval: 30000,
+      timeInterval: 60000,
       foregroundService: {
         notificationTitle: 'Hooyu',
-        notificationBody : '당신의 반경을 탐색하는중...',
+        notificationBody: '당신의 반경을 탐색하는중...',
         notificationColor: '#FF6A77'
       }
     })
   }
 
   const getUsers = (latitude, longitude) => {
-    console.log('실행됨')
-    axios({
-      method: 'post',
-      url: SERVER_URL + 'user/radar',
-      data: {
-        list: [
-        ],
-        requestRadiusDto: {
-          lat: latitude,
-          lon: longitude,
-          radius: myRadius,
-          userPK: userPK
-        }
+    AsyncStorage.getItem('access_token', async (err, result) => {
+      if (result) {
+        axios({
+          method: 'post',
+          url: SERVER_URL + 'user/radar',
+          data: {
+            list: [...users, ...privateZoneUsers],
+            requestRadiusDto: {
+              lat: latitude,
+              lon: longitude,
+              radius: myRadius
+            }
+          }
+        })
+          .then((res) => {
+            if (appState.current === 'active') {
+              const newUsers = res.data.success.filter(user => user.privateZone !== true)
+              if (mainListSortMode === 'distance') {
+                newUsers.sort(function (a, b) {
+                  return a.distDto.dist - b.distDto.dist
+                })
+              } else if (mainListSortMode === 'time') {
+                newUsers.sort(function (a, b) {
+                  return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
+                })
+              }
+              setUsers(newUsers)
+              const newPrivateZoneUsers = res.data.success.filter(user => user.privateZone === true)
+              newPrivateZoneUsers.sort(function (a, b) {
+                return Date.parse(b.contentTime.recent) - Date.parse(a.contentTime.recent)
+              })
+              setPrivateZoneUsers(newPrivateZoneUsers)
+            }
+          })
+          .catch((err) => {
+            console.log(err)
+          })
       }
     })
-      .then((res) => {
-        if (appState.current === 'active') {
-          setUsers(res.data.success.filter(user => user.privateZone !== true))
-          setPrivateZoneUsers(res.data.success.filter(user => user.privateZone === true))
-        }
-        console.warn('get users : ', AppState.currentState)
-      })
-      .catch((err) => {
-        console.warn(err)
-      })
   }
 
   const selectUser = (idx) => {
@@ -252,14 +268,16 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
         onSwipeUp={() => {
           shelterListRef.current.close()
           mainListRef.current.open()
+          setIsListOpened(true)
         }}
         onSwipeDown={() => {
           mainListRef.current.close()
           shelterListRef.current.close()
+          setIsListOpened(false)
         }}
         config={{
           velocityThreshold: 0.1,
-          directionalOffsetThreshold: 50,
+          directionalOffsetThreshold: 80,
         }}
         style={{
           height: deviceHeight,
@@ -277,6 +295,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                   onPress={() => {
                     mainListRef.current.close()
                     shelterListRef.current.close()
+                    setIsListOpened(false)
                   }}
                 >
                   <Image source={morning} style={styles.morning} resizeMode="contain" />
@@ -290,6 +309,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                     onPress={() => {
                       mainListRef.current.close()
                       shelterListRef.current.close()
+                      setIsListOpened(false)
                     }}
                   >
                     <Image source={evening} style={styles.evening} resizeMode="contain" />
@@ -301,6 +321,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                     onPress={() => {
                       mainListRef.current.close()
                       shelterListRef.current.close()
+                      setIsListOpened(false)
                     }}
                   >
                     <Image source={night} style={styles.night} resizeMode="contain" />
@@ -308,9 +329,8 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                 </>
               )
           }
-
           <View style={styles.profileButton}>
-            <TouchableOpacity onPress={() => navigate("Profile", { nickname: 'HELLO', emoji: emojiImages.default.emoji[userEmoji] })}>
+            <TouchableOpacity onPress={() => navigate("Profile", { nickname: userName })}>
               <View>
                 <View style={styles.profileBackground}></View>
                 <Image
@@ -323,19 +343,20 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
               </View>
             </TouchableOpacity>
           </View>
-
-
           <View style={styles.raderArea}>
-            <View style={styles.radar__text}>
-              <Text style={styles.radar__text__title}>내 반경안의 이웃들</Text>
-              <Text style={styles.radar__text__count}>10000</Text>
-            </View>
+            {!isListOpened &&
+              <View style={styles.radar__text}>
+                <Text style={styles.radar__text__title}>내 주위의 후유어</Text>
+                <Text style={styles.radar__text__count}>{users.length}</Text>
+              </View>
+            }
             <TouchableOpacity
-              style={styles.shelterArea}
-              disabled={myRadius === 500 || myRadius === 2000 ? false : true}
+              style={[styles.shelterArea, {top: isListOpened ? deviceHeight * 0.173 - 30 : deviceHeight * 0.175}]}
+              disabled={myRadius === 500 || myRadius === 30000 ? false : true}
               onPress={() => {
                 mainListRef.current.close()
                 shelterListRef.current.open()
+                setIsListOpened(true)
               }}
             >
               <View >
@@ -344,7 +365,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                   style={[
                     styles.shelterImage,
                     {
-                      opacity: myRadius === 500 || myRadius === 2000 ? 1 : 0.2
+                      opacity: myRadius === 500 || myRadius === 30000 ? 1 : 0.2
                     }
                   ]}
                 ></Image>
@@ -352,7 +373,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                   style={[
                     styles.shelterCount,
                     {
-                      opacity: myRadius === 500 || myRadius === 2000 ? 1 : 0
+                      opacity: myRadius === 500 || myRadius === 30000 ? 1 : 0
                     }
                   ]}
                 >
@@ -368,8 +389,6 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                 </View>
               </View>
             </TouchableOpacity>
-
-
             <View
               style={styles.rader}
               onLayout={({ target }) => {
@@ -380,6 +399,9 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                 })
               }}
             >
+              <View style={{ position: 'absolute', top: -25 }}>
+                <Direction radarWidth={radarWidth} />
+              </View>
               <View
                 style={{
                   borderRadius: Math.round(deviceWidth + deviceHeight) / 2,
@@ -411,7 +433,6 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                 </View>
               </View>
             </View>
-
             <View style={{ flexDirection: "row", marginTop: deviceWidth * 0.023 }}>
               {
                 myRadius == 20 &&
@@ -456,7 +477,7 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                 </View>
               }
               {
-                myRadius == 2000 &&
+                myRadius == 30000 &&
                 <View style={{ top: -deviceWidth * 0.06, transform: [{ rotate: '-30deg' }] }}>
                   <View style={{ position: "absolute", left: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
                   <View style={{ position: "absolute", right: 0, backgroundColor: mainColor7, width: 2, height: "100%" }}></View>
@@ -464,17 +485,15 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
                 </View>
               }
               {
-                myRadius != 2000 &&
+                myRadius != 30000 &&
                 <View style={{ top: -deviceWidth * 0.06, transform: [{ rotate: '-30deg' }] }}>
-                  <Text onPress={() => setMyRadius(2000)} style={{ color: mainColor5, paddingRight: 5, paddingLeft: 5 }}>2km</Text>
+                  <Text onPress={() => setMyRadius(30000)} style={{ color: mainColor5, paddingRight: 5, paddingLeft: 5 }}>2km</Text>
                 </View>
               }
             </View>
           </View>
 
-          <AddButton navigate={navigate} />
-
-          {/* 중앙 내 이모티콘 */}
+          <AddButton navigate={navigate} theme={theme} />
           <TouchableOpacity
             style={{
               left: radarX + radarWidth / 2 - deviceWidth * 0.035,
@@ -492,74 +511,81 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
               resizeMode="cover"
             />
           </TouchableOpacity>
-
           {users.map((user, index) => (
-            <View
-              key={index}
-              style={{
-                position: 'absolute'
-              }}
-            >
-              {index == selectedUser &&
-                <LinearGradient
-                  colors={['#AB79EF', '#FC98AB']}
-                  style={{
-                    borderRadius: 20,
-                    left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
-                    top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
-                    height: deviceWidth * 0.07,
-                    width: deviceWidth * 0.07,
-                    position: 'absolute',
-                    elevation: 6,
-                  }}
-                >
-                </LinearGradient>
-              }
-              <TouchableOpacity
+            user.distDto.dist <= myRadius
+              ?
+              <View
+                key={index}
                 style={{
-                  left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
-                  top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
-                  position: 'absolute',
-                  elevation: index == selectedUser ? 7 : 5,
-                }}
-                onPress={() => {
-                  selectUser(index)
-                  shelterListRef.current.close()
-                  mainListRef.current.open()
+                  position: 'absolute'
                 }}
               >
-                <Image
+                {index == selectedUser &&
+                  <LinearGradient
+                    colors={['#AB79EF', '#FC98AB']}
+                    style={{
+                      borderRadius: 20,
+                      left: radarX + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
+                      top: radarY + radarWidth / 2 - deviceWidth * 0.035 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
+                      height: deviceWidth * 0.07,
+                      width: deviceWidth * 0.07,
+                      position: 'absolute',
+                      elevation: 6,
+                    }}
+                  >
+                  </LinearGradient>
+                }
+                <TouchableOpacity
                   style={{
-                    height: deviceWidth * 0.06,
-                    width: deviceWidth * 0.06,
+                    left: radarX + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.xdist / (myRadius * 115 / 100)),
+                    top: radarY + radarWidth / 2 - deviceWidth * 0.03 + (radarWidth / 2 * user.distDto.ydist / (myRadius * 115 / 100)),
+                    position: 'absolute',
+                    elevation: index == selectedUser ? 7 : 5,
                   }}
-                  source={amazingEmozi}
-                  resizeMode="cover"
-                />
-              </TouchableOpacity>
-            </View>
+                  onPress={() => {
+                    selectUser(index)
+                    shelterListRef.current.close()
+                    mainListRef.current.open()
+                    setIsListOpened(true)
+                  }}
+                >
+                  <Image
+                    style={{
+                      height: deviceWidth * 0.06,
+                      width: deviceWidth * 0.06,
+                    }}
+                    source={images.emoji[user.emoji]}
+                    resizeMode="cover"
+                  />
+                </TouchableOpacity>
+              </View>
+              :
+              <View
+                key={index}>
+              </View>
           ))}
         </LinearGradient >
       </GestureRecognizer>
-
       <MainList
         deviceWidth={deviceWidth}
         deviceHeight={deviceHeight}
         theme={theme}
-        navigate={navigate}
         users={users}
         selectUser={selectUser}
         selectedUser={selectedUser}
+        setUsers={setUsers}
+        mainListSortMode={mainListSortMode}
+        setMainListSortMode={setMainListSortMode}
         ref={mainListRef}
       />
       <ShelterList
         deviceWidth={deviceWidth}
         deviceHeight={deviceHeight}
         theme={theme}
-        navigate={navigate}
         users={privateZoneUsers}
         selectPrivateZoneUser={selectPrivateZoneUser}
         selectedPrivateZoneUser={selectedPrivateZoneUser}
+        setPrivateZoneUsers={setPrivateZoneUsers}
         ref={shelterListRef}
       />
     </>
@@ -569,23 +595,25 @@ const Main = ({ navigation: { navigate }, deviceWidth, deviceHeight, myRadius, S
 const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create({
   evening: {
     left: deviceWidth * 0.025,
+    height: deviceWidth / 530 * 943,
     position: "absolute",
-    top: -deviceHeight * 0.2,
+    top: (deviceHeight - (deviceWidth / 530 * 943)) / 2,
     width: deviceWidth * 0.95
   },
   linearGradient: {
     flex: 1,
   },
   morning: {
-    left: deviceWidth * 0.025,
     position: "absolute",
-    top: -deviceHeight * 0.2,
-    width: deviceWidth * 0.95
+    height: deviceWidth / 530 * 942,
+    top: (deviceHeight - (deviceWidth / 530 * 942)) / 2,
+    width: deviceWidth
   },
   night: {
     left: deviceWidth * 0.025,
+    height: deviceWidth / 530 * 943,
     position: "absolute",
-    top: -deviceHeight * 0.2,
+    top: (deviceHeight - (deviceWidth / 530 * 943)) / 2,
     width: deviceWidth * 0.95
   },
   profileButton: {
@@ -614,7 +642,7 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     backgroundColor: 'white',
     borderRadius: Math.round(deviceWidth + deviceHeight
     ) / 2,
-    borderColor: "black",
+    borderColor: "#B4B4B4",
     borderWidth: 1.5,
     position: "absolute",
     top: deviceHeight
@@ -626,6 +654,7 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     alignItems: "center"
   },
   profileMeText: {
+    color: "#B4B4B4",
     fontSize: 10,
     marginBottom: 2
   },
@@ -633,7 +662,6 @@ const styleSheet = (deviceWidth, deviceHeight, radarWidth) => StyleSheet.create(
     flex: 0.7,
     justifyContent: 'center',
     alignItems: 'center',
-
   },
   rader: {
     borderRadius: Math.round(deviceWidth + deviceHeight
@@ -705,8 +733,8 @@ function mapStateToProps(state) {
     deviceHeight: state.user.deviceHeight,
     myRadius: state.user.myRadius,
     SERVER_URL: state.user.SERVER_URL,
-    userPK: state.user.userPK,
-    userEmoji: state.user.userEmoji
+    userEmoji: state.user.userEmoji,
+    userName: state.user.userName,
   }
 }
 
@@ -714,7 +742,7 @@ function mapDispatchToProps(dispatch) {
   return {
     setMyRadius: (radius) => {
       dispatch(actionCreators.setRadius(radius))
-    }
+    },
   }
 }
 

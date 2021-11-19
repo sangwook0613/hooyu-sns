@@ -1,42 +1,48 @@
-import React, {useEffect, useRef, useState} from 'react';
-import { Text, TouchableOpacity, View, StyleSheet, PermissionsAndroid, Dimensions, Image } from 'react-native';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import LinearGradient from 'react-native-linear-gradient';
+import React, {useRef, useState, useCallback} from 'react'
+import { Text, TouchableOpacity, View, Animated, StyleSheet, PermissionsAndroid, Image, LogBox } from 'react-native'
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler'
+import LinearGradient from 'react-native-linear-gradient'
 import imageUpload from '../../assets/createcontent/uploadImage.png'
-import * as ImagePicker from 'react-native-image-picker';
+import * as ImagePicker from 'react-native-image-picker'
 import axios from 'axios'
 import { connect } from 'react-redux'
 import { actionCreators } from '../../store/reducers'
 import * as emojiImages from '../../assets/images'
-
-const clientWidth = Dimensions.get('screen').width
+import Toast from 'react-native-easy-toast'
 
 const emojiArray = [
   ['smile', 'amazing', 'sad', 'crying', 'sense', 'angry'], 
   ['pouting', 'pokerface', 'love', 'sunglass', 'hard', 'sleep']
 ]
 
-const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoji }) => {
-  
+const Picture = ({ navigation, setUserEmoji, SERVER_URL, userEmoji, deviceWidth, deviceHeight }) => {
+  LogBox.ignoreAllLogs()
+
   const [isEmojiSelect, setIsEmojiSelect] = useState(false)
   const [emoji, setEmoji] = useState(userEmoji)
   const [imageFile, setImageFile] = useState('')
-  const [sendForm, setSendForm] = useState('')
 
+  const floatValue = useRef(new Animated.Value(0)).current
+  const toastRef = useRef()
 
   const PictureTitle = () => {
     return (
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View 
+        style={{
+          flexDirection: 'row', 
+          alignItems: 'center'
+        }}
+      >
         <TouchableOpacity onPress={() => setIsEmojiSelect(true)}
         >
           <Image
-            style={{ width: 40, height: 40 }}
+            style={styles.navEmojiSelect}
             source={emojiImages.default.emoji[emoji]}
           />
         </TouchableOpacity>
-        <Text style={{ marginLeft: 10, color: '#aaa'}}>이모지 선택</Text>
+        <Text style={styles.navEmojiSelectText}>이모지 선택</Text>
       </View>
-    );
+    )
   }
 
   React.useEffect(() => {
@@ -45,21 +51,55 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
       headerRight: () => (
         <View>
           { imageFile ? 
-            <TouchableOpacity style={{ marginRight: 10 }} onPress={() => {
-              createPicture()
-              navigation.navigate('Main')
-            }}>
+            <TouchableOpacity 
+              style={{ padding: 10 }} 
+              onPress={() => {
+                createPicture()
+                navigation.navigate('Main')
+              }}
+            >
               <Text>등록</Text>
             </TouchableOpacity>
             :
-            <Text style={{color: 'gray', marginRight: 10 }}>등록</Text>
+            <TouchableWithoutFeedback
+              onPress={() => showToast()}
+            >
+              <Text style={{color: 'gray', padding: 10 }}>등록</Text>
+            </TouchableWithoutFeedback>
           }
 
         </View>
       )
-    });
-  }, [navigation, emoji, imageFile, sendForm]);
+    })
+    floatUp()
+    floatValue.addListener(({value}) => {
+      if (value == 1) {
+        floatDown()
+      } else if (value == 0) {
+        floatUp()
+      }
+    })
+  }, [navigation, emoji, imageFile])
 
+  const floatUp = () => {
+    Animated.timing(floatValue, {
+      toValue: 1,
+      duration: 1500,
+      useNativeDriver: false
+    }).start()
+  }
+
+  const floatDown = () => {
+    Animated.timing(floatValue, {
+      toValue: 0,
+      duration: 1500,
+      useNativeDriver: false
+    }).start()
+  }
+
+  const showToast = useCallback(() => {
+    toastRef.current.show('사진을 선택해 주세요')
+  })
 
   const imageGalleryLaunch = () => {
     let options = {
@@ -68,25 +108,22 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
         path: 'images',
       },
       mediaType: 'photo'
-    };
+    }
   
     ImagePicker.launchImageLibrary(options, (res) => {
-      if (res.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (res.error) {
-        console.log('ImagePicker Error: ', res.error);
-      } else if (res.customButton) {
-        console.log('User tapped custom button: ', res.customButton);
-        alert(res.customButton);
-      } else {
+      if (!res.didCancel && !res.error && !res.customButton) {
         setImageFile(res.assets[0])
       }
-    });
+    })
   }  
 
   const requestGalleryPermission = async () => {
     if (Platform.OS === 'ios') {
-      alert('안드로이드에서만 지원됩니다.')
+      Alert.alert(
+        '서비스 이용 알림',
+        '안드로이드에서만 지원됩니다.',
+        [{text: '확인'}]
+      )
     }
 
     if (Platform.OS === 'android') {
@@ -98,11 +135,13 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
       ) {
         imageGalleryLaunch()
       } else {
-        alert('갤러리 접근 권한을 얻지 못했습니다.')
-        // return false
+        Alert.alert(
+          '서비스 이용 알림',
+          '갤러리 접근 권한을 얻지 못했습니다.',
+          [{text: '확인'}]
+        )
       }
     }
-
   }
 
   const createEmoji = () => {
@@ -112,11 +151,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
       url: SERVER_URL + 'user/emojiSet',
       data: {
         "userEmoji": emoji,
-        "userPK": userPK
       }
-    })
-    .then((res) => {
-      console.log(res.data.success)
     })
     .catch((err) => {
       console.log(err)
@@ -124,7 +159,7 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   }
 
   const createPicture = () => {
-    const formData = new FormData();
+    const formData = new FormData()
 
     formData.append('upload', {
       uri: imageFile.uri,
@@ -151,7 +186,6 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
       method: 'post',
       url: SERVER_URL + 'content/create/image',
       data: {
-        userPK: userPK,
         color: '',
         exon: uri,
       }
@@ -161,20 +195,26 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
   return (
     <LinearGradient colors={["#AB79EF", "#FC98AB"]} style={styles.mainView}>
       <TouchableWithoutFeedback onPress={() => {setIsEmojiSelect(false)}} style={{flex: 1}}>
-        <View style={{width: clientWidth, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <View style={{width: deviceWidth, flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           {
             imageFile ? 
             <View>
               <View style={{ elevation: 15}}>
                 <Image
-                  style={{ width: clientWidth-80, height: clientWidth-80 }}
+                  style={{ width: deviceWidth-80, height: deviceWidth-80 }}
                   source={{ uri: imageFile.uri }}
                 />
               </View>
-              <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', marginTop: 50}} onPress={() => imageGalleryLaunch()}>
+              <TouchableOpacity 
+                style={{
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  marginTop: 50
+                }} 
+                onPress={() => imageGalleryLaunch()}
+              >
                 <View 
                   style={{ 
-                    // borderWidth: 1,
                     borderColor: 'red',
                     elevation: 4,
                     width: 200, 
@@ -190,22 +230,23 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
               </TouchableOpacity>
             </View>
             : 
-            <TouchableOpacity onPress={() => {
-              requestGalleryPermission()
-            }}
+            <TouchableOpacity onPress={() => requestGalleryPermission()}
             >
-              <Image
-                style={{ width: 150, height: 150, marginLeft: 25 }}
-                source={imageUpload}
-              />
+              <Animated.View 
+                style={['', {
+                  top: floatValue.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [-3, 2, -3]
+                  })
+                }]}
+              >
+                <Image
+                  style={{ width: 150, height: 150, marginLeft: 25 }}
+                  source={imageUpload}
+                />
+              </Animated.View>
             </TouchableOpacity>
           }
-          {/* <TouchableOpacity onPress={() => imageGalleryLaunch()}>
-            <Image
-              style={{ width: 150, height: 150, marginLeft: 25 }}
-              source={imageUpload}
-            />
-          </TouchableOpacity> */}
         </View>
       </TouchableWithoutFeedback>
       { isEmojiSelect && 
@@ -216,16 +257,14 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
                 <View key={index2} style={styles.emojiSelectCol}>
                   <TouchableOpacity
                     onPress={() => {
-                      // console.log('onpress')
                       setEmoji(emojiArray[index][index2])
-                      // console.log(emoji)
                       setIsEmojiSelect(false)
                     }}
                     >
                     <Image 
                       source={emojiImages.default.emoji[emotion]}
                       style={{width: '100%', height: '100%'}}
-                      />
+                    />
                   </TouchableOpacity>
                 </View>
                 ))}
@@ -233,27 +272,27 @@ const Picture = ({ navigation, route, setUserEmoji, SERVER_URL, userPK, userEmoj
           ))}
         </View>
       }
+      <Toast 
+        ref={toastRef}
+        positionValue={deviceHeight * 0.4}
+        fadeInDuration={200}
+        fadeOutDuration={1000}
+        style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
+      />
     </LinearGradient>
   )
 }
 
 const styles = StyleSheet.create({
-  mainView: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   emojiSelect: {
     position: 'absolute',
     width: 300,
     height: 100,
-    borderWidth: 1,
-    borderColor: "#B4B4B4",
+    top: 1,
     borderRadius: 10,
     backgroundColor: 'white',
     elevation: 4,
-    },
+  },
   emojiSelectRow: {
     flex: 1, 
     flexDirection: 'row',
@@ -266,12 +305,25 @@ const styles = StyleSheet.create({
     height: '100%',
     padding: 5
   },
-});
+  mainView: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  navEmojiSelect: {
+    width: 34, 
+    height: 34
+  },
+  navEmojiSelectText: { 
+    marginLeft: 10, 
+    color: '#aaa'
+  },
+})
 
 function mapStateToProps(state) {
   return {
     SERVER_URL: state.user.SERVER_URL,
-    userPK: state.user.userPK,
     userEmoji: state.user.userEmoji,
   }
 }
@@ -285,4 +337,4 @@ function mapDispatchToProps(dispatch) {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(Picture);
+export default connect(mapStateToProps, mapDispatchToProps)(Picture)

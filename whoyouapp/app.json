@@ -2,7 +2,7 @@
   "expo": {
     "name": "whoyouapp",
     "slug": "whoyouapp",
-    "version": "1.0.0",
+    "version": "1.0.4",
     "assetBundlePatterns": [
       "**/*"
     ]

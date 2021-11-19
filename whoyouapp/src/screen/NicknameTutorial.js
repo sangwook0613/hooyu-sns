@@ -1,48 +1,58 @@
-import React, { useState } from 'react';
-import { Dimensions, Text, TouchableOpacity, View, StyleSheet, TextInput } from 'react-native';
+import React, { useRef, useState } from 'react'
+import { Text, TouchableOpacity, View, StyleSheet, TextInput, LogBox } from 'react-native'
 import Api from '../utils/api'
 import { connect } from 'react-redux'
+import Toast from 'react-native-easy-toast'
 
 
-const NicknameTutorial = ({ navigation: { navigate }, deviceWidth, deviceHeight, SERVER_URL}) => {
+const NicknameTutorial = ({ navigation: { navigate }, deviceWidth, deviceHeight }) => {
+  
+  LogBox.ignoreAllLogs()
 
   const styles = styleSheet(deviceWidth, deviceHeight)
 
   const [inputValue, setInputValue] = useState('')
 
+  const toastRef = useRef()
+
   const registerNickname = () => {
     Api.isDuplicatedNickname(inputValue)
     .then((res) => {
       if (res.data.success !== 'Success') {
-        alert('중복된 닉네임입니다.')
+        toastRef.current.show('중복된 닉네임입니다.')
       } else {
         navigate('EmojiTutorial', {nickname: inputValue})
       }
     })
     .catch((err) => {
-      console.warn(err)
+      console.log(err)
     })
   }
 
   return (
     <View>
       <View style={styles.nicknameContainer}>
-        <View style={{
+        <View 
+          style={{
             width: deviceWidth * 0.8
           }}
         > 
-          <Text style={{
-            color: '#0B1C26',
-            fontSize: 22,
-            fontWeight: 'bold',
-          }}>
+          <Text 
+            style={{
+              color: '#0B1C26',
+              fontSize: 22,
+              fontWeight: 'bold',
+            }}
+          >
             닉네임 설정
           </Text>
-          <Text style={{
-            color: '#4F5457',
-            fontSize: 14,
-            marginTop: deviceHeight * 0.01,
-          }}>
+          <Text 
+            style={{
+              color: '#4F5457',
+              fontSize: 14,
+              marginTop: deviceHeight * 0.01,
+            }}
+          >
             당신의 닉네임을 설정해주세요.
           </Text>
         </View>
@@ -74,6 +84,13 @@ const NicknameTutorial = ({ navigation: { navigate }, deviceWidth, deviceHeight,
           </Text>
         </TouchableOpacity>
       </View>
+      <Toast 
+        ref={toastRef}
+        positionValue={deviceHeight * 0.4}
+        fadeInDuration={200}
+        fadeOutDuration={1000}
+        style={{backgroundColor:'rgba(0, 0, 0, 0.5)'}}
+      />
     </View>
   )
 }
