@@ -152,6 +152,12 @@
 
 <br>
 
+## 📃 프로젝트 진행 관련 문서
+
+[Notion 문서](https://sangwook-dev.notion.site/Hooyu-10308c1ca73d40819315c0be8f6e6cf1)
+
+
+
 ## 💬 Contact
 
 [류현선](https://github.com/hs-ryu) - richman20486@gmail.com
